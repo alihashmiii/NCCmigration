@@ -47,9 +47,9 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-ca_movie =0; % makes a movie of a surface plot of the chemo attractant concentration
-all_movie=1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant
-frames=1; % makes frames at 12 and 24 hours (can be changed) of the cells on top of the ca
+ca_movie =0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+all_movie=1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames=1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -111,7 +111,7 @@ width = 300;                % initial width of the domain with growth (um)
 domain_length=ones(1,tsteps).*width;  % initialise domain length vector
 
 % These parameters are found from data from the Kulesa Lab, using least
-% squares regression in make_domain_plot.m
+% squares regression in make_domain_plot.m on data in lengths_data.m
 Linf = 870;                            % end domain length
 % Linf = 830;
 a = 0.0800;                            % how fast the domain grows (?)
