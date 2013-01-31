@@ -47,7 +47,9 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-track_cell=0; hist_movie=0; cells_movie=0; ca_movie =0; all_movie=1; comp_movie=0; frames=1;
+ca_movie =0; % makes a movie of a surface plot of the chemo attractant concentration
+all_movie=1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant
+frames=1; % makes frames at 12 and 24 hours (can be changed) of the cells on top of the ca
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -342,34 +344,14 @@ if movies==1
         disp('made frames')
     end
     
-    %%% make histmovie.avi %%%
-    if hist_movie==1
-        make_hist_movie
-    end
-    
-    %%% make cellsmovie.avi %%%
-    if cells_movie==1
-        make_cells_movie
-    end
-    
     %%% make camovie.avi %%%
     if ca_movie==1
         make_ca_movie
     end
     
-    %%% track cell paths %%%
-    if track_cell==1
-        make_track_cell
-    end
-    
     %%% make cells+ca movie (allmovie.avi)%%%
     if all_movie==1
         make_all_movie
-    end
-    
-    %%% make compmovie.avi %%%
-    if comp_movie==1
-        make_comp_movie
     end
     
     close all
