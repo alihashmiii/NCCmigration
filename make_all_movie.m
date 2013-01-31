@@ -24,18 +24,13 @@ set(gcf,'Renderer','zbuffer')
 for k=1:tsteps
     disp(['step ',mat2str(k),' of ',mat2str(tsteps)])
     make_plot(cells_save{k},cells_follow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},attach_save{k},cell_radius,0,barrier(k),experiment)
-    colorbar
-    L = get(colorbar,'YLim');
-    y = 10^floor(log10(L(2)));
-    set(colorbar,'YTick',linspace(0,floor(L(2)/y)*y,3))
-    
+
     axis image
     xlim([min(xlat_save{end}),1100])
     ylim([-50,120+50])
     T_t = get(gca,'TightInset');
     T = get(gca,'Position');
     set(gca,'position',[T_t(1)+0.05 T_t(2) 1-T_t(1)-T_t(3)-0.17 1-T_t(2)-T_t(4)]);
-    %     xlim([-100,1100])
 
     %% Insert title here
     %     title([mat2str(follow_perc),' followers without growing domain and ',mat2str(tsteps),' time steps of ',mat2str(tstep),' hours at time = ', mat2str(t_save(k))])

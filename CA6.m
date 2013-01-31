@@ -34,7 +34,8 @@ satiate = 0;            % number of timesteps after which the cells are satiated
 
 %%% probably don't want to change these %%%
 make_chemoattractant = 1;   % there is a chemoattranctant source term
-zero_bc = 1;                % make the boundary conditions for the c'tant c(edge) = 0 (has smoothed initial conditions)
+zero_bc = 0;                % = 1: make the boundary conditions for the c'tant c(edge) = 0 (has smoothed initial conditions)
+                            % else no flux boundary conditions
 if experiment==6
     ca_solve = 0;           % don't bother solving for the chemoattractant concentration
 else
@@ -46,7 +47,7 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-track_cell=0; hist_movie=0; cells_movie=0; ca_movie =0; all_movie=0; comp_movie=0; frames=1;
+track_cell=0; hist_movie=0; cells_movie=0; ca_movie =0; all_movie=1; comp_movie=0; frames=1;
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -91,9 +92,9 @@ else
 end
     
 %% insert_cells parameters %%
-insert_time_step = 2;         % the time in hours between each new cell insertion
+insert_time_step = 0.1;         % the time in hours between each new cell insertion
 insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
-num_cells = 1;                  % how many new cells are inserted at each timepoint
+num_cells = 2;                  % how many new cells are inserted at each timepoint
 if insert_cells==1
     n = num_cells;              % initial number of cells
 else
