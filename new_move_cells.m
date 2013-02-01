@@ -24,19 +24,23 @@ for i =1:length(cell_order)
         end            
     elseif attach(cellidx)~=0     
         %% if it's a chained follower that can reach the cell ahead
-        if (cells(1,attach(cellidx))-cells(1,cellidx))^2 + (cells(2,attach(cellidx))-cells(2,cellidx))^2 < filolength^2
+        if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (filolength + cell_radius)^2
 %             % set angle of movement towards cell being followed -- LJS
-%             theta = atan(abs((cells(2,attach(cellidx)) - cells(2,cellidx))/(cells(1,attach(cellidx)) - cells(1,cellidx))));
+%             theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
             % set angle of movement parallel to that of cell being followed
-            % -- LJS
-            theta = atan(abs((cells(2,attach(cellidx)) - filopodia(attach(cellidx),2))/(cells(1,attach(cellidx)) - filopodia(attach(cellidx),2))));
-            % set filopodium position to cell being followed -- LJS
-            filopodia(cellidx,:) = cells(:,attach(cellidx))';
+            % -- LJS (THIS NEEDS TO BE CORRECTED)
+            theta = atan2((filopodia(attach(cellidx),2) - cells(2,attach(cellidx))),(filopodia(attach(cellidx),2) - cells(1,attach(cellidx))));
+            % set filopodium position to closet point on membrane of cell being followed -- LJS
+            phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
+            filopodia(cellidx,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
+            filopodia(cellidx,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
             move = 1;
         else
             %% if the cell ahead is too far, then dettach the chain
-            theta = atan(abs((cells(2,attach(cellidx))-cells(2,cellidx))/(cells(1,attach(cellidx))-cells(1,cellidx))));
-            filopodia(cellidx,:)=cells(:,attach(cellidx))';
+            % set filopodial position and movement angle in the direction of cell
+            % centre of lost cell -- LJS
+            theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
+            filopodia(cellidx,:) = cells(:,cellidx)' + filolength.*[cos(theta) sin(theta)];
             attach = dettach(cellidx,attach);
         end
         
@@ -53,7 +57,7 @@ for i =1:length(cell_order)
             end
             if cells_follow(head)==0    %% if the head is a leader, then attach and move
                 attach(cellidx) = c;
-                theta = atan(abs((cells(2,attach(cellidx))-cells(2,cellidx))/(cells(1,attach(cellidx))-cells(1,cellidx))));
+                theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
                 filopodia(cellidx,:) = cells(:,attach(cellidx))';
                 move = 1;
             end
@@ -62,7 +66,7 @@ for i =1:length(cell_order)
     
     %% Try to move
     r1 = rand();
-    T = 0.0001;
+    T = 0.0001; %%% ???? -- LJS
     if (cells_follow(cellidx)==1)&&(move==0)
         x_fil = cells(1,cellidx)+ filolength*cos(theta);
         y_fil = cells(2,cellidx)+ filolength*sin(theta);
@@ -76,20 +80,8 @@ for i =1:length(cell_order)
     end
     if (move==1)||((metropolis==1)&&(r1<exp(-E/T)))%&&(cells_follow(r)==1))
         if (cells_follow(cellidx)==1)&&(move==1)
-            % find the putative new coordinates towards the filopodia
-            if (cells(1,cellidx)<=filopodia(cellidx,1))&&(cells(2,cellidx)<=filopodia(cellidx,2)) % increasing in both directions
                 new_x = cells(1,cellidx) + cos(theta)*dist;
                 new_y = cells(2,cellidx) + sin(theta)*dist;
-            elseif (cells(1,cellidx)<=filopodia(cellidx,1))&&(cells(2,cellidx)>=filopodia(cellidx,2)) % decreasing in y
-                new_x = cells(1,cellidx) + cos(theta)*dist;
-                new_y = cells(2,cellidx) - sin(theta)*dist;
-            elseif (cells(1,cellidx)>=filopodia(cellidx,1))&&(cells(2,cellidx)<=filopodia(cellidx,2)) % decreasing in x
-                new_x = cells(1,cellidx) - cos(theta)*dist;
-                new_y = cells(2,cellidx) + sin(theta)*dist;
-            elseif (cells(1,cellidx)>=filopodia(cellidx,1))&&(cells(2,cellidx)>=filopodia(cellidx,2)) % decreasing in both directions
-                new_x = cells(1,cellidx) - cos(theta)*dist;
-                new_y = cells(2,cellidx) - sin(theta)*dist;
-            end
         else
             new_x = cells(1,cellidx) + cos(theta)*dist;
             new_y = cells(2,cellidx) + sin(theta)*dist;

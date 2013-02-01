@@ -57,7 +57,7 @@ tsteps = floor(time/tstep)+1;   % number of time steps
 cell_radius = 7.5;              % radius in um (= 7.5um)
 speed = 45;                     % speed of the leader cells (=2*45um/hr because half the time they look the wrong way and don't move)
 height = 120;                   % maximum y value
-filolength = cell_radius + 9;                % filopodial length (um) (=50um)
+filolength = cell_radius + 9;   % filopodial length (um) (measured from cell centre -- LJS)
 inity_perc = (height-2*cell_radius)/height; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = speed*tstep;             % the distance moved in a timestep
 
