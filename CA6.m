@@ -47,9 +47,9 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-ca_movie =0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie=1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames=1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+ca_movie = 1; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -94,7 +94,7 @@ else
 end
     
 %% insert_cells parameters %%
-insert_time_step = 0.1;         % the time in hours between each new cell insertion
+insert_time_step = 0.2;         % the time in hours between each new cell insertion
 insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
 num_cells = 2;                  % how many new cells are inserted at each timepoint
 if insert_cells==1
