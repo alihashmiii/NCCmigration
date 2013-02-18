@@ -47,7 +47,7 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-ca_movie = 1; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
@@ -265,17 +265,18 @@ for k=1:tsteps
     %% move cells %%
     if cells_move==1
         if k==1
-            temp = new_move_cells(cells,cells_follow,[],attach,...
+            temp = new_move_cells(cells,cells_follow,[],attach,[],...
                 ca_save{k},xlat_save{k},ylat_save{k},...
                 cell_radius,filolength,d,height,dist,domain_length(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
         else
-            temp = new_move_cells(cells,cells_follow,filopodia,attach,...
+            temp = new_move_cells(cells,cells_follow,filopodia,attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
                 cell_radius,filolength,d,height,dist,domain_length(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
         end
         attach = temp.attach;
         cells_follow = temp.cells_follow;
         filopodia = temp.filopodia;
+        theta = temp.theta;
         cells = temp.cells;
         moved(k,:) = [temp.moved, zeros(1,length(moved(1,:))-length(temp.moved))];
         

@@ -1,4 +1,4 @@
-function out = new_move_cells(cells,cells_follow,filopodia,attach,...
+function out = new_move_cells(cells,cells_follow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
                             cell_radius, filolength, d, height, dist, domain_length, barrier, experiment, t_save, in, metropolis, num_filopodia, diffusion)
 % dettached = 0;
@@ -13,9 +13,8 @@ for i =1:length(cell_order)
     %% Decide whether to try to move
     if cells_follow(cellidx)~=1   
         %% if it's a leader
-        theta = rand(1,num_filopodia(1))*2*pi;
         if diffusion==0
-            [filopodia(cellidx,:),E,move,theta,~] = cell_movement5(theta,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            [filopodia(cellidx,:),E,move,theta(cellidx),~] = cell_movement5(rand(1,num_filopodia(1))*2*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
                 d,filolength,num_filopodia(1),[]);
         elseif rand(1,1)<diffusion
             move = 1;
@@ -26,10 +25,9 @@ for i =1:length(cell_order)
         %% if it's a chained follower that can reach the cell ahead
         if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (filolength + cell_radius)^2
 %             % set angle of movement towards cell being followed -- LJS
-%             theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
+%             theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
             % set angle of movement parallel to that of cell being followed
-            % -- LJS (THIS NEEDS TO BE CORRECTED)
-            theta = atan2((filopodia(attach(cellidx),2) - cells(2,attach(cellidx))),(filopodia(attach(cellidx),2) - cells(1,attach(cellidx))));
+            theta(cellidx) = theta(attach(cellidx));
             % set filopodium position to closet point on membrane of cell being followed -- LJS
             phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
             filopodia(cellidx,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
@@ -39,15 +37,15 @@ for i =1:length(cell_order)
             %% if the cell ahead is too far, then dettach the chain
             % set filopodial position and movement angle in the direction of cell
             % centre of lost cell -- LJS
-            theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
-            filopodia(cellidx,:) = cells(:,cellidx)' + filolength.*[cos(theta) sin(theta)];
+            theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
+            filopodia(cellidx,:) = cells(:,cellidx)' + filolength.*[cos(theta(cellidx)) sin(theta(cellidx))];
             attach = dettach(cellidx,attach);
         end
         
     else
         %% if it's an unchained follower
-        theta = rand()*2*pi;
-        [c,filopodia(cellidx,:)] = cell_movement5_follow(theta,cellidx,cells(1,:),cells(2,:),cell_radius,...
+        theta(cellidx) = rand()*2*pi;
+        [c,filopodia(cellidx,:)] = cell_movement5_follow(theta(cellidx),cellidx,cells(1,:),cells(2,:),cell_radius,...
             filolength,filopodia,barrier,experiment);
         if isempty(c)~=1
             %% if another cell was found then find the head of that chain
@@ -57,8 +55,12 @@ for i =1:length(cell_order)
             end
             if cells_follow(head)==0    %% if the head is a leader, then attach and move
                 attach(cellidx) = c;
-                theta = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
-                filopodia(cellidx,:) = cells(:,attach(cellidx))';
+                % set angle of movement parallel to that of cell being followed
+                theta(cellidx) = theta(attach(cellidx));
+                % set filopodium position to closet point on membrane of cell being followed -- LJS
+                phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
+                filopodia(cellidx,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
+                filopodia(cellidx,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
                 move = 1;
             end
         end
@@ -68,8 +70,8 @@ for i =1:length(cell_order)
     r1 = rand();
     T = 0.0001; %%% ???? -- LJS
     if (cells_follow(cellidx)==1)&&(move==0)
-        x_fil = cells(1,cellidx)+ filolength*cos(theta);
-        y_fil = cells(2,cellidx)+ filolength*sin(theta);
+        x_fil = cells(1,cellidx)+ filolength*cos(theta(cellidx));
+        y_fil = cells(2,cellidx)+ filolength*sin(theta(cellidx));
         E = min(sqrt((x_fil-other_cells(1,:)).^2+(y_fil-other_cells(2,:)).^2));
         T = 50;
 %     elseif (cells_follow(r)==0)&&(move==0)
@@ -80,11 +82,11 @@ for i =1:length(cell_order)
     end
     if (move==1)||((metropolis==1)&&(r1<exp(-E/T)))%&&(cells_follow(r)==1))
         if (cells_follow(cellidx)==1)&&(move==1)
-                new_x = cells(1,cellidx) + cos(theta)*dist;
-                new_y = cells(2,cellidx) + sin(theta)*dist;
+                new_x = cells(1,cellidx) + cos(theta(cellidx))*dist;
+                new_y = cells(2,cellidx) + sin(theta(cellidx))*dist;
         else
-            new_x = cells(1,cellidx) + cos(theta)*dist;
-            new_y = cells(2,cellidx) + sin(theta)*dist;
+            new_x = cells(1,cellidx) + cos(theta(cellidx))*dist;
+            new_y = cells(2,cellidx) + sin(theta(cellidx))*dist;
         end
         
         %% if there is no cell or edge in the way, then move
@@ -124,5 +126,6 @@ end
 out.attach = attach;
 out.cells_follow = cells_follow;
 out.filopodia = filopodia;
+out.theta = theta;
 out.cells = cells;
 out.moved = moved;
