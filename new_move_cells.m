@@ -14,7 +14,7 @@ for i =1:length(cell_order)
     if cells_follow(cellidx)~=1   
         %% if it's a leader
         if diffusion==0
-            [filopodia(cellidx,:),E,move,theta(cellidx),~] = cell_movement5(rand(1,num_filopodia(1))*2*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            [filopodia(cellidx,:,:),E,move,theta(cellidx),~] = cell_movement5(rand(1,num_filopodia(1))*2*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
                 d,filolength,num_filopodia(1),[]);
         elseif rand(1,1)<diffusion
             move = 1;
@@ -30,52 +30,51 @@ for i =1:length(cell_order)
             theta(cellidx) = theta(attach(cellidx));
             % set filopodium position to closet point on membrane of cell being followed -- LJS
             phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
-            filopodia(cellidx,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
-            filopodia(cellidx,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
+            filopodia(cellidx,1,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
+            filopodia(cellidx,1,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
             move = 1;
         else
             %% if the cell ahead is too far, then dettach the chain
             % set filopodial position and movement angle in the direction of cell
             % centre of lost cell -- LJS
             theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
-            filopodia(cellidx,:) = cells(:,cellidx)' + filolength.*[cos(theta(cellidx)) sin(theta(cellidx))];
+            filopodia(cellidx,1,:) = cells(:,cellidx)' + filolength.*[cos(theta(cellidx)) sin(theta(cellidx))];
             attach = dettach(cellidx,attach);
         end
         
     else
         %% if it's an unchained follower
-        theta(cellidx) = rand()*2*pi;
-        [c,filopodia(cellidx,:)] = cell_movement5_follow(theta(cellidx),cellidx,cells(1,:),cells(2,:),cell_radius,...
+        [foundCellidx,filopodia] = cell_movement5_follow(rand(1,num_filopodia(2))*2*pi,cellidx,cells(1,:),cells(2,:),cell_radius,...
             filolength,filopodia,barrier,experiment);
-        if isempty(c)~=1
+        if isempty(foundCellidx)~=1
             %% if another cell was found then find the head of that chain
-            head = c;
+            head = foundCellidx;
             while attach(head)~=0
                 head = attach(head);
             end
             if cells_follow(head)==0    %% if the head is a leader, then attach and move
-                attach(cellidx) = c;
+                attach(cellidx) = foundCellidx;
                 % set angle of movement parallel to that of cell being followed
                 theta(cellidx) = theta(attach(cellidx));
                 % set filopodium position to closet point on membrane of cell being followed -- LJS
                 phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
-                filopodia(cellidx,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
-                filopodia(cellidx,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
+                filopodia(cellidx,1,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
+                filopodia(cellidx,1,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
                 move = 1;
             end
         end
     end
     
     %% Try to move
-    r1 = rand();
-    T = 0.0001; %%% ???? -- LJS
+%     r1 = rand();
+%     T = 0.0001; %%% ???? -- LJS
     if (cells_follow(cellidx)==1)&&(move==0)
-        x_fil = cells(1,cellidx)+ filolength*cos(theta(cellidx));
-        y_fil = cells(2,cellidx)+ filolength*sin(theta(cellidx));
-        E = min(sqrt((x_fil-other_cells(1,:)).^2+(y_fil-other_cells(2,:)).^2));
-        T = 50;
-%     elseif (cells_follow(r)==0)&&(move==0)
-%         exp(-E/T)
+%         x_fil = cells(1,cellidx)+ filolength*cos(theta(cellidx));
+%         y_fil = cells(2,cellidx)+ filolength*sin(theta(cellidx));
+%         E = min(sqrt((x_fil-other_cells(1,:)).^2+(y_fil-other_cells(2,:)).^2));
+%         T = 50;
+% %     elseif (cells_follow(r)==0)&&(move==0)
+% %         exp(-E/T)
     end
     if (move==1)%||((metropolis==1)&&(r1<exp(-E/T))&&(cells_follow(r)==1))
         moved(cellidx)=1;

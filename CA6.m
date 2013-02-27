@@ -27,7 +27,7 @@ tic
 growing_domain = 1;     % the domain grows
 follow_perc = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+convert_type = 2;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 metropolis = 0;         % cells sometimes move even if it is unfavourable
 num_filopodia = [6,2];  % the number of filopodia for lead cells and follower cells
 satiate = 0;            % number of timesteps after which the cells are satiated
@@ -58,7 +58,6 @@ cell_radius = 7.5;              % radius in um (= 7.5um)
 speed = 45;                     % speed of the leader cells (=2*45um/hr because half the time they look the wrong way and don't move)
 height = 120;                   % maximum y value
 filolength = cell_radius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS)
-% filolength = 50;   % for trouble-shooting, this is what Louise used -- LJS
 inity_perc = (height-2*cell_radius)/height; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = speed*tstep;             % the distance moved in a timestep
 
@@ -87,8 +86,8 @@ if convert_type == 1
     num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     num_directions=[];
 elseif convert_type == 2
-    num_steps = 16; % number of directions to sample in (convert type 2)
-    num_directions = 0.25; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
+    num_steps = num_filopodia(1); % number of directions to sample in (convert type 2)
+    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
 else
     num_steps=[];
     num_directions=[];
