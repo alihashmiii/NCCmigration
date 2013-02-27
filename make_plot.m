@@ -30,7 +30,8 @@ if (isempty(filopodia)==1)
     filopodia = cells';
 end
 
-t = 0:0.1:2*pi;
+% draw the cells with their filopodia -- LJS
+t = 0:0.1:2*pi; % for plotting the cell circles -- LJS
 for cell_ind = 1:length(cells(1,:))
     if cells_follow(cell_ind)==1
         if attach(cell_ind)==0
@@ -42,7 +43,7 @@ for cell_ind = 1:length(cells(1,:))
         end
     else
         fill(cell_radius*cos(t)+cells(1,cell_ind),cell_radius*sin(t)+cells(2,cell_ind),'y');
-        hold on
+        %hold on
         plot([cells(1,cell_ind),filopodia(cell_ind,1)],[cells(2,cell_ind),filopodia(cell_ind,2)],'y','LineWidth',2)
     end
 end

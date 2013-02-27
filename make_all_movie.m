@@ -39,7 +39,6 @@ for k=1:tsteps
     else
         title('Cell invasion with followers')
     end
-    drawnow
     writeVideo(aviobj,getframe(gca));
 end
 close(aviobj);
