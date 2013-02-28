@@ -14,7 +14,7 @@ for i =1:length(cell_order)
     if cells_follow(cellidx)~=1   
         %% if it's a leader
         if diffusion==0
-            [filopodia(cellidx,:,:),E,move,theta(cellidx),~] = cell_movement5(rand(1,num_filopodia(1))*2*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            [filopodia(cellidx,:,:),E,move,theta(cellidx),~] = cell_movement5((rand(1,num_filopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
                 d,filolength,num_filopodia(1),[]);
         elseif rand(1,1)<diffusion
             move = 1;
@@ -28,23 +28,29 @@ for i =1:length(cell_order)
 %             theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
             % set angle of movement parallel to that of cell being followed
             theta(cellidx) = theta(attach(cellidx));
-            % set filopodium position to closet point on membrane of cell being followed -- LJS
+            % set (first) filopodium position to closet point on membrane of cell being followed -- LJS
             phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
             filopodia(cellidx,1,1) = cells(1,attach(cellidx)) - cell_radius*cos(phi);
             filopodia(cellidx,1,2) = cells(2,attach(cellidx)) - cell_radius*sin(phi);
-            move = 1;
         else
             %% if the cell ahead is too far, then dettach the chain
-            % set filopodial position and movement angle in the direction of cell
+            % set (first) filopodial position and movement angle in the direction of cell
             % centre of lost cell -- LJS
             theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));
             filopodia(cellidx,1,:) = cells(:,cellidx)' + filolength.*[cos(theta(cellidx)) sin(theta(cellidx))];
             attach = dettach(cellidx,attach);
         end
-        
+        % set any other filopodia in random direction (for now, until I
+        % have a better idea) -- LJS
+        if num_filopodia(2) > 1
+            phi = (rand(1,num_filopodia(2)-1) - 1)*pi;
+            filopodia(cellidx,2:num_filopodia(2),1) = cells(1,cellidx) + filolength.*cos(phi);
+            filopodia(cellidx,2:num_filopodia(2),2) = cells(2,cellidx) + filolength.*cos(phi);
+        end
+        move = 1;
     else
         %% if it's an unchained follower
-        [foundCellidx,filopodia] = cell_movement5_follow(rand(1,num_filopodia(2))*2*pi,cellidx,cells(1,:),cells(2,:),cell_radius,...
+        [foundCellidx,filopodia] = cell_movement5_follow((rand(1,num_filopodia(2))*2 - 1)*pi,cellidx,cells(1,:),cells(2,:),cell_radius,...
             filolength,filopodia,barrier,experiment);
         if isempty(foundCellidx)~=1
             %% if another cell was found then find the head of that chain

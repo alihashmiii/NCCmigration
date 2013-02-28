@@ -54,7 +54,7 @@ elseif convert_type==2
     n = param(16);
     m = param(17);
     r = rand()*2*pi;
-    theta = (2*pi/n:2*pi/n:2*pi) +r;
+    theta = (2*pi/n:2*pi/n:2*pi) + r;
     for i=1:length(cells(1,:))
         [~,~,~,~,num_better] = cell_movement5(theta,cells(1,i),cells(2,i),ca_save,xlat,ylat,d,filolength,n,[]);
 

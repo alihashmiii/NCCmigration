@@ -27,7 +27,7 @@ tic
 growing_domain = 1;     % the domain grows
 follow_perc = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 2;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 metropolis = 0;         % cells sometimes move even if it is unfavourable
 num_filopodia = [6,2];  % the number of filopodia for lead cells and follower cells
 satiate = 0;            % number of timesteps after which the cells are satiated
@@ -57,7 +57,7 @@ tsteps = floor(time/tstep)+1;   % number of time steps
 cell_radius = 7.5;              % radius in um (= 7.5um)
 speed = 45;                     % speed of the leader cells (=2*45um/hr because half the time they look the wrong way and don't move)
 height = 120;                   % maximum y value
-filolength = cell_radius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS)
+filolength = cell_radius + 9;   % filopodial length (um) (measured from cell centre -- LJS)
 inity_perc = (height-2*cell_radius)/height; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = speed*tstep;             % the distance moved in a timestep
 
@@ -73,7 +73,7 @@ end
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 0.02888;               % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 0*0.02888;               % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s, for membrane bound VEGF unknown/near zero -- LJS
 d = 30;                         % width of sensing chemoattractant
 chi = 0.0001;                   % chemoattractant production term (usually 0.0001)
 mult = 1;                      % lambda, usually 0.045

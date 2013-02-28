@@ -1,6 +1,6 @@
 %% A function to plot the data in cells, cells_follow and ca
 
-function [] = make_plot(cells,cells_follow,xlat,ylat,ca,filopodia,attach,cell_radius,edge,barrier,experiment)
+function [] = make_plot(cells,cells_follow,xlat,ylat,ca,filopodia,num_filopodia,attach,cell_radius,edge,barrier,experiment)
 
 if experiment~=6
     if isempty(ca)==1
@@ -32,19 +32,25 @@ end
 
 % draw the cells with their filopodia -- LJS
 t = 0:0.1:2*pi; % for plotting the cell circles -- LJS
-for cell_ind = 1:length(cells(1,:))
-    if cells_follow(cell_ind)==1
-        if attach(cell_ind)==0
-            fill(cell_radius*cos(t)+cells(1,cell_ind),cell_radius*sin(t)+cells(2,cell_ind),'r');
-            plot([cells(1,cell_ind),filopodia(cell_ind,1)],[cells(2,cell_ind),filopodia(cell_ind,2)],'r','LineWidth',2)
+for cellidx = 1:length(cells(1,:))
+    if cells_follow(cellidx)==1
+        filoNum = num_filopodia(2);
+        if attach(cellidx)==0
+            cellColor = 'r';
         else
-            fill(cell_radius*cos(t)+cells(1,cell_ind),cell_radius*sin(t)+cells(2,cell_ind),'w');
-            plot([cells(1,cell_ind),filopodia(cell_ind,1)],[cells(2,cell_ind),filopodia(cell_ind,2)],'w','LineWidth',2)
+            cellColor = 'w';
         end
     else
-        fill(cell_radius*cos(t)+cells(1,cell_ind),cell_radius*sin(t)+cells(2,cell_ind),'y');
-        %hold on
-        plot([cells(1,cell_ind),filopodia(cell_ind,1)],[cells(2,cell_ind),filopodia(cell_ind,2)],'y','LineWidth',2)
+        filoNum = num_filopodia(1);
+        cellColor = 'y';
+    end
+    
+    % draw the cell
+    fill(cell_radius*cos(t)+cells(1,cellidx),cell_radius*sin(t)+cells(2,cellidx),cellColor);
+    
+    % draw the filopodia
+    for filoidx = 1:filoNum
+        plot([cells(1,cellidx),filopodia(cellidx,filoidx,1)],[cells(2,cellidx),filopodia(cellidx,filoidx,2)],cellColor,'LineWidth',1)
     end
 end
 
