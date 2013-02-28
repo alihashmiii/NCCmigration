@@ -21,7 +21,7 @@ set(gcf,'Renderer','zbuffer')
 open(aviobj);
 for k=1:tsteps
     disp(['step ',mat2str(k),' of ',mat2str(tsteps)])
-    make_plot(cells_save{k},cells_follow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cell_radius,0,barrier(k),experiment)
+    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cellRadius,0,barrier(k),experiment)
     
     axis image
     xlim([min(xlat_save{end}),1100])

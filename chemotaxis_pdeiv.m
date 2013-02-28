@@ -8,11 +8,11 @@ function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 % u = sin(pi.*x./1100);
 
 load avi_mat/param
-width = param(6);
+domainWidth = param(6);
 height = param(9);
 zero_bc = param(10);
 insert = param(11);
-growing_domain= param(5);
+growingDomain= param(5);
 if insert==1
     disp('inserting')
     load avi_mat/ca_new
@@ -44,23 +44,23 @@ if insert==1
     % size(y)
 %     L_inf = param(1);
 %     a = param(2);
-%     width = param(6);
+%     domainWidth = param(6);
 %     t_start = param(13);
 %     tstep = param(12);
 %     
-%     out = domain_growth([],t-tstep,tstep,L_inf,a,width,[],t_start);
-%     L = out.domain_length;
+%     out = domain_growth([],t-tstep,tstep,L_inf,a,domainWidth,[],t_start);
+%     L = out.domainLength;
 %     for i=1:length(x)
-%         u(i) = interp2(xlat_new*width/L,ylat_new,ca_new',x(i),y(i));
+%         u(i) = interp2(xlat_new*domainWidth/L,ylat_new,ca_new',x(i),y(i));
 %     end
         u = reshape(ca_new,[1,length(x)]);
 %         x(1:length(xlat_new))
-%         xlat_new*width/L
+%         xlat_new*domainWidth/L
     %     y
     %     u = ca_new;
 else
     if zero_bc == 1
-        if growing_domain==1
+        if growingDomain==1
             steepy = 0.1; % the higher steep is the steeper the gradient at the edge
             steepx = 0.15;
         else
@@ -68,7 +68,7 @@ else
             steepx = 0.2;
         end
         z1 = 1./(1+exp(-steepy*x))-1/2;
-        z2 = 1./(1+exp(steepy*(-width+x)))-1/2;
+        z2 = 1./(1+exp(steepy*(-domainWidth+x)))-1/2;
         z3 = 1./(1+exp(steepx*(-y)))-1/2;
         z4 = 1./(1+exp(steepx*(-height+y)))-1/2;
     else % no flux boundary condition -- LJS

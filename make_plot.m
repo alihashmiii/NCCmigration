@@ -1,6 +1,6 @@
-%% A function to plot the data in cells, cells_follow and ca
+%% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cells_follow,xlat,ylat,ca,filopodia,num_filopodia,attach,cell_radius,edge,barrier,experiment)
+function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,num_filopodia,attach,cellRadius,edge,barrier,experiment)
 
 if experiment~=6
     if isempty(ca)==1
@@ -21,9 +21,9 @@ if experiment~=6
         hold on
     end
 end
-if cell_radius < 1
+if cellRadius < 1
     filopodia = cells';
-    cell_radius = 5;
+    cellRadius = 5;
 end
 
 if (isempty(filopodia)==1)
@@ -33,7 +33,7 @@ end
 % draw the cells with their filopodia -- LJS
 t = 0:0.1:2*pi; % for plotting the cell circles -- LJS
 for cellidx = 1:length(cells(1,:))
-    if cells_follow(cellidx)==1
+    if cellsFollow(cellidx)==1
         filoNum = num_filopodia(2);
         if attach(cellidx)==0
             cellColor = 'r';
@@ -46,7 +46,7 @@ for cellidx = 1:length(cells(1,:))
     end
     
     % draw the cell
-    fill(cell_radius*cos(t)+cells(1,cellidx),cell_radius*sin(t)+cells(2,cellidx),cellColor);
+    fill(cellRadius*cos(t)+cells(1,cellidx),cellRadius*sin(t)+cells(2,cellidx),cellColor);
     
     % draw the filopodia
     for filoidx = 1:filoNum

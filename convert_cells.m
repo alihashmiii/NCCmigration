@@ -1,4 +1,4 @@
-function out = convert_cells(cells,cells_follow,attach_save,k,cells_save,filolength,moved,ca_save,xlat,ylat,d,filopodia,convert_type,param,...
+function out = convert_cells(cells,cellsFollow,attach_save,k,cells_save,filolength,moved,ca_save,xlat,ylat,d,filopodia,convert_type,param,...
     num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save)
 
 %% using quorum sensing
@@ -8,20 +8,20 @@ function out = convert_cells(cells,cells_follow,attach_save,k,cells_save,filolen
 %     num_cells = sum(sqrt((cells(1,i)-cells(1,(1:end)~=i)).^2 + (cells(2,i)-cells(2,(1:end)~=i)).^2)<=filolength);
 %
 %     % if there are many, and it was a leader, become a follower
-%     if (cells_follow(i)==1) && (num_cells<3)
+%     if (cellsFollow(i)==1) && (num_cells<3)
 %         disp('foll->lead')
-%         cells_follow(i)=0;
+%         cellsFollow(i)=0;
 %         num_cells
-% %     elseif (cells_follow(i)==0) && (num_cells>15)
+% %     elseif (cellsFollow(i)==0) && (num_cells>15)
 % %         disp('lead->foll')
-% %         cells_follow(i)=1;
+% %         cellsFollow(i)=1;
 % %         num_cells
 %     end
 % end
 
 if convert_type==1
     %% using amount of time not found a gradient / another cell
-    n = param(16);
+    n = param(15);
     [size_attach_save,~] = cellfun(@size,attach_save(1:k)); % don't consider timesteps that haven't happened yet
     change = find(size_attach_save~=size_attach_save(1),1,'first');
     if isempty(change)
@@ -34,25 +34,25 @@ if convert_type==1
         if (k>n)&&(num_cells_k(k-n)>=i)
             moved_in_n = sum(moved(k-n:k,i));
             if (moved_in_n==0)
-                if cells_follow(i)==1
+                if cellsFollow(i)==1
                     disp('foll->lead')
-                    cells_follow(i)=0;
+                    cellsFollow(i)=0;
                 else
                     disp('lead->foll')
-                    cells_follow(i)=1;
+                    cellsFollow(i)=1;
                 end
                 moved(k,i)=1;
             end
         end
     end
-    % out.cells_follow = cells_follow;
+    % out.cellsFollow = cellsFollow;
     % out.moved = moved;
     
 elseif convert_type==2
     %% Using the presence of a c'tant gradient (with integral measures of c'tant)
 
-    n = param(16);
-    m = param(17);
+    n = param(15);
+    m = param(16);
     r = rand()*2*pi;
     theta = (2*pi/n:2*pi/n:2*pi) + r;
     for i=1:length(cells(1,:))
@@ -60,19 +60,19 @@ elseif convert_type==2
 
         if num_better>=(m*n)
 %             if (rand()<0.7)
-                if cells_follow(i)==1
+                if cellsFollow(i)==1
                     disp('follow -> lead')
-                    cells_follow(i)=0;
+                    cellsFollow(i)=0;
                 end
 %             else
-%                 cells_follow(i) = 1;
+%                 cellsFollow(i) = 1;
 %             end
         elseif num_better<(m*n)
-            if cells_follow(i)==0
+            if cellsFollow(i)==0
                 disp('lead -> follow')
-                cells_follow(i)=1;
+                cellsFollow(i)=1;
             end
-        if cells_follow(i)==1
+        if cellsFollow(i)==1
             num_better_foll_save = [num_better_foll_save, num_better/n];
             num_foll_save = num_foll_save +1;
         else
@@ -80,7 +80,7 @@ elseif convert_type==2
             num_lead_save = num_lead_save +1;
         end
 %         elseif rand()<0.5
-%             cells_follow(i) = 1-cells_follow(i);
+%             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
 elseif convert_type==3
@@ -97,7 +97,7 @@ elseif convert_type==3
         else
             grad = sign(chemo(2:end)-chemo(1)).*max(abs(chemo(2:end)-chemo(1)))/(dx*chemo(1));
         end
-        if cells_follow(i)==1
+        if cellsFollow(i)==1
             temp_grad(i,k) = grad(1);
             if (k>100)
                 [~,tempj] = find(abs(temp_grad)==max(abs(temp_grad(i,k-100:k))));
@@ -107,7 +107,7 @@ elseif convert_type==3
             end
             %                 if (k>10)&&(follow_grad(i,k)>1)
             %                     disp('follow -> lead')
-            %                     cells_follow(i)=0;
+            %                     cellsFollow(i)=0;
             %                 end
         else
             temp_grad(i,k) = grad(1);
@@ -120,13 +120,13 @@ elseif convert_type==3
             end
             %                 if (k>10)&&(leader_grad(i,k)<0.001)
             %                     disp('lead -> follow')
-            %                     cells_follow(i)=1;
+            %                     cellsFollow(i)=1;
             %                 end
         end
                     if grad>0.8
-                        cells_follow(i) = 0;
+                        cellsFollow(i) = 0;
                     elseif grad<0.05
-                        cells_follow(i) = 1;
+                        cellsFollow(i) = 1;
                     end
         %             pause
     end
@@ -135,5 +135,5 @@ out.num_better_foll_save = num_better_foll_save;
 out.num_foll_save = num_foll_save;
 out.num_better_lead_save = num_better_lead_save;
 out.num_lead_save = num_lead_save;
-out.cells_follow = cells_follow;
+out.cellsFollow = cellsFollow;
 out.moved = moved;

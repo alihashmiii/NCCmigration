@@ -15,7 +15,7 @@ open(aviobj);
 for k=1:tsteps
     surf(xlat_save{k},ylat_save{k},ca_save{k}')
     zlim([0,1])
-    xlim([0,max(domain_length)])
+    xlim([0,max(domainLength)])
     ylim([0,height])
     
     %% insert title here
