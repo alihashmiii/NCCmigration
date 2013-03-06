@@ -27,7 +27,7 @@ tic
 growingDomain = 1;     % the domain grows
 follow_perc = 5/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+convert_type = 2;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 metropolis = 0;         % cells sometimes move even if it is unfavourable
 num_filopodia = [6,2];  % the number of filopodia for lead cells and follower cells
 satiate = 0;            % number of timesteps after which the cells are satiated
@@ -48,16 +48,16 @@ insert_cells = 1;           % new cells are inserted at x=0
 %% Outputs (videos and figures) %%
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
 tsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
-speed = 45;                     % speed of the leader cells (=2*45um/hr because half the time they look the wrong way and don't move)
+speed = 45;                     % speed of the leader cells
 height = 120;                   % maximum y value
-filolength = cellRadius + 9;   % filopodial length (um) (measured from cell centre -- LJS)
+filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 inity_perc = (height-2*cellRadius)/height; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = speed*tstep;             % the distance moved in a timestep
 
@@ -73,7 +73,7 @@ end
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 0;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 mult = 1;                      % lambda, usually 0.045
 eatWidth = 2*cellRadius;%30;;         % width of eating chemoattractant (smaller e has larger radius)
@@ -84,14 +84,14 @@ if convert_type == 1
     num_directions=[];
 elseif convert_type == 2
     num_steps = num_filopodia(1); % number of directions to sample in (convert type 2)
-    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
+    num_directions = 1/2; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
 else
     num_steps=[];
     num_directions=[];
 end
     
 %% insert_cells parameters %%
-insert_time_step = 0.2;         % the time in hours between each new cell insertion
+insert_time_step = 0.25;         % the time in hours between each new cell insertion
 insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
 num_cells = 2;                  % how many new cells are inserted at each timepoint
 if insert_cells==1
@@ -133,6 +133,7 @@ cells_save = cell(tsteps,1);
 filopodia_save = cell(tsteps,1);
 cellsFollow_save = cell(tsteps,1);
 attach = zeros(end_num_cells,1);
+theta = NaN(end_num_cells,1); % -- LJS
 attach_save = cell(1,tsteps);
 xlat_new=[];
 barrier = zeros(tsteps,1);
@@ -261,7 +262,7 @@ for k=1:tsteps
     %% move cells %%
     if cells_move==1
         if k==1
-            temp = new_move_cells(cells,cellsFollow,[],attach,[],...
+            temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
                 cellRadius,filolength,eatWidth,height,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
         else
@@ -285,7 +286,7 @@ for k=1:tsteps
     %% cells can convert from leaders <-> followers
     if (convert_type~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(k)==in.changeTime))
         out = convert_cells(cells,cellsFollow,attach_save,k,cells_save,filolength,moved,ca_save{k},xlat_save{k},ylat_save{k},...
-            d,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save);
+            eatWidth,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
         num_better_foll_save = out.num_better_foll_save;

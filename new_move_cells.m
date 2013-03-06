@@ -45,7 +45,7 @@ for i =1:length(cell_order)
         if num_filopodia(2) > 1
             phi = (rand(1,num_filopodia(2)-1) - 1)*pi;
             filopodia(cellidx,2:num_filopodia(2),1) = cells(1,cellidx) + filolength.*cos(phi);
-            filopodia(cellidx,2:num_filopodia(2),2) = cells(2,cellidx) + filolength.*cos(phi);
+            filopodia(cellidx,2:num_filopodia(2),2) = cells(2,cellidx) + filolength.*sin(phi);
         end
         move = 1;
     else

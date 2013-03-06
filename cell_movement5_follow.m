@@ -1,5 +1,5 @@
 % Louise Dyson D.Phil project second CA program, 23/11/09
-% takes in a theta direction of filopodium extension, a cell (x_cell,y_cell)
+% takes in a theta direction of movement and position of filopodia (--LJS), a cell (x_cell,y_cell)
 % position, the position (x_cells,y_cells,) of the other cells and the radius of a cell and
 % outputs an angle, theta, of movement for the cell, based on the existence
 % of other cells in the area of the filopodium
