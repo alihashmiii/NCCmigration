@@ -27,9 +27,9 @@ tic
 growingDomain = 1;     % the domain grows
 follow_perc = 5/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 2;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 metropolis = 0;         % cells sometimes move even if it is unfavourable
-num_filopodia = [6,2];  % the number of filopodia for lead cells and follower cells
+num_filopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 satiate = 0;            % number of timesteps after which the cells are satiated
 
 %%% probably don't want to change these %%%
@@ -41,13 +41,12 @@ if experiment==6
 else
     ca_solve = 1;           % solve for the chemoattractant concentration
 end
-% ca_solve = 0;
 cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+ca_movie = 1; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
@@ -56,9 +55,9 @@ tstep = 0.05;                   % time step in hours
 tsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
 speed = 45;                     % speed of the leader cells
-height = 120;                   % maximum y value
+domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-inity_perc = (height-2*cellRadius)/height; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
+inity_perc = (domainHeight-2*cellRadius)/domainHeight; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = speed*tstep;             % the distance moved in a timestep
 
 %% diffusion parameters
@@ -73,9 +72,9 @@ end
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 0;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-mult = 1;                      % lambda, usually 0.045
+eatRate = 1;                      % lambda, usually 0.045 -- need to check this -- LJS
 eatWidth = 2*cellRadius;%30;;         % width of eating chemoattractant (smaller e has larger radius)
 
 %% convert parameters
@@ -84,20 +83,20 @@ if convert_type == 1
     num_directions=[];
 elseif convert_type == 2
     num_steps = num_filopodia(1); % number of directions to sample in (convert type 2)
-    num_directions = 1/2; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
+    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
 else
     num_steps=[];
     num_directions=[];
 end
     
 %% insert_cells parameters %%
-insert_time_step = 0.25;         % the time in hours between each new cell insertion
+insert_time_step = 0.1;         % the time in hours between each new cell insertion
 insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
-num_cells = 2;                  % how many new cells are inserted at each timepoint
+num_cells = 1;                  % how many new cells are inserted at each timepoint
 if insert_cells==1
     n = num_cells;              % initial number of cells
 else
-    n = 10;
+    n = 1;
 end
 initx_perc = 0;                 % initial percentage of x with cells
 followStart = floor(24/tstep) - floor(24*follow_perc/tstep)+1
@@ -113,12 +112,12 @@ Linf = 870;                            % end domain length
 a = 0.0800;                            % how fast the domain grows (?)
 t_start = -16;
 % t_start = -11;
-param = [Linf, a, diffus, eatWidth, growingDomain, domainWidth, makeChemoattractant, chi, height, zeroBC, insert, tstep, t_start, mult, num_steps, num_directions];
+param = [Linf, a, diffus, eatWidth, growingDomain, domainWidth, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
 save avi_mat/param param
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%
-temp = initiate_cells(n,cellRadius,0,domainWidth,height,initx_perc,inity_perc,[]);
+temp = initiate_cells(n,cellRadius,0,domainWidth,domainHeight,initx_perc,inity_perc,[]);
 cells = temp.cells;
 end_num_cells = (n + floor(tsteps/insert_step)*num_cells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
 cellsFollow = [zeros(end_num_cells -floor(56* follow_perc),1); ones(floor(end_num_cells * follow_perc),1)];
@@ -165,7 +164,7 @@ for k=1:tsteps
     if mod(k,insert_step)==0
         fprintf(['t = ' mat2str(t_save(k+1)) '\r'] )
         if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(k)<in.ablate_time)
-            temp = initiate_cells(num_cells,cellRadius,0,domainWidth,height,0,inity_perc,cells);
+            temp = initiate_cells(num_cells,cellRadius,0,domainWidth,domainHeight,0,inity_perc,cells);
             cells = temp.cells;
         end
     end
@@ -202,11 +201,11 @@ for k=1:tsteps
         end
         % run the solver
         if ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,height,length(xlat_new),length(ylat_new),insert);
+            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,domainHeight,length(xlat_new),length(ylat_new),insert);
         elseif k>1
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,height,length(xlat_new),length(ylat_save{k-1}),insert);
+            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,domainHeight,length(xlat_new),length(ylat_save{k-1}),insert);
         else
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,height,length(xlat_new),50,insert);
+            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,domainWidth,domainHeight,length(xlat_new),50,insert);
         end
 
         % take output 
@@ -230,7 +229,7 @@ for k=1:tsteps
         end
         
         xlat_save{k} = 0:domainLength(k)/100:domainLength(k);
-        ylat_save{k} = 0:height/100:height;
+        ylat_save{k} = 0:domainHeight/100:domainHeight;
         ca = zeros(length(xlat_save{k}),length(ylat_save{k}));
         for i=1:length(xlat_save{k})
             for j=1:length(ylat_save{k})
@@ -241,7 +240,7 @@ for k=1:tsteps
     end
     %% divide cells %%
     if (divide_cells==1)
-        temp = cells_divide(cells,cellsFollow,cellRadius,domainLength(k),0,height,ca_save{k},xlat_save{k},ylat_save{k},tstep);
+        temp = cells_divide(cells,cellsFollow,cellRadius,domainLength(k),0,domainHeight,ca_save{k},xlat_save{k},ylat_save{k},tstep);
         cells = temp.cells;
         cellsFollow = temp.cellsFollow;
     end
@@ -264,11 +263,11 @@ for k=1:tsteps
         if k==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,height,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,height,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

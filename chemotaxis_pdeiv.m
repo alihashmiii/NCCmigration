@@ -9,7 +9,7 @@ function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 
 load avi_mat/param
 domainWidth = param(6);
-height = param(9);
+domainHeight = param(9);
 zero_bc = param(10);
 insert = param(11);
 growingDomain= param(5);
@@ -67,10 +67,10 @@ else
             steepy = 0.03;
             steepx = 0.2;
         end
-        z1 = 1./(1+exp(-steepy*x))-1/2;
-        z2 = 1./(1+exp(steepy*(-domainWidth+x)))-1/2;
+        z1 = 1./(1+exp(-steepy*x*domainWidth))-1/2;
+        z2 = 1./(1+exp(steepy*(-domainWidth + x*domainWidth)))-1/2;
         z3 = 1./(1+exp(steepx*(-y)))-1/2;
-        z4 = 1./(1+exp(steepx*(-height+y)))-1/2;
+        z4 = 1./(1+exp(steepx*(-domainHeight+y)))-1/2;
     else % no flux boundary condition -- LJS
         z1 = ones(size(x))/2;
         z2 = ones(size(x))/2;
