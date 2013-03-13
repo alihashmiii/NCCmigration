@@ -13,7 +13,7 @@ ycell = cells(2,:);
 Linf = param(1);
 a = param(2);
 diffus = param(3);
-e = param(4);
+eatWidth = param(4);
 growingDomain = param(5);
 domainWidth = param(6);
 make_chemoattractant = param(7);
@@ -36,9 +36,12 @@ if make_chemoattractant~=1
 end
 % the following equation should describe the chemoattractant evolution on
 % the stationary domain [0,1]. Therefore, introduce factors of L-- LJS
-eatTerm = eatRate*u*ones(size(xcell))/(e*sqrt(pi)).*exp(-1/e^2.*((x*ones(size(xcell))-ones(size(x))*xcell).^2*L^2 +(y*ones(size(ycell))-ones(size(y))*ycell).^2));      
+eatTerm = zeros(size(x));
+for ctr = 1:length(xcell)
+    eatTerm = eatTerm + eatRate*u/(eatWidth*sqrt(pi)).*exp(-1/eatWidth^2.*((x - xcell(ctr)).^2*L^2 +(y - ycell(ctr)).^2));      
+end
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
-          -sum(eatTerm,2)...
+          - eatTerm...
           + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
 res(x>0) = res(x>0) + Ldiff/L*u(x>0);
 % max(abs(res-res_check))
