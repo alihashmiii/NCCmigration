@@ -10,36 +10,21 @@ global param % using global variables is much faster than saving & loading from 
 % load avi_mat/current_domainLength
 domainHeight = param(9);
 zero_bc = param(10);
-domainWidth = param(6);
 
 if isunix==1
     nbpts = int32(nbpts);
 end
 
 if zero_bc==1
-    % zero boundary conditions
-    for idks = 1:nbpts
-        j = lbnd(idks);
-        res(j,1) = u(j,1);
-    end
+    res(lbnd,1) = u(lbnd,1);
 else
     % No Flux Boundary conditions
     tol = x02aj();
-%     tol = 20*tol;
-    for idks = 1:nbpts
-        j = lbnd(idks);
-        % at x = 0
-        if (abs(x(j)) <= tol)
-            res(j,1) = ux(j,1);
-            % at y = 0
-        elseif (abs(y(j)) <= tol)
-            res(j,1) = uy(j,1);
-            % at y = domainHeight
-        elseif(abs(y(j)-domainHeight) <= tol)
-            res(j,1) = uy(j,1);
-%             at x = domainLength
-        else
-            res(j,1) = ux(j,1);
-        end
-    end
+    % at x = 0 or x = 1
+    xBndIdcs = lbnd(abs(x(lbnd)) <= tol | abs(x(lbnd) - 1) <= tol);
+    res(xBndIdcs,1) = ux(xBndIdcs,1);
+    % at y = 0 or y = domainHeight
+    yBndIdcs = lbnd(abs(y(lbnd)) <= tol | abs(y(lbnd) - domainHeight) <= tol);
+    res(yBndIdcs,1) = uy(yBndIdcs,1);
+end
 end
