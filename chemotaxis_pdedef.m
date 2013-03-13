@@ -4,8 +4,9 @@
 % for use with chemotaxis_solve.m
 
 function [res] = chemotaxis_pdedef(npts, npde, t, x, y, u, ut, ux, uy, uxx, uxy, uyy)
-load avi_mat/cells
-load avi_mat/param
+global param cells % using global variables is much faster than saving & loading from disk -- LJS
+% load avi_mat/cells
+% load avi_mat/param
 xcell = cells(1,:);
 ycell = cells(2,:);
 

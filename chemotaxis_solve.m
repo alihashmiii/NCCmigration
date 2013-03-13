@@ -3,6 +3,7 @@
 % requires pdedef.m, bndary.m, deiv.m, monitr.m
 
 function out = chemotaxis_solve(ts,tout,ind,iwk,rwk,cells,domainWidth,domainHeight,x_length,y_length,insert)
+global plotsol xsave ysave % using global variables is much faster than saving & loading from disk -- LJS
 dt = [0; 0; 0]; % initial, min and max time step used ([0;0;0] for defaults)
     
 % size of rectangular domain (for numerical solution the problem is scaled
@@ -64,14 +65,14 @@ else
 end
 % rwk = zeros(188000,1);
 % iwk = zeros(58023,1,'int64');
-save avi_mat/cells cells
+% save avi_mat/cells cells
 
 [ts, tout, rwk, iwk, ind, ifail] = d03ra(ts, tout, dt, xmin, xmax, ymin, ymax, nx, ny, tols,...
     tolt, 'chemotaxis_pdedef', 'chemotaxis_bndary', 'chemotaxis_pdeiv', 'chemotaxis_monitr', opti, optr,rwk, iwk, itrace,...
     ind);
-load avi_mat/plotsol
-load avi_mat/xsave
-load avi_mat/ysave
+% load avi_mat/plotsol
+% load avi_mat/xsave
+% load avi_mat/ysave
 out.chemotaxis = plotsol;
 out.xsave = xsave*domainWidth;
 out.ysave = ysave;

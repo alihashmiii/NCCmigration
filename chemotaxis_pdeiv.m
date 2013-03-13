@@ -6,8 +6,8 @@
 function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 % u = ones(npts,npde);
 % u = sin(pi.*x./1100);
-
-load avi_mat/param
+global param % using global variables is much faster than saving & loading from disk -- LJS
+% load avi_mat/param
 domainWidth = param(6);
 domainHeight = param(9);
 zero_bc = param(10);

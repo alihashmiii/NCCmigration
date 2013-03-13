@@ -15,6 +15,7 @@
 % requires a subfolder avi_mat to save results
 
 function out = CA6(in,experiment)
+global param cells % using global variables is much faster than saving & loading from disk -- LJS
 
 if (experiment~=0)&&(experiment~=6)
     time = in.time;
@@ -46,7 +47,7 @@ insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
 movies = 1;
-ca_movie = 1; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
@@ -72,7 +73,7 @@ end
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 0;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 eatRate = 1;                      % lambda, usually 0.045 -- need to check this -- LJS
 eatWidth = 2*cellRadius;%30;;         % width of eating chemoattractant (smaller e has larger radius)
