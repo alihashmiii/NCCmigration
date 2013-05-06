@@ -111,8 +111,7 @@ domainLength=ones(1,tsteps).*domainWidth;  % initialise domain length vector
 Linf = 870;                            % end domain length
 % Linf = 830;
 a = 0.0800;                            % how fast the domain grows (?)
-t_start = -16;
-% t_start = -11;
+t_start = -16; %parameter used in domain growth
 param = [Linf, a, diffus, eatWidth, growingDomain, domainWidth, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
 save avi_mat/param param
 
