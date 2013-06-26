@@ -10,9 +10,7 @@ function [filopodia,E,move,theta,num_better] = cell_movement5(theta,x_cell,y_cel
 
 
 %% Integrate the chemoattractant in the present area %%%
-multiplier = 1/(eatWidth*sqrt(pi))*exp(-(x-x_cell).^2/eatWidth^2)*exp(-(y'-y_cell).^2/eatWidth^2);
-
-% multiplier(multiplier<0.3) = 0;
+multiplier = 1/(eatWidth^2*2*pi)*exp(-(x-x_cell).^2/2/eatWidth^2)*exp(-(y'-y_cell).^2/2/eatWidth^2);
 
 %% Trapezoid sum computed with vector-matrix multiply. %
 intgrand = ca.*multiplier;
@@ -37,9 +35,8 @@ for filo_ctr=1:num_filopodia %loops through the filopodia and keeps track of bes
         filopodia(filo_ctr,:) = fil(filo_ctr,:);
     end
     old_area = new_area;
-    multiplier = 1/(eatWidth*sqrt(pi))*exp(-(x-x_fil).^2/eatWidth^2)*exp(-(y'-y_fil).^2/eatWidth^2);
+    multiplier = 1/(eatWidth^2*2*pi)*exp(-(x-x_fil).^2/2/eatWidth^2)*exp(-(y'-y_fil).^2/2/eatWidth^2);
 
-%     multiplier(multiplier<0.3) = 0;
 %%    Trapezoid sum computed with vector-matrix multiply. %
     intgrand = ca.*multiplier;
     intgrand = sum((intgrand(1:end-1,:) + intgrand(2:end,:))./2,1);

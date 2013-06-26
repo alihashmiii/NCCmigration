@@ -38,7 +38,7 @@ end
 % the stationary domain [0,1]. Therefore, introduce factors of L-- LJS
 eatTerm = zeros(size(x));
 for ctr = 1:length(xcell)
-    eatTerm = eatTerm + eatRate*u/(eatWidth*sqrt(pi)).*exp(-1/eatWidth^2.*((x - xcell(ctr)).^2*L^2 +(y - ycell(ctr)).^2));      
+    eatTerm = eatTerm + eatRate*u/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*((x - xcell(ctr)).^2*L^2 +(y - ycell(ctr)).^2));      
 end
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
           - eatTerm...
