@@ -86,12 +86,12 @@ for i =1:length(cell_order)
         moved(cellidx)=1;
     end
     if (move==1)||((metropolis==1)&&(r1<exp(-E/T)))%&&(cellsFollow(r)==1))
-        if (cellsFollow(cellidx)==1)&&(move==1)
-                new_x = cells(1,cellidx) + cos(theta(cellidx))*dist;
-                new_y = cells(2,cellidx) + sin(theta(cellidx))*dist;
+        if (cellsFollow(cellidx)==1)&&(move==1) %if it's a follower
+                new_x = cells(1,cellidx) + cos(theta(cellidx))*dist(2);
+                new_y = cells(2,cellidx) + sin(theta(cellidx))*dist(2);
         else
-            new_x = cells(1,cellidx) + cos(theta(cellidx))*dist;
-            new_y = cells(2,cellidx) + sin(theta(cellidx))*dist;
+            new_x = cells(1,cellidx) + cos(theta(cellidx))*dist(1);
+            new_y = cells(2,cellidx) + sin(theta(cellidx))*dist(1);
         end
         
         %% if there is no cell or edge in the way, then move

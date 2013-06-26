@@ -23,7 +23,7 @@ for j=1:length(frames)
         xlim([0,300])
     end
     title(['Cell invasion at time t = ',mat2str(t_save(k)),' hours'])
-    
+    xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 
 % one colorbar for everything

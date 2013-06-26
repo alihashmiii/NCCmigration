@@ -1,9 +1,9 @@
 % Louise Dyson D.Phil project CA program describing the migration of cranial neural crest cells, 22/10/09
 % Edited on 07/12/09
-% Cells move through a 2D box, each cell is represented by an (x,y) coordinate in a width x height box
+% Further developed by Linus Schumacher (LJS) from Oct 2012 onwards.
+% Cells move through a 2D box, each cell is represented by an (x,y) coordinate in a width x height y box
 % at each timestep the list of cells is worked through in a random order
-% and each cell extends filopodia in random directions until a better
-% concentration is found or max_fil is reached
+% and each cell extends filopodia in a set number of random directions
 % Domain growth in steps intervals can be added with growingDomain=1,
 % Chemoattractant concentration can be solved (rather than fixed) with ca_solve=1
 % Cells move if cells_move=1,
@@ -55,16 +55,18 @@ frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells o
 tstep = 0.05;                   % time step in hours
 tsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
-speed = 45;                     % speed of the leader cells
+leadSpeed = 41.6;                     % speed of the leader cells in mu/h
+followSpeed = 49.9;                 % speed of the follower cells in mu/h
+
 domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 inity_perc = (domainHeight-2*cellRadius)/domainHeight; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
-dist = speed*tstep;             % the distance moved in a timestep
+dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 
 %% diffusion parameters
 if experiment==6
-    dist = 1;                   % the distance moved in a timestep
-    diffusion = speed / dist * tstep;   % rate of movement given speed, distance moved and timestep
+    dist = [1; 1];                   % the distance moved in a timestep
+    diffusion = leadSpeed / dist(1) * tstep;   % rate of movement given speed, distance moved and timestep
 else
     diffusion = 0;
 end
@@ -182,10 +184,10 @@ for k=1:tsteps
         % give parameters for the solver (depending on whether this is the first run or not)
         if t_save(k)==0
             if isunix==1
-                ind = int64(0); % beginning at t=0
+                ind = int64(0); % starts integration at t=0
                 iwk = zeros(580230,1,'int64');
             else
-                ind = int32(0);
+                ind = int32(0); % starts integration at t=0
                 iwk = zeros(580230,1,'int32');
             end
             rwk = zeros(1880000,1);
@@ -194,9 +196,9 @@ for k=1:tsteps
             insert_tissue
         else
             if isunix==1
-                ind = int64(1); % continuing from the previous solution
+                ind = int64(1); % continuing integration from the previous solution
             else
-                ind = int32(1); % continuing from the previous solution
+                ind = int32(1); % continuing integration from the previous solution
             end
         end
         % run the solver
