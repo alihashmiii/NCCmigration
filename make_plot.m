@@ -58,10 +58,6 @@ if (experiment==4)||(experiment==5)
     hold on
     y = 0:120;
     plot(barrier.*ones(length(y)),y)
-elseif (experiment==6)
-    hold on
-    y = 0:120;
-    plot(max(xlat).*ones(length(y)),y)
 end
 hold off
 axis equal

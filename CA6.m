@@ -31,17 +31,12 @@ divide_cells = 0;       % the cells can divide - they divide more where there's 
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 metropolis = 0;         % cells sometimes move even if it is unfavourable
 num_filopodia = [2,2];  % the number of filopodia for lead cells and follower cells
-satiate = 0;            % number of timesteps after which the cells are satiated
 
 %%% probably don't want to change these %%%
 makeChemoattractant = 1;   % there is a chemoattranctant source term
 zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(edge) = 0 (has smoothed initial conditions)
                             % else no flux boundary conditions
-if experiment==6
-    ca_solve = 0;           % don't bother solving for the chemoattractant concentration
-else
-    ca_solve = 1;           % solve for the chemoattractant concentration
-end
+ca_solve = 1;           % solve for the chemoattractant concentration
 cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
@@ -62,14 +57,6 @@ domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 inity_perc = (domainHeight-2*cellRadius)/domainHeight; % percentage of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
-
-%% diffusion parameters
-if experiment==6
-    dist = [1; 1];                   % the distance moved in a timestep
-    diffusion = leadSpeed / dist(1) * tstep;   % rate of movement given speed, distance moved and timestep
-else
-    diffusion = 0;
-end
 
 %% experimental parameters %%
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
@@ -173,14 +160,7 @@ for k=1:tsteps
     
     %% chemoattractant %%
     if ca_solve==1
-        %% cells stop consuming c'tant after satiate timesteps
-        if satiate~=0
-            time_in_domain(end+1:length(cells)) = 1;
-            time_in_domain = time_in_domain + ones(1,length(time_in_domain));
-            cells_in = cells(:,time_in_domain<satiate);
-        else
-            cells_in = cells;
-        end
+        cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
         if t_save(k)==0
             if isunix==1
@@ -265,11 +245,11 @@ for k=1:tsteps
         if k==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia, diffusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLength(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

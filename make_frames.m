@@ -26,19 +26,4 @@ for j=1:length(frames)
     xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 
-% one colorbar for everything
-% if experiment==6
-%     L = get(colorbar,'YLim');
-%     M = colorbar;
-%     set(M,'YTick',L,'YTickLabel',[{0},1]);
-%     set(M, 'Position', [.8314 .164 .0381 .71]);
-%     set(M,'YTick',L,'YTickLabel',[{0},{1}]);
-%     
-%     h = findobj(gcf,'Type','axes','Tag','');
-%     for i=1:length(h)
-%         pos=get(h(i), 'Position');
-%         set(h(i), 'Position', [pos(1) pos(2) .6626 pos(4)])
-%     end
-% end
-
 saveas(gcf,['avi_mat/frames/frames3',save_info,'.fig'])
