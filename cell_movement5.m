@@ -51,22 +51,6 @@ for filo_ctr=1:num_filopodia %loops through the filopodia and keeps track of bes
     end
 end
 
-% load avi_mat/saved
-% if saved.multip==1
-%     figure(1)
-%     % multiplier(multiplier~=0)=1;
-%     contourf(x,y,multiplier','EdgeColor','none');
-%     hold on
-%     t = 0:0.1:2*pi;
-%     cellRadius = 7.5;
-%     plot(cellRadius*cos(t)+x_cell,cellRadius*sin(t)+y_cell,'w');
-%     plot([x_cell,x_fil],[y_cell,y_fil],'w')
-%     axis image
-%     
-%     figure(2)
-%     surf(x,y,multiplier')
-%     pause
-% end
 %% If the present area is better then stay put, else move in the theta direction%%%
 E = (present_area - new_area)/present_area;    % energy difference. So if E<0 then the cell definitely moves, otherwise it moves with some prob.
 if E>0 % then present_area>new_area and the cell doesn't try to move

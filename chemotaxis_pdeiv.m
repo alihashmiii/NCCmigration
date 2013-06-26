@@ -8,7 +8,7 @@ function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 % u = sin(pi.*x./1100);
 global param % using global variables is much faster than saving & loading from disk -- LJS
 % load avi_mat/param
-domainWidth = param(6);
+initialDomainLength = param(6);
 domainHeight = param(9);
 zero_bc = param(10);
 insert = param(11);
@@ -44,18 +44,18 @@ if insert==1
     % size(y)
 %     L_inf = param(1);
 %     a = param(2);
-%     domainWidth = param(6);
+%     initialDomainLength = param(6);
 %     t_start = param(13);
 %     tstep = param(12);
 %     
-%     out = domain_growth([],t-tstep,tstep,L_inf,a,domainWidth,[],t_start);
+%     out = domain_growth([],t-tstep,tstep,L_inf,a,initialDomainLength,[],t_start);
 %     L = out.domainLength;
 %     for i=1:length(x)
-%         u(i) = interp2(xlat_new*domainWidth/L,ylat_new,ca_new',x(i),y(i));
+%         u(i) = interp2(xlat_new*initialDomainLength/L,ylat_new,ca_new',x(i),y(i));
 %     end
         u = reshape(ca_new,[1,length(x)]);
 %         x(1:length(xlat_new))
-%         xlat_new*domainWidth/L
+%         xlat_new*initialDomainLength/L
     %     y
     %     u = ca_new;
 else
@@ -67,8 +67,8 @@ else
             steepy = 0.03;
             steepx = 0.2;
         end
-        z1 = 1./(1+exp(-steepy*x*domainWidth))-1/2;
-        z2 = 1./(1+exp(steepy*(-domainWidth + x*domainWidth)))-1/2;
+        z1 = 1./(1+exp(-steepy*x*initialDomainLength))-1/2;
+        z2 = 1./(1+exp(steepy*(-initialDomainLength + x*initialDomainLength)))-1/2;
         z3 = 1./(1+exp(steepx*(-y)))-1/2;
         z4 = 1./(1+exp(steepx*(-domainHeight+y)))-1/2;
     else % no flux boundary condition -- LJS

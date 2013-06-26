@@ -12,16 +12,16 @@ end
 aviobj.FrameRate = 20;    % frames per second - fewer frames will make the movie slower
 set(gcf,'Renderer','zbuffer')
 open(aviobj);
-for k=1:tsteps
+for k=1:numTsteps
     surf(xlat_save{k},ylat_save{k},ca_save{k}')
     zlim([0,1])
-    xlim([0,max(domainLength)])
+    xlim([0,max(domainLengths)])
     ylim([0,domainHeight])
     
     %% insert title here
     if experiment>0
         title(['Cell invasion simulating experiment ',mat2str(experiment)])
-    elseif follow_perc==0
+    elseif follow_frac==0
         title('Cell invasion without followers')
     else
         title('Cell invasion with followers')

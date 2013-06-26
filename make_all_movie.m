@@ -19,8 +19,8 @@ end
 aviobj.FrameRate = 15;    % frames per second - fewer frames will make the movie slower
 set(gcf,'Renderer','zbuffer')
 open(aviobj);
-for k=1:tsteps
-    disp(['step ',mat2str(k),' of ',mat2str(tsteps)])
+for k=1:numTsteps
+    disp(['step ',mat2str(k),' of ',mat2str(numTsteps)])
     make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cellRadius,0,barrier(k),experiment)
     
     axis image
@@ -31,10 +31,10 @@ for k=1:tsteps
     set(gca,'position',[T_t(1)+0.05 T_t(2) 1-T_t(1)-T_t(3)-0.17 1-T_t(2)-T_t(4)]);
     
     %% Insert title here
-    %     title([mat2str(follow_perc),' followers without growing domain and ',mat2str(tsteps),' time steps of ',mat2str(tstep),' hours at time = ', mat2str(t_save(k))])
+    %     title([mat2str(follow_frac),' followers without growing domain and ',mat2str(numTsteps),' time steps of ',mat2str(tstep),' hours at time = ', mat2str(t_save(k))])
     if experiment>0
         title(['Cell invasion simulating experiment ',mat2str(experiment)])
-    elseif follow_perc==0
+    elseif follow_frac==0
         title('Cell invasion without followers')
     else
         title('Cell invasion with followers')
