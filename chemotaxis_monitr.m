@@ -7,14 +7,14 @@ function [ierr] = chemotaxis_monitr(a, t, b, c, tlast, d, ngpts, xpts, ypts, lso
 global param plotsol xsave ysave % using global variables is much faster than saving & loading from disk -- LJS
 
 if isunix==1
-    ngpts = int32(ngpts);
+    ngpts = int32(ngpts); % the documentation calls for this parameter to be int32 -- LJS
 end
 
 if tlast
     level = 1;
     npts=ngpts(level);
     if isunix==1
-        ipsol=int32(lsol(level));
+        ipsol=int32(lsol(level)); % this seems to have to be int32 -- LJS
     else
         ipsol=lsol(level);
     end

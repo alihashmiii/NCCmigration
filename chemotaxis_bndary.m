@@ -12,7 +12,7 @@ domainHeight = param(9);
 zero_bc = param(10);
 
 if isunix==1
-    nbpts = int32(nbpts);
+    nbpts = int32(nbpts); % the documentation calls for this parameter to be int32, but I commenting this out doesn't seem to make a difference -- LJS
 end
 
 if zero_bc==1

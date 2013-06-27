@@ -157,23 +157,14 @@ for k=1:numTsteps
         cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
         if t_save(k)==0
-            if isunix==1
-                ind = int64(0); % starts integration at t=0
-                iwk = zeros(580230,1,'int64');
-            else
-                ind = int32(0); % starts integration at t=0
-                iwk = zeros(580230,1,'int32');
-            end
-            rwk = zeros(1880000,1);
+            ind = int64(0); % starts integration at t=0
+            iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
+            rwk = zeros(1880000,1); % it unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
         elseif ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
             %% experiments 1 and 2: inserting chemoattractant
             insert_tissue
         else
-            if isunix==1
-                ind = int64(1); % continuing integration from the previous solution
-            else
-                ind = int32(1); % continuing integration from the previous solution
-            end
+            ind = int64(1); % continuing integration from the previous solution
         end
         % run the solver
         if ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
