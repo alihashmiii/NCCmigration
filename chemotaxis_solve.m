@@ -37,8 +37,6 @@ opti(4) = int64(100);   % max linear equation iterations
 optr = [1.0;1.0;1.0];   % specifies parameters in the space and time monitors
 itrace = int64(0);     % level of trace information
 
-% rwk = zeros(188000,1);
-% iwk = zeros(58023,1,'int64');
 % save avi_mat/cells cells
 
 [ts, tout, rwk, iwk, ind, ifail] = d03ra(ts, tout, dt, xmin, xmax, ymin, ymax, nx, ny, tols,...

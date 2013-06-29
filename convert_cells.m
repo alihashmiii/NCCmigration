@@ -83,7 +83,7 @@ elseif convert_type==2
 %             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
-elseif convert_type==3
+elseif convert_type==3 %% Conversion type 3 was because Ruth kept asking if we couldn't just set some concentration of local chemoattractant at which cells would convert between the types. It doesn't really work, because the overall levels are being diluted as the domain expands, so you can't set just one threshold. (LJS: but what if hte consumption was high enough so that dilution wasn't much of an issue?
     %% using maximum chemoattractant gradient (with point measures of c'tant)
     dx = 10;
     temp_thet = 0:0.1*pi:2*pi;
@@ -91,7 +91,8 @@ elseif convert_type==3
         temp = [cells(1,i) + dx*cos(temp_thet); cells(2,i) + dx*sin(temp_thet)];
         temp = [cells(:,i) temp];
     
-        chemo = find_ca(temp,xlat_save,ylat_save,ca_save);
+%         chemo = find_ca(temp,xlat_save,ylat_save,ca_save);
+        chemo = find_ca(temp,xlat,ylat,ca_save); % ?? -- LJS
         if chemo(1)==0
             grad = sign(chemo(2:end)-chemo(1)).*max(abs(chemo(2:end)-chemo(1)))/dx;
         else

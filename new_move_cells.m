@@ -1,13 +1,12 @@
 function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
-                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, barrier, experiment, t_save, in, metropolis, num_filopodia)
-% dettached = 0;
+                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, barrier, experiment, t_save, in, num_filopodia)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = zeros(1,length(cells(1,:)));
 for i =1:length(cell_order)
     move = 0;
-    cellidx = cell_order(i);  % look at the rth cell
+    cellidx = cell_order(i);  % look at the ith cell
     other_cells = cells(:,(1:end)~=cellidx);
     
     %% Decide whether to try to move
@@ -54,7 +53,8 @@ for i =1:length(cell_order)
             end
             if cellsFollow(head)==0    %% if the head is a leader, then attach and move
                 attach(cellidx) = foundCellidx;
-                % set angle of movement parallel to that of cell being followed
+                % set angle of movement parallel to that of cell being
+                % followed -- LJS
                 theta(cellidx) = theta(attach(cellidx));
                 % set filopodium position to closet point on membrane of cell being followed -- LJS
                 phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
@@ -66,20 +66,11 @@ for i =1:length(cell_order)
     end
     
     %% Try to move
-%     r1 = rand();
-%     T = 0.0001; %%% ???? -- LJS
     if (cellsFollow(cellidx)==1)&&(move==0)
-%         x_fil = cells(1,cellidx)+ filolength*cos(theta(cellidx));
-%         y_fil = cells(2,cellidx)+ filolength*sin(theta(cellidx));
-%         E = min(sqrt((x_fil-other_cells(1,:)).^2+(y_fil-other_cells(2,:)).^2));
-%         T = 50;
-% %     elseif (cellsFollow(r)==0)&&(move==0)
-% %         exp(-E/T)
+%         currently unchained followers do not move
     end
-    if (move==1)%||((metropolis==1)&&(r1<exp(-E/T))&&(cellsFollow(r)==1))
+    if (move==1)
         moved(cellidx)=1;
-    end
-    if (move==1)||((metropolis==1)&&(r1<exp(-E/T)))%&&(cellsFollow(r)==1))
         if (cellsFollow(cellidx)==1)&&(move==1) %if it's a follower
                 new_x = cells(1,cellidx) + cos(theta(cellidx))*dist(2);
                 new_y = cells(2,cellidx) + sin(theta(cellidx))*dist(2);
@@ -100,12 +91,10 @@ for i =1:length(cell_order)
                     if (barrier-previous_side)*(barrier-new_side)>0
                         cells(1,cellidx) = new_x;
                         cells(2,cellidx) = new_y;
-%                         moved(r) = 1;
                     end
                 else
                     cells(1,cellidx) = new_x;
                     cells(2,cellidx) = new_y;
-%                     moved(r) = 1;
                     if (move==0)&&(cellsFollow(cellidx)==1)
                         disp('follower moved anyway')
                     elseif move==0

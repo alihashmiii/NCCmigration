@@ -4,8 +4,6 @@
 % movement for the cell and a parameter, d, that is related to the radius
 % of sensing of ca.
 
-% (theta=100 gives no movement)
-
 function [filopodia,E,move,theta,num_better] = cell_movement5(theta,x_cell,y_cell,ca,x,y,eatWidth,filolength,num_filopodia,fil)
 
 
@@ -31,7 +29,6 @@ for filo_ctr=1:num_filopodia %loops through the filopodia and keeps track of bes
     else
         x_fil = fil(filo_ctr,1);
         y_fil = fil(filo_ctr,2);
-        theta(filo_ctr) = 100; % (theta=100 gives no movement)
         filopodia(filo_ctr,:) = fil(filo_ctr,:);
     end
     old_area = new_area;
@@ -52,7 +49,7 @@ for filo_ctr=1:num_filopodia %loops through the filopodia and keeps track of bes
 end
 
 %% If the present area is better then stay put, else move in the theta direction%%%
-E = (present_area - new_area)/present_area;    % energy difference. So if E<0 then the cell definitely moves, otherwise it moves with some prob.
+E = (present_area - new_area)/present_area;    % energy difference. So if E<0 then the cell definitely moves
 if E>0 % then present_area>new_area and the cell doesn't try to move
     move=0;
     theta = NaN; % direction of movement is undefined -- LJS

@@ -17,7 +17,7 @@
 function out = CA6(in,experiment)
 global param cells % using global variables is much faster than saving & loading from disk -- LJS
 
-if (experiment~=0)
+if isstruct(in)
     time = in.time;
 else
     time = in;
@@ -26,10 +26,9 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-follow_frac = 5/8;        % proportion of cells that are followers (0<=follow_per<=1)
+follow_frac = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 2;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-metropolis = 0;         % cells sometimes move even if it is unfavourable
+convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 num_filopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
@@ -41,10 +40,10 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
-movies = 1;
+movies = 0;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -67,6 +66,36 @@ chi = 0.0001;                  % chemoattractant production term (usually 0.0001
 eatRate = 1;                      % chemoattractant consumption rate, usually 0.045 -- need to check this -- LJS
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
+%% adjust parameters if they have been provided in input %%
+if isstruct(in)
+    if ismember('leadSpeed',fields(in))
+        leadSpeed = in.leadSpeed; % speed of the leader cells in mu/h
+    end
+    if ismember('followSpeed',fields(in))
+        followSpeed = in.followSpeed; % speed of the follower cells in mu/h
+    end
+    if ismember('num_filopodia',fields(in))
+        num_filopodia = in.num_filopodia; % the number of filopodia for lead cells and follower cells
+    end
+    if ismember('filolength',fields(in))
+        filolength = in.filolength; % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
+    end
+    if ismember('diffus',fields(in))
+        diffus = in.diffus; % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+    end
+    if ismember('chi',fields(in))
+        chi = in.chi; % chemoattractant production term (usually 0.0001)
+    end
+    if ismember('eatRate',fields(in))
+        eatRate = in.eatRate; % chemoattractant consumption rate, usually 0.045 -- need to check this -- LJS
+    end
+    if ismember('eatWidth',fields(in))
+        eatWidth = in.eatWidth; % width of eating chemoattractant, equivalent to gaussian sigma
+    end
+    if ismember('follow_frac',fields(in))
+        follow_frac = in.follow_frac; % proportion of cells that are followers (0<=follow_per<=1)
+    end
+end
 %% convert parameters
 if convert_type == 1
     num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
@@ -230,11 +259,11 @@ for k=1:numTsteps
         if k==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,num_filopodia);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,metropolis,num_filopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,num_filopodia);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;
@@ -285,15 +314,15 @@ for k=1:numTsteps
     end
 end
 %%
-hist(num_better_foll_save/num_foll_save)
-hist(num_better_lead_save/num_lead_save)
+% hist(num_better_foll_save/num_foll_save)
+% hist(num_better_lead_save/num_lead_save)
 out.num_better_foll_save = num_better_foll_save;
 out.num_foll_save = num_foll_save;
 out.num_better_lead_save = num_better_lead_save;
 out.num_lead_save = num_lead_save;
 toc
-whitebg('white')
-
+% whitebg('white')
+disp(['Number of cells: ' num2str(size(cells,2))])
 %% Save stuff
 save_stuff
 
@@ -321,6 +350,8 @@ if movies==1
     open(['avi_mat/frames/frames3',save_info,'.fig'])
 end
 %% calculate average directionality %%%
+% LJS: check resulting directionality and effective speed of leaders vs.
+% trailers (for fixed case)
 % for i=1:n
 %     total = sum(sqrt((cells_save{2:end}(1,i)-cells_save{1:end-1}(1,i)).^2+(cells_save{2:end}(2,i)-cells_save{1:end-1}(2,i)).^2));
 %     straight = sqrt((cells_save{end}(1,i)-cells_save{1}(1,i))^2 + (cells_save{end}(2,i)-cells_save{1}(2,i))^2);
@@ -331,4 +362,4 @@ end
 % average_speed =
 % mean((cells_save(1,1:n,end)-cells_save(1,1:n,1))./t_save(end))
 
-delete('avi_mat/cells.mat','avi_mat/param.mat','avi_mat/plotsol.mat','avi_mat/xsave.mat','avi_mat/ysave.mat')
+delete('avi_mat/cells.mat','avi_mat/param.mat','avi_mat/plotsol.mat','avi_mat/xsave.mat','avi_mat/ysave.mat');

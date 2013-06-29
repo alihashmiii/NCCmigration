@@ -9,7 +9,7 @@ elseif comp==1
 else
     aviobj = VideoWriter(['avi_mat/camovie/camovie_',save_info,'uncompressed.avi'],'Uncompressed AVI');
 end
-aviobj.FrameRate = 20;    % frames per second - fewer frames will make the movie slower
+aviobj.FrameRate = 30;    % frames per second - fewer frames will make the movie slower
 set(gcf,'Renderer','zbuffer')
 open(aviobj);
 for k=1:numTsteps

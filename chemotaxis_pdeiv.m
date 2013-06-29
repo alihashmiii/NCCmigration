@@ -4,8 +4,7 @@
 % for use with chemotaxis_solve.m
 
 function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
-% u = ones(npts,npde);
-% u = sin(pi.*x./1100);
+
 global param % using global variables is much faster than saving & loading from disk -- LJS
 % load avi_mat/param
 initialDomainLength = param(6);
@@ -13,7 +12,7 @@ domainHeight = param(9);
 zero_bc = param(10);
 insert = param(11);
 growingDomain= param(5);
-if insert==1
+if insert==1 %% will have to check these when doing tissue transplantations -- LJS
     disp('inserting')
     load avi_mat/ca_new
     load avi_mat/xlat_new
@@ -79,19 +78,3 @@ else
     end
     u = min(min(min(z1,z2),z3),z4)/max(min(min(min(z1,z2),z3),z4));
 end
-
-% save_initial = input('save initial?:');
-% if save_initial==1
-%     xpts = x;
-%     ypts = y;
-%     plotxpts = xpts(1:find(xpts(2:end)<xpts(1:end-1),1,'first'));
-%     plotypts = ypts((ypts(2:end)-ypts(1:end-1)>0));
-%     plotypts(end+1) = ypts(end);
-%
-%     plotsol = reshape(u,[length(plotxpts),length(plotypts)]);
-%     surf(plotxpts,plotypts,plotsol)
-%     xlabel('x')
-%     ylabel('y')
-%     zlabel('Chemoattractant concentration')
-%     saveas(gcf,['avi_mat/initial_conditions.fig'])
-% end

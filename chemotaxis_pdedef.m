@@ -35,7 +35,7 @@ if make_chemoattractant~=1
     chi=0;
 end
 % the following equation should describe the chemoattractant evolution on
-% the stationary domain [0,1]. Therefore, introduce factors of L-- LJS
+% the stationary domain [0,1]. Therefore, introduce factors of L -- LJS
 eatTerm = zeros(size(x));
 for ctr = 1:length(xcell)
     eatTerm = eatTerm + eatRate*u/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*((x - xcell(ctr)).^2*L^2 +(y - ycell(ctr)).^2));      
@@ -43,12 +43,4 @@ end
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
           - eatTerm...
           + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
-res(x>0) = res(x>0) + Ldiff/L*u(x>0);
-% max(abs(res-res_check))
-% x = linspace(0,1100,50);
-% y = linspace(0,250,50);
-% xcell = 500;
-% ycell = 125;
-% eatRate = 0.1;
-% e = 100;
-% z = eatRate.*exp(-e.*((x./max(x)-xcell./max(x)).^2+(y./max(y)-ycell/max(y)).^2));
+res(x>0) = res(x>0) + Ldiff/L*u(x>0); % dilution through tissue growth -- LJS

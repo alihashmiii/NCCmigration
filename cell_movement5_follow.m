@@ -4,8 +4,7 @@
 % outputs an angle, theta, of movement for the cell, based on the existence
 % of other cells in the area of the filopodium
 
-% theta is the direction of the cell found, r is the cell that was found, filopodia is the position of the filopodia
-% (theta=100 gives no movement)
+% theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
 function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cell_radius,filolength,filopodia,barrier,experiment)
 %% find the coordinates of our cell
@@ -57,12 +56,10 @@ end
 d(:,cellidx) = 10000*ones(length(theta),1); % so that we don't get our cell back again
 
 %% If there is a cell there, [or a cell's filopodium - follow that cell  %%]
-% t = 0:0.1:2*pi;
 
 if (min(min(d))<cell_radius)
     %% if the filopodium finds a cell body then find out which was the
     %% nearest such cell that was found
-%     r = find(d==min(d),1,'first')
     
     cells_found = find(min(d,[],1)<cell_radius);
     %% find the distance from our cell to the cells found
@@ -71,36 +68,10 @@ if (min(min(d))<cell_radius)
         dist(i) = sqrt((x_cell - x_cells(cells_found(i)))^2+(y_cell - y_cells(cells_found(i)))^2);
     end
     foundCellidx = cells_found(dist==min(dist));
-%     
-%     
-%     index = find(sqrt((x_cells(cells_found)- x_cell).^2+(y_cells(cells_found)-y_cell).^2)...
-%               >min(sqrt((x_cells(cells_found)- x_cell).^2+(y_cells(cells_found)-y_cell).^2)),1,'first');
-%     r = cells_found(index);
+
     %% if the filopodia finds another filopodia, then find out which was
     %% the nearest such cell that was found
+    % this seems to never have been implemented -- LJS
 else
     foundCellidx = [];
 end
-
-%% So the output is: 
-
-    
-% if ((sqrt(min((x_fil- x_cells).^2+(y_fil-y_cells).^2)))<cell_radius) % the filopodia finds a cell body
-%     %% if the end of the filopodia finds a cell body then find out which
-%     %% cell it was
-%     r = find(sqrt(((x_fil- x_cells).^2+(y_fil-y_cells).^2))==sqrt(min((x_fil- x_cells).^2+(y_fil-y_cells).^2)));
-% elseif ( min(d)<cell_radius )
-%     theta = atan((y_cell-y_cells(d==min(d)))/(x_cell-x_cells(d==min(d)))); % the filopodia finds another cell
-% %     % which cell?
-%     r = find(d==min(d));
-%     
-% %         for k=1:length(x_cells)
-% %             plot(cell_radius*cos(t)+x_cells(k),cell_radius*sin(t)+y_cells(k));
-% %             hold on
-% %         end
-% %         plot(cell_radius*cos(t)+x_cell,cell_radius*sin(t)+y_cell,'r');
-% %         plot(cell_radius*cos(t)+x_cells(r),cell_radius*sin(t)+y_cells(r),'m')
-% %         plot([x_cell,filopodia(1)],[y_cell,filopodia(2)],'r')
-% %         hold off
-% %         axis image
-% %         pause

@@ -3,7 +3,7 @@
 %
 % creates a movie of the cells moving with yellow followers and blue leaders
 % on a background of chemoattractant
-% saves to /scratch/dysonl/avi_mat
+% saves to /avi_mat
 
 close all
 clear mex
@@ -16,7 +16,7 @@ elseif comp==1
 else
     aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',save_info,'uncompressed.avi'],'Uncompressed AVI');
 end
-aviobj.FrameRate = 15;    % frames per second - fewer frames will make the movie slower
+aviobj.FrameRate = 30;    % frames per second - fewer frames will make the movie slower
 set(gcf,'Renderer','zbuffer')
 open(aviobj);
 for k=1:numTsteps
@@ -31,13 +31,12 @@ for k=1:numTsteps
     set(gca,'position',[T_t(1)+0.05 T_t(2) 1-T_t(1)-T_t(3)-0.17 1-T_t(2)-T_t(4)]);
     
     %% Insert title here
-    %     title([mat2str(follow_frac),' followers without growing domain and ',mat2str(numTsteps),' time steps of ',mat2str(tstep),' hours at time = ', mat2str(t_save(k))])
     if experiment>0
-        title(['Cell invasion simulating experiment ',mat2str(experiment)])
+        title(['Cell invasion simulating experiment ' num2str(experiment) ' at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
     elseif follow_frac==0
-        title('Cell invasion without followers')
+        title(['Cell invasion without followers at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
     else
-        title('Cell invasion with followers')
+        title(['Cell invasion with followers at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
     end
     writeVideo(aviobj,getframe(gca));
 end

@@ -3,14 +3,14 @@ figure
 
 edge = 1;
 if experiment==0
-    frames = [1, find(t_save==6), find(t_save==18)] %, find(t_save==36), length(t_save)-1]
+    frames = [1, find(t_save>=6,1,'first'), find(t_save==18,1,'first')] 
 else
-    frames = [find(t_save==6), find(t_save==18)]
+    frames = [find(t_save==6,1,'first'), find(t_save==18,1,'first')]
 end
 lengths = cellfun(@length,cells_save);
 lengths_change = find(lengths(2:end)-lengths(1:end-1)>2);
-lengths(lengths_change)
-lengths(lengths_change+1)
+lengths(lengths_change);
+lengths(lengths_change+1);
 for j=1:length(frames)
     k = frames(j);
     subplot(length(frames),1,j)    
@@ -22,7 +22,7 @@ for j=1:length(frames)
     if growingDomain==0
         xlim([0,300])
     end
-    title(['Cell invasion at time t = ',mat2str(t_save(k)),' hours'])
+    title(['Cell invasion at time t = ',mat2str(t_save(k)),' hours with ' num2str(size(cells_save{k},2)) ' cells.'])
     xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 

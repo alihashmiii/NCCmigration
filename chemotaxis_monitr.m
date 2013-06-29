@@ -34,7 +34,6 @@ if tlast
         k = sum(ngpts(1:level-1));
         xpts = xpts(k+1:k+npts);
         ypts = ypts(k+1:k+npts);
-%         xsave = xpts(1:find(xpts(2:end)-xpts(1:end-1)<0,1,'first')).*L/initialDomainLength;
         xsave = xpts(1:find(xpts(2:end)-xpts(1:end-1)<0,1,'first'));
         xsave(xsave>=0) = xsave(xsave>=0).*L/initialDomainLength;
         ysave = ypts(1:length(xsave):end);
@@ -51,8 +50,11 @@ if tlast
         plotsol(idks) = sol(ipsol+idks);
     end;
     plotsol = reshape(plotsol,[length(xsave),length(ysave)]);
+% uncomment these next to lines to monitor the ca conc during simulation --
+% LJS
 %     surf(xsave,ysave,plotsol)
 %     pause
+
 %     save avi_mat/plotsol plotsol
 %     save avi_mat/xsave xsave
 %     save avi_mat/ysave ysave
