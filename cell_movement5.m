@@ -4,7 +4,7 @@
 % movement for the cell and a parameter, d, that is related to the radius
 % of sensing of ca.
 
-function [filopodia,E,move,theta,num_better] = cell_movement5(theta,x_cell,y_cell,ca,x,y,eatWidth,filolength,num_filopodia,fil)
+function [filopodia,E,move,theta,num_better] = cell_movement5(theta,x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil)
 
 
 %% Integrate the chemoattractant in the present area %%%
@@ -19,8 +19,8 @@ present_area = sum((intgrand(1:end-1) + intgrand(2:end))./2);
 new_area = 0;
 num_better = 0;
 chosen_theta_idx = NaN;
-filopodia = NaN(num_filopodia,2); % store the x-y coordinates of all the cell's filopodia -- LJS
-for filo_ctr=1:num_filopodia %loops through the filopodia and keeps track of best direction -- LJS
+filopodia = NaN(numFilopodia,2); % store the x-y coordinates of all the cell's filopodia -- LJS
+for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best direction -- LJS
     if isempty(fil)
         %% the cell extends a filopodia in the theta direction %%%
         x_fil = x_cell + cos(theta(filo_ctr))*filolength;  % x coordinate of the filopodia

@@ -15,9 +15,9 @@ for j=1:length(frames)
     k = frames(j);
     subplot(length(frames),1,j)    
     if (experiment==4)||(experiment==5)
-        make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cellRadius,edge,barrier(k),experiment)
+        make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,edge,barrier(k),experiment)
     else
-        make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cellRadius,edge,[],experiment)
+        make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,edge,[],experiment)
     end
     if growingDomain==0
         xlim([0,300])
@@ -26,4 +26,4 @@ for j=1:length(frames)
     xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 
-saveas(gcf,['avi_mat/frames/frames3',save_info,'.fig'])
+saveas(gcf,['avi_mat/frames/frames3',saveInfo,'.fig'])

@@ -10,18 +10,18 @@ clear mex
 figure('units','normalized','outerposition',[0 0 1 0.5],'visible','off'); % fullscreen and not visible
 comp = input('all_movie with compression? (1 for yes): ');
 if comp==1&&isunix==1
-    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',save_info,'compressed.avi'],'Motion JPEG AVI');
+    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',saveInfo,'compressed.avi'],'Motion JPEG AVI');
 elseif comp==1
-    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',save_info,'compressed.avi'],'MPEG-4'); % "Compressed MPEG-4 file with H.264 encoding (Windows 7 systems only)" -- LJS
+    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',saveInfo,'compressed.avi'],'MPEG-4'); % "Compressed MPEG-4 file with H.264 encoding (Windows 7 systems only)" -- LJS
 else
-    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',save_info,'uncompressed.avi'],'Uncompressed AVI');
+    aviobj = VideoWriter(['avi_mat/allmovie/allmovie_',saveInfo,'uncompressed.avi'],'Uncompressed AVI');
 end
 aviobj.FrameRate = 30;    % frames per second - fewer frames will make the movie slower
 set(gcf,'Renderer','zbuffer')
 open(aviobj);
 for k=1:numTsteps
     disp(['step ',mat2str(k),' of ',mat2str(numTsteps)])
-    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},num_filopodia,attach_save{k},cellRadius,0,barrier(k),experiment)
+    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,0,barrier(k),experiment)
     
     axis image
     xlim([min(xlat_save{end}),1100])
@@ -33,7 +33,7 @@ for k=1:numTsteps
     %% Insert title here
     if experiment>0
         title(['Cell invasion simulating experiment ' num2str(experiment) ' at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
-    elseif follow_frac==0
+    elseif followerFraction==0
         title(['Cell invasion without followers at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
     else
         title(['Cell invasion with followers at time = ' num2str(t_save(k),'%2.2f') ' hours with '  num2str(size(cells_save{k},2)) ' cells'])
@@ -42,4 +42,4 @@ for k=1:numTsteps
 end
 close(aviobj);
 
-disp(['saved to avi_mat/allmovie/allmovie_',save_info,'.avi'])
+disp(['saved to avi_mat/allmovie/allmovie_',saveInfo,'.avi'])

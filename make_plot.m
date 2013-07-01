@@ -1,6 +1,6 @@
 %% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,num_filopodia,attach,cellRadius,edge,barrier,experiment)
+function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,numFilopodia,attach,cellRadius,edge,barrier,experiment)
 
 if experiment~=6
     if isempty(ca)==1
@@ -34,14 +34,14 @@ end
 t = 0:0.1:2*pi; % for plotting the cell circles -- LJS
 for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
-        filoNum = num_filopodia(2);
+        filoNum = numFilopodia(2);
         if attach(cellidx)==0
             cellColor = 'r';
         else
             cellColor = 'w';
         end
     else
-        filoNum = num_filopodia(1);
+        filoNum = numFilopodia(1);
         cellColor = 'y';
     end
     

@@ -26,10 +26,10 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-follow_frac = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-num_filopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -74,8 +74,8 @@ if isstruct(in)
     if ismember('followSpeed',fields(in))
         followSpeed = in.followSpeed; % speed of the follower cells in mu/h
     end
-    if ismember('num_filopodia',fields(in))
-        num_filopodia = in.num_filopodia; % the number of filopodia for lead cells and follower cells
+    if ismember('numFilopodia',fields(in))
+        numFilopodia = in.numFilopodia; % the number of filopodia for lead cells and follower cells
     end
     if ismember('filolength',fields(in))
         filolength = in.filolength; % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
@@ -92,8 +92,8 @@ if isstruct(in)
     if ismember('eatWidth',fields(in))
         eatWidth = in.eatWidth; % width of eating chemoattractant, equivalent to gaussian sigma
     end
-    if ismember('follow_frac',fields(in))
-        follow_frac = in.follow_frac; % proportion of cells that are followers (0<=follow_per<=1)
+    if ismember('followerFraction',fields(in))
+        followerFraction = in.followerFraction; % proportion of cells that are followers (0<=follow_per<=1)
     end
 end
 %% convert parameters
@@ -101,7 +101,7 @@ if convert_type == 1
     num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     num_directions=[];
 elseif convert_type == 2
-    num_steps = num_filopodia(1); % number of directions to sample in (convert type 2)
+    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2)
     num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
 else
     num_steps=[];
@@ -118,7 +118,7 @@ else
     n = 1;
 end
 initx_frac = 0;                 % initial fraction of x with cells
-followStart = floor(18/tstep) - floor(18*follow_frac/tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
+followStart = floor(18/tstep) - floor(18*followerFraction/tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
 
 %% domain growth parameters %%
 initialDomainLength= 300;                % initial width of the domain with growth (um)
@@ -188,7 +188,7 @@ for k=1:numTsteps
         if t_save(k)==0
             ind = int64(0); % starts integration at t=0
             iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
-            rwk = zeros(1880000,1); % it unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
+            rwk = zeros(1880000,1); % it's unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
         elseif ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
             %% experiments 1 and 2: inserting chemoattractant
             insert_tissue
@@ -259,11 +259,11 @@ for k=1:numTsteps
         if k==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,num_filopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,numFilopodia);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,num_filopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,numFilopodia);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;
@@ -347,7 +347,7 @@ if movies==1
     end
     
     close all
-    open(['avi_mat/frames/frames3',save_info,'.fig'])
+    open(['avi_mat/frames/frames3',saveInfo,'.fig'])
 end
 %% calculate average directionality %%%
 % LJS: check resulting directionality and effective speed of leaders vs.
@@ -362,4 +362,4 @@ end
 % average_speed =
 % mean((cells_save(1,1:n,end)-cells_save(1,1:n,1))./t_save(end))
 
-delete('avi_mat/cells.mat','avi_mat/param.mat','avi_mat/plotsol.mat','avi_mat/xsave.mat','avi_mat/ysave.mat');
+delete('avi_mat/*.mat');
