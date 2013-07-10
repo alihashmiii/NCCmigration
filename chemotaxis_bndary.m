@@ -12,19 +12,20 @@ domainHeight = param(9);
 zero_bc = param(10);
 
 if isunix==1
-    nbpts = int32(nbpts); % the documentation calls for this parameter to be int32, but I commenting this out doesn't seem to make a difference -- LJS
+    nbpts = int32(nbpts); % the documentation calls for this parameter to be int32, but commenting this out doesn't seem to make a difference -- LJS
 end
 
 if zero_bc==1
     res(lbnd,1) = u(lbnd,1);
 else
     % No Flux Boundary conditions
-    tol = x02aj();
+    tolx = 1/sqrt(double(npts))/2 - x02aj(); % we need to account not only for machine precision, but also lattice discretisation -- LJS
     % at x = 0 or x = 1
-    xBndIdcs = lbnd(abs(x(lbnd)) <= tol | abs(x(lbnd) - 1) <= tol);
+    xBndIdcs = lbnd(abs(x(lbnd)) <= tolx | abs(x(lbnd) - 1) <= tolx);
     res(xBndIdcs,1) = ux(xBndIdcs,1);
     % at y = 0 or y = domainHeight
-    yBndIdcs = lbnd(abs(y(lbnd)) <= tol | abs(y(lbnd) - domainHeight) <= tol);
+    toly = domainHeight/sqrt(double(npts))/2 - x02aj(); % we need to account not only for machine precision, but also lattice discretisation -- LJS
+    yBndIdcs = lbnd(abs(y(lbnd)) <= toly | abs(y(lbnd) - domainHeight) <= toly);
     res(yBndIdcs,1) = uy(yBndIdcs,1);
 end
 end
