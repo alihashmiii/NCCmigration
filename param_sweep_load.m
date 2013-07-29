@@ -1,7 +1,7 @@
 % parameter sweep for Dyson model CA6
-% perturb parameters around reference parameter set
-% save results for later plotting
-% LJSchumacher 29.06.2013
+% perturbed parameters around reference parameter set
+% load results for plotting
+% LJSchumacher 29.07.2013
 
 clear all
 
@@ -20,135 +20,140 @@ eatRate = 1;                      % chemoattractant consumption rate, usually 0.
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 
-input.time = 18; % duration of each run, simulation time in hours
 numRepeats = 10; % number of runs per parameter combination, to gather stats
+numPerturbations = 21; % how many parameter combinations have been run altogether, not incl. repeats
+numCells = NaN(numPerturbations,numRepeats);
+saveInfo = cell(numPerturbations,1);
 
-totalTime = tic;
+dateString = '2013_06_29'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
+
 for ctr = 1:numRepeats
     
-    % run model for reference set
-    input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+    % load results for reference set
+    loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
         '-leadSpeed_' num2str(leadSpeed) '_followSpeed_' num2str(followSpeed) ...
         '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
         '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
         '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-        '_Run_' num2str(ctr)];
-
-
+        '_Run_' num2str(ctr) '.mat']);
+    load(['results/parameterSweeps/' loadInfo.name], 'out');
+    numCells(1,ctr) =  size(out.cells_save{end},2);
+    if ctr == 1, saveInfo{1} = loadInfo.name; end
+    
     % perturb parameters with experimental reference values
     perturbFactor = 1.1;
     
     for newLeadSpeed = [leadSpeed/perturbFactor, leadSpeed*perturbFactor]
-        input.leadSpeed = newLeadSpeed;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'leadSpeed');
     
     for newFollowSpeed = [followSpeed/perturbFactor, followSpeed*perturbFactor]
-        input.followSpeed = newFollowSpeed;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(newFollowSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'followSpeed');
     
     for newnumFilopodia = [[3; 2], [2; 1], [1; 1], [3; 3]]
-        input.numFilopodia = newnumFilopodia';
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(newnumFilopodia(1)) '_nFiloFollow_' num2str(newnumFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'numFilopodia');
     
     for newFilolength = [filolength/perturbFactor, filolength*perturbFactor]
-        input.filolength = newFilolength;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(newFilolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'filolength');
     
     for newFollowerFraction = [followerFraction/perturbFactor, followerFraction*perturbFactor]
-        input.followerFraction = newFollowerFraction;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(newFollowerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'followerFraction');
     
     % perturb parameters without experimental reference values
     perturbFactor = 10;
     
     for newDiffus = [diffus/perturbFactor, diffus*perturbFactor]
-        input.diffus = newDiffus;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(newDiffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'diffus');
     
     for newChi = [chi/perturbFactor, chi*perturbFactor]
-        input.chi = newChi;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(newChi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'chi');
     
     for newEatRate = [eatRate/perturbFactor, eatRate*perturbFactor]
-        input.eatRate = newEatRate;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(newEatRate) '_eatWidth_' num2str(eatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'eatRate');
     
     perturbFactor = 2;
     for newEatWidth = [eatWidth/perturbFactor, eatWidth*perturbFactor]
-        input.eatWidth = newEatWidth;
-        input.saveInfo = ['parameterSweeps/' datestr(now,'yyyy_mm_dd-HH_MM') ...
+        loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(numFilopodia(1)) '_nFiloFollow_' num2str(numFilopodia(2)) ...
             '_filolength_' num2str(filolength) '_diffus_' num2str(diffus) '_chi_' num2str(chi) ...
             '_eatRate_' num2str(eatRate) '_eatWidth_' num2str(newEatWidth) '_followerFraction_' num2str(followerFraction) ...
-            '_Run_' num2str(ctr)];
-    
+            '_Run_' num2str(ctr) '.mat']);
+        load(['results/parameterSweeps/' loadInfo.name], 'out');
+        numCells(find(isnan(numCells(:,ctr)),1,'first'),ctr) =  size(out.cells_save{end},2);
+        if ctr == 1, saveInfo{find(~isnan(numCells(:,ctr)),1,'last')} = loadInfo.name; end
     end
-    input = rmfield(input,'eatWidth');
     
 end
-toc(totalTime);
+save(['results/parameterSweeps/' dateString '-collatedResults'], 'numCells', 'saveInfo')
