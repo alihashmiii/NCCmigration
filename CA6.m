@@ -349,17 +349,5 @@ if movies==1
     close all
     open(['avi_mat/frames/frames3',saveInfo,'.fig'])
 end
-%% calculate average directionality %%%
-% LJS: check resulting directionality and effective speed of leaders vs.
-% trailers (for fixed case)
-% for i=1:n
-%     total = sum(sqrt((cells_save{2:end}(1,i)-cells_save{1:end-1}(1,i)).^2+(cells_save{2:end}(2,i)-cells_save{1:end-1}(2,i)).^2));
-%     straight = sqrt((cells_save{end}(1,i)-cells_save{1}(1,i))^2 + (cells_save{end}(2,i)-cells_save{1}(2,i))^2);
-%     directionality(i) = straight/total;
-% end
-% directionality
-% average_direc = mean(directionality)
-% average_speed =
-% mean((cells_save(1,1:n,end)-cells_save(1,1:n,1))./t_save(end))
 
 delete('avi_mat/*.mat');

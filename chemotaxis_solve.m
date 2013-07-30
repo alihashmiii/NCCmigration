@@ -20,8 +20,8 @@ if insert==1
     nx = int64(length(xlat_new));
     xmin = min(xlat_new);
 else
-    nx = int64(80); % number of x grid points including boundary
-    ny = int64(80);
+    nx = int64(100); % number of x grid points including boundary
+    ny = int64(100);
 end
 %n = nx*ny; % n by n square grid
 
