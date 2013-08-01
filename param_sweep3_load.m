@@ -12,7 +12,7 @@ cellRadius = 7.5;              % radius in um (= 7.5um)
 % reference parameter set -- these should be the same as defautls in CA6.m
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
 followSpeed = 49.9;                 % speed of the follower cells in mu/h
-numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+numFilopodia = [6,2];  % the number of filopodia for lead cells and follower cells
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 diffus = 1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
@@ -27,7 +27,7 @@ saveInfo = cell(numPerturbations,1);
 meanDirectionality = NaN(numPerturbations,numRepeats,2);
 meanSpeed = NaN(numPerturbations,numRepeats,2);
 
-dateString = '2013_07_3*'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
+dateString = '2013_08_02'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
 
 for repCtr = 1:numRepeats
     
@@ -75,7 +75,7 @@ for repCtr = 1:numRepeats
     if repCtr == 1, saveInfo{1} = loadInfo.name; end
     
     % perturb parameters with experimental reference values
-    perturbFactor = 1.1;
+    perturbFactor = 1.2;
     
     for newLeadSpeed = [leadSpeed/perturbFactor, leadSpeed*perturbFactor]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
@@ -155,7 +155,7 @@ for repCtr = 1:numRepeats
         if repCtr == 1, saveInfo{perturbIdx} = loadInfo.name; end % only once, save parameter details
     end
     
-    for newnumFilopodia = [[3; 2], [4; 2], [5; 2], [6; 2]]
+    for newnumFilopodia = [[5; 2], [7; 2], [6; 1], [6; 3]]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
             '_nFiloLead_' num2str(newnumFilopodia(1)) '_nFiloFollow_' num2str(newnumFilopodia(2)) ...
@@ -194,6 +194,8 @@ for repCtr = 1:numRepeats
         if repCtr == 1, saveInfo{perturbIdx} = loadInfo.name; end % only once, save parameter details
     end
     
+    perturbFactor = 1.1;
+
     for newFilolength = [filolength/perturbFactor, filolength*perturbFactor]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
@@ -273,7 +275,7 @@ for repCtr = 1:numRepeats
     end
     
     % perturb parameters without experimental reference values
-    perturbFactor = 10;
+    perturbFactor = 100;
     
     for newDiffus = [diffus/perturbFactor, diffus*perturbFactor]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
@@ -353,6 +355,8 @@ for repCtr = 1:numRepeats
         if repCtr == 1, saveInfo{perturbIdx} = loadInfo.name; end % only once, save parameter details
     end
     
+    perturbFactor = 10;
+
     for newEatRate = [eatRate/perturbFactor, eatRate*perturbFactor]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...
@@ -393,6 +397,7 @@ for repCtr = 1:numRepeats
     end
     
     perturbFactor = 1.1;
+    
     for newEatWidth = [eatWidth/perturbFactor, eatWidth*perturbFactor]
         loadInfo = dir(['results/parameterSweeps/' dateString '*' ...
             '-leadSpeed_' num2str(newLeadSpeed) '_followSpeed_' num2str(followSpeed) ...

@@ -29,7 +29,7 @@ growingDomain = 1;     % the domain grows
 followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+numFilopodia = [6,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -40,10 +40,10 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
-movies = 0;
+movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
