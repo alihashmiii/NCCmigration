@@ -40,10 +40,10 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
-movies = 1;
+movies = 0;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 0.05;                   % time step in hours
@@ -129,7 +129,8 @@ domainLengths = ones(1,numTsteps).*initialDomainLength;  % initialise domain len
 Linf = 870;                            % end domain length
 a = 0.0800;                            % "steepness" of the logistic domain growth -- LJS
 t_start = -16; %parameter used in domain growth
-param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
+param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
+    chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
 save avi_mat/param param
 
 %% set up the initial cells so that they aren't too close to each other or
@@ -137,11 +138,11 @@ save avi_mat/param param
 temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initx_frac,inity_frac,[]);
 cells = temp.cells;
 end_num_cells = (n + floor(numTsteps/insert_step)*num_cells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
-cellsFollow = zeros(end_num_cells,1); % cells are leaders by default. For fixed fractions of followers, all
+cellsFollow = false(end_num_cells,1); % cells are leaders by default. For fixed fractions of followers, all
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
 % on expected total cell numbers, which are too high when many cells cannot
-% be inserted due to jamming
+% be inserted due to jamming -- LJS
 
 %% initialise vectors and time %%
 t_save = 0:tstep:tstep*numTsteps;
@@ -151,20 +152,20 @@ ca_save = cell(1,numTsteps); % chemoattractant (ca)
 cells_save = cell(numTsteps,1);
 filopodia_save = cell(numTsteps,1);
 cellsFollow_save = cell(numTsteps,1);
-attach = zeros(end_num_cells,1); % indices of which cell each cell is attached to
+attach = zeros(end_num_cells,1,'uint16'); % indices of which cell each cell is attached to
 theta = NaN(end_num_cells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);
 xlat_new=[];
-barrier = zeros(numTsteps,1);
-moved = zeros(numTsteps,end_num_cells);
+barrier = zeros(numTsteps,1); % x-position of barrier for experiments 4&5, may be obsolete -- LJS
+moved = false(numTsteps,end_num_cells);
 num_better_foll_save = []; %% these may be obsolete -- LJS
 num_foll_save = 0; %% these may be obsolete -- LJS
 num_better_lead_save = []; %% these may be obsolete -- LJS
 num_lead_save = 0; %% these may be obsolete -- LJS
 %% begin timesteps %%
-for k=1:numTsteps
+for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
-    if k==followStart
+    if timeCtr==followStart
         cellsFollow(length(cells(1,:))+1:end) = 1;
         disp('followers start here')
     end
@@ -173,9 +174,9 @@ for k=1:numTsteps
     insert_cells_and_barrier
     
     %% If we are inserting new cells, do so here %%
-    if mod(k,insert_step)==0
-        fprintf(['t = ' mat2str(t_save(k+1)) '\r'] )
-        if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(k)<in.ablate_time)
+    if mod(timeCtr,insert_step)==0
+        fprintf(['t = ' mat2str(t_save(timeCtr+1)) '\r'] )
+        if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(timeCtr)<in.ablate_time)
             temp = initiate_cells(num_cells,cellRadius,0,initialDomainLength,domainHeight,0,inity_frac,cells);
             cells = temp.cells;
         end
@@ -185,58 +186,58 @@ for k=1:numTsteps
     if ca_solve==1
         cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
-        if t_save(k)==0
+        if t_save(timeCtr)==0
             ind = int64(0); % starts integration at t=0
             iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
             rwk = zeros(1880000,1); % it's unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
-        elseif ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
+        elseif ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
             %% experiments 1 and 2: inserting chemoattractant
             insert_tissue
         else
             ind = int64(1); % continuing integration from the previous solution
         end
         % run the solver
-        if ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(k)==in.changeTime)
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),length(ylat_new),insert);
-        elseif k>1
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),length(ylat_save{k-1}),insert);
+        if ((experiment==1)||(experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),length(ylat_new),insert);
+        elseif timeCtr>1
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),length(ylat_save{timeCtr-1}),insert);
         else
-            temp = chemotaxis_solve(t_save(k),t_save(k+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),50,insert);
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,initialDomainLength,domainHeight,length(xlat_new),50,insert);
         end
 
         % take output 
-        xlat_save{k} = temp.xsave;
-        ylat_save{k} = temp.ysave;
+        xlat_save{timeCtr} = temp.xsave;
+        ylat_save{timeCtr} = temp.ysave;
         iwk = temp.iwk;
         rwk = temp.rwk;
         
-        ca_save{k} = temp.chemotaxis;
+        ca_save{timeCtr} = temp.chemotaxis;
     else
         %% Fixed chemoattractant %%
         if growingDomain==1
             % Domain Growth Happens at every timestep
             if ((experiment==4)||(experiment==5))
-                temp = domain_growth(cells(1,:),t_save(k),tstep,Linf,a,initialDomainLength,barrier(k),t_start);
-                barrier(k+1)=temp.barrier;
+                temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,barrier(timeCtr),t_start);
+                barrier(timeCtr+1)=temp.barrier;
             else
-                temp = domain_growth(cells(1,:),t_save(k),tstep,Linf,a,initialDomainLength,[],t_start);
+                temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,[],t_start);
             end
-            domainLengths(k) = temp.domainLength;
+            domainLengths(timeCtr) = temp.domainLength;
         end
         
-        xlat_save{k} = 0:domainLengths(k)/100:domainLengths(k);
-        ylat_save{k} = 0:domainHeight/100:domainHeight;
-        ca = zeros(length(xlat_save{k}),length(ylat_save{k}));
-        for i=1:length(xlat_save{k})
-            for j=1:length(ylat_save{k})
-                ca(i,j) = xlat_save{k}(i)./domainLengths(k);
+        xlat_save{timeCtr} = 0:domainLengths(timeCtr)/100:domainLengths(timeCtr);
+        ylat_save{timeCtr} = 0:domainHeight/100:domainHeight;
+        ca = zeros(length(xlat_save{timeCtr}),length(ylat_save{timeCtr}));
+        for i=1:length(xlat_save{timeCtr})
+            for j=1:length(ylat_save{timeCtr})
+                ca(i,j) = xlat_save{timeCtr}(i)./domainLengths(timeCtr);
             end
         end
-        ca_save{k} = ca;
+        ca_save{timeCtr} = ca;
     end
     %% divide cells %%
     if (divide_cells==1)
-        temp = cells_divide(cells,cellsFollow,cellRadius,domainLengths(k),0,domainHeight,ca_save{k},xlat_save{k},ylat_save{k},tstep);
+        temp = cells_divide(cells,cellsFollow,cellRadius,domainLengths(timeCtr),0,domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},tstep);
         cells = temp.cells;
         cellsFollow = temp.cellsFollow;
     end
@@ -244,43 +245,43 @@ for k=1:numTsteps
     if growingDomain==1
         % Domain Growth Happens at every timestep
         if ((experiment==4)||(experiment==5))
-            temp = domain_growth(cells(1,:),t_save(k),tstep,Linf,a,initialDomainLength,barrier(k),t_start);
-            barrier(k+1)=temp.barrier;
+            temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,barrier(timeCtr),t_start);
+            barrier(timeCtr+1)=temp.barrier;
         else
-            temp = domain_growth(cells(1,:),t_save(k),tstep,Linf,a,initialDomainLength,[],t_start);
+            temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,[],t_start);
         end
-        domainLengths(k) = temp.domainLength;
+        domainLengths(timeCtr) = temp.domainLength;
         cells(1,:) = temp.cells_next;
         cells(2,:) = cells(2,:);
     end
     
     %% move cells %%
     if cells_move==1
-        if k==1
+        if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
-                ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,numFilopodia);
+                ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),barrier(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
-                ca_save{k},xlat_save{k},ylat_save{k},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(k),barrier(k),experiment,t_save(k),in,numFilopodia);
+                ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),barrier(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;
         filopodia = temp.filopodia;
         theta = temp.theta;
         cells = temp.cells;
-        moved(k,:) = [temp.moved, zeros(1,length(moved(1,:))-length(temp.moved))];
+        moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))];
         
-        attach_save{k} = attach;
-        cellsFollow_save{k} = cellsFollow;
-        filopodia_save{k} = filopodia;
+        attach_save{timeCtr} = attach;
+        cellsFollow_save{timeCtr} = cellsFollow;
+        filopodia_save{timeCtr} = filopodia;
     end
-    cells_save{k}=cells;
+    cells_save{timeCtr}=cells;
     
     %% cells can convert from leaders <-> followers
-    if (convert_type~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(k)==in.changeTime))
-        out = convert_cells(cells,cellsFollow,attach_save,k,cells_save,filolength,moved,ca_save{k},xlat_save{k},ylat_save{k},...
+    if (convert_type~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(timeCtr)==in.changeTime))
+        out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             eatWidth,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
@@ -288,26 +289,26 @@ for k=1:numTsteps
         num_foll_save = out.num_foll_save;
         num_better_lead_save = out.num_better_lead_save;
         num_lead_save = out.num_lead_save;
-        cellsFollow_save{k} = cellsFollow;
+        cellsFollow_save{timeCtr} = cellsFollow;
     end
     
 
-    if (cells~=cells_save{k})
+    if (cells~=cells_save{timeCtr})
         size(cells)
         size(cells_save)
         disp('cells error')
         pause
     end
-    if (k>=followStart)
-        if (attach~=attach_save{k})
+    if (timeCtr>=followStart)
+        if (attach~=attach_save{timeCtr})
             disp('attach error')
             pause
         end
-        if (cellsFollow~=cellsFollow_save{k})
+        if (cellsFollow~=cellsFollow_save{timeCtr})
             disp('follow error')
             pause
         end
-        if (filopodia~=filopodia_save{k})
+        if (filopodia~=filopodia_save{timeCtr})
             disp('filopodia error')
             pause
         end

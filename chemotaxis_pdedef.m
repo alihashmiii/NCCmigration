@@ -42,7 +42,7 @@ end
 %     eatTerm = eatTerm + eatRate*u/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*((x - xcell(ctr)).^2*L^2 +(y - ycell(ctr)).^2));      
 % end
 % % this following vectorisation, using "Tony's trick" for indexing, is
-% faster
+% faster -- LJS
 bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*(...
     (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
 eatTerm = sum(bigEat,2);

@@ -3,7 +3,7 @@ function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, barrier, experiment, t_save, in, numFilopodia)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
-moved = zeros(1,length(cells(1,:)));
+moved = false(1,length(cells(1,:)));
 for i =1:length(cell_order)
     move = 0;
     cellidx = cell_order(i);  % look at the ith cell

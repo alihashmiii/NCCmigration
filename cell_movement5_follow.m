@@ -21,7 +21,7 @@ end
 if cellidx>size(filopodia,1)
     filopodia = [filopodia; NaN(1,size(filopodia,2),2)]; % extend list of filopodia if necessary -- LJS
 end
-filopodia(cellidx,1:length(theta),:) = [x_fil', y_fil'];
+filopodia(cellidx,1:length(theta),:) = [x_fil', y_fil']; % WHAT THE HELL IS GOING ON HERE? I NEED TO CHECK THIS...
 
 %% find the minimum distance from a line (the filopodia) to each of the points (each other cell) %%
 % by finding the closest point using x.y = |x||y|cos(theta) (see green
