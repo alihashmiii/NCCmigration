@@ -46,7 +46,7 @@ all_movie = 0; % makes a movie of the cells with filopodia on top of a contourpl
 frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
-tstep = 0.05;                   % time step in hours
+tstep = 5/2/60;                   % time step in hours
 numTsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h

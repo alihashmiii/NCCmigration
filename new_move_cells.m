@@ -12,7 +12,7 @@ for i =1:length(cell_order)
     %% Decide whether to try to move
     if cellsFollow(cellidx)~=1   
         %% if it's a leader
-            [filopodia(cellidx,:,:),E,move,theta(cellidx),~] = cell_movement5((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            [filopodia(cellidx,:,:),caDiff,move,theta(cellidx),~] = cell_movement5((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
                 eatWidth,filolength,numFilopodia(1),[]);        
     elseif attach(cellidx)~=0     
         %% if it's a chained follower that can reach the cell ahead
