@@ -157,35 +157,36 @@ boxplot(fliplr(squeeze(meanSpeed(:,:,2))'),'labels',fliplr(labels),'orientation'
 title('effects of parameter perturbation on effective follower speed')
 xlabel('speed of follower cells (\mum/hr, mean per simulation)')
 
-%% for exporting as pdf
-% set(gcf, 'PaperPositionMode', 'auto'); % set size to as seen on screen
-% print(gcf, '-r0','../../TransferOfStatus/ThesisProposal/figures/velocityCorrelation.eps', '-depsc2');
-% or ...
-set(gcf,'PaperUnits','centimeters');
-exportOptions = struct('Format','eps2',...
-    'Width','10.0',...
-    'Color','cmyk',...
-    'Resolution',300,...
-    'FontMode','fixed',...
-    'FontSize',8,...
-    'LineWidth',1);
 
-filename = 'results/tmp/effectsOnCellNumber3.eps';
-exportfig(figCellNumber,filename,exportOptions);
-system(['epstopdf ' filename]);
-
-filename = 'results/tmp/effectsOnLeaderDirectionality3.eps';
-exportfig(figLeaderDirectionality,filename,exportOptions);
-system(['epstopdf ' filename]);
-
-filename = 'results/tmp/effectsOnFollowerDirectionality3.eps';
-exportfig(figFollowerDirectionality,filename,exportOptions);
-system(['epstopdf ' filename]);
-
-filename = 'results/tmp/effectsOnLeaderSpeed3.eps';
-exportfig(figLeaderSpeed,filename,exportOptions);
-system(['epstopdf ' filename]);
-
-filename = 'results/tmp/effectsOnFollowerSpeed3.eps';
-exportfig(figFollowerSpeed,filename,exportOptions);
-system(['epstopdf ' filename]);
+ %% for exporting as pdf
+% % set(gcf, 'PaperPositionMode', 'auto'); % set size to as seen on screen
+% % print(gcf, '-r0','../../TransferOfStatus/ThesisProposal/figures/velocityCorrelation.eps', '-depsc2');
+% % or ...
+% set(gcf,'PaperUnits','centimeters');
+% exportOptions = struct('Format','eps2',...
+%     'Width','10.0',...
+%     'Color','cmyk',...
+%     'Resolution',300,...
+%     'FontMode','fixed',...
+%     'FontSize',8,...
+%     'LineWidth',1);
+% 
+% filename = 'results/tmp/effectsOnCellNumber3.eps';
+% exportfig(figCellNumber,filename,exportOptions);
+% system(['epstopdf ' filename]);
+% 
+% filename = 'results/tmp/effectsOnLeaderDirectionality3.eps';
+% exportfig(figLeaderDirectionality,filename,exportOptions);
+% system(['epstopdf ' filename]);
+% 
+% filename = 'results/tmp/effectsOnFollowerDirectionality3.eps';
+% exportfig(figFollowerDirectionality,filename,exportOptions);
+% system(['epstopdf ' filename]);
+% 
+% filename = 'results/tmp/effectsOnLeaderSpeed3.eps';
+% exportfig(figLeaderSpeed,filename,exportOptions);
+% system(['epstopdf ' filename]);
+% 
+% filename = 'results/tmp/effectsOnFollowerSpeed3.eps';
+% exportfig(figFollowerSpeed,filename,exportOptions);
+% system(['epstopdf ' filename]);

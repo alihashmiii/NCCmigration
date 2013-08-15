@@ -70,9 +70,11 @@ eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to 
 if isstruct(in)
     if ismember('leadSpeed',fields(in))
         leadSpeed = in.leadSpeed; % speed of the leader cells in mu/h
+        dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
     end
     if ismember('followSpeed',fields(in))
         followSpeed = in.followSpeed; % speed of the follower cells in mu/h
+        dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
     end
     if ismember('numFilopodia',fields(in))
         numFilopodia = in.numFilopodia; % the number of filopodia for lead cells and follower cells

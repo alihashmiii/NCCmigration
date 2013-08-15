@@ -20,7 +20,7 @@ eatRate = 1;                      % chemoattractant consumption rate, usually 0.
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 
-dateString = '2013_07_3*'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
+dateString = '2013_07_30'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
     
 collatedResults = load(['results/parameterSweeps/' dateString '-collatedResults']);
 saveInfo = collatedResults.saveInfo;
