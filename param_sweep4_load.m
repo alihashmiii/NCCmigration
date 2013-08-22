@@ -26,6 +26,9 @@ numCells = NaN(numPerturbations,numRepeats);
 saveInfo = cell(numPerturbations,1);
 meanDirectionality = NaN(numPerturbations,numRepeats,2);
 meanSpeed = NaN(numPerturbations,numRepeats,2);
+% to calculate the density profile of cells along the x-direction
+xBins = 0:2*cellRadius:685.4; % check the end length for time step run, or try loading this from the out-file somehow
+cellDistributions = NaN(numPerturbations,numRepeats,2,length(xBins));
 
 dateString = '2013_08_02'; % date of simulation that is to be loaded - needs to be adapted if ran on multiple days. Use wildcard (*) for time.
 dateString2 = '2013_08_0*'; % if the simulations were repeated on a different date
@@ -54,6 +57,10 @@ for repCtr = 1:numRepeats
         end
     end
     
+    % construct distribution of cells along x, for leaders and followers
+    cellDistributions(1,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==0),xBins)./numberOfCells; % leaders
+    cellDistributions(1,repCtr,2,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==1),xBins)./numberOfCells; % leaders
+
     % calculate directionality and speed, needs to be adapted if phenotype switching is enabled
     directionality = NaN(numberOfCells,2);
     effectiveSpeed = NaN(numberOfCells,2);
@@ -78,4 +85,4 @@ for repCtr = 1:numRepeats
     if repCtr == 1, saveInfo{1} = loadInfo.name; end
     
 end
-save(['results/parameterSweeps/' dateString '-reference100repeats'], 'numCells', 'saveInfo', 'meanDirectionality', 'meanSpeed')
+save(['results/parameterSweeps/' dateString '-reference100repeats'], 'numCells', 'saveInfo', 'meanDirectionality', 'meanSpeed','cellDistributions')

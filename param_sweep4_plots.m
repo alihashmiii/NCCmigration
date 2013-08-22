@@ -29,40 +29,52 @@ numRepeats = size(numCells,2); % number of runs per parameter combination, to ga
 numPerturbations = size(numCells,1); % how many parameter combinations have been run altogether, not incl. repeats
 meanDirectionality = collatedResults.meanDirectionality; % mean directionality for leaders and followers
 meanSpeed = collatedResults.meanSpeed; % mean speed for leaders and followers
+xBins = 0:2*cellRadius:685.4; % check the end length for time step run, or try loading this from the out-file somehow
+cellDistributions = squeeze(collatedResults.cellDistributions);
 
 %% analyse effects of parameter perturbation on cell number
-repeats = 1:1:numRepeats;
+repeats = 10:numRepeats;
+nResample = 1;
 
 figCellNumber = figure;
 
-plotMuSigmaErr(repeats,numCells,'number of cells at end of simulation')
+plotMuSigmaErr(repeats,numCells,'number of cells at end of simulation',nResample)
 
 %% analyse effects of parameter perturbation on leader directionality
 meanDirectionality = squeeze(meanDirectionality);
 
 figLeaderDirectionality = figure;
 
-plotMuSigmaErr(repeats,meanDirectionality(:,1),'leader directionality')
+plotMuSigmaErr(repeats,meanDirectionality(:,1),'leader directionality',nResample)
 
 %% analyse effects of parameter perturbation on follower directionality
 
 figFollowerDirectionality = figure;
 
-plotMuSigmaErr(repeats,meanDirectionality(:,2),'follower directionality')
+plotMuSigmaErr(repeats,meanDirectionality(:,2),'follower directionality',nResample)
 
 %% analyse effects of parameter perturbation on leader speed
 meanSpeed = squeeze(meanSpeed);
 
 figLeaderSpeed = figure;
 
-plotMuSigmaErr(repeats,meanSpeed(:,1),'effective leader speed')
+plotMuSigmaErr(repeats,meanSpeed(:,1),'effective leader speed',nResample)
 
 %% analyse effects of parameter perturbation on follower speed
 
 figFollowerSpeed = figure;
 
-plotMuSigmaErr(repeats,meanSpeed(:,2),'effective follower speed')
+plotMuSigmaErr(repeats,meanSpeed(:,2),'effective follower speed',nResample)
 
+%% migration profile along x
+
+figxProfile = figure;
+stairs(xBins,mean(squeeze(cellDistributions(:,1,:))),'k-')
+hold on
+stairs(xBins,mean(squeeze(cellDistributions(:,2,:))),'k--')
+legend('leaders','followers')
+xlabel('x/\mum')
+ylabel('P')
 %% for exporting as pdf
 % % set(gcf, 'PaperPositionMode', 'auto'); % set size to as seen on screen
 % % print(gcf, '-r0','../../TransferOfStatus/ThesisProposal/figures/velocityCorrelation.eps', '-depsc2');

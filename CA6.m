@@ -131,6 +131,7 @@ domainLengths = ones(1,numTsteps).*initialDomainLength;  % initialise domain len
 Linf = 870;                            % end domain length
 a = 0.0800;                            % "steepness" of the logistic domain growth -- LJS
 t_start = -16; %parameter used in domain growth
+%%
 param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
     chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
 save avi_mat/param param
