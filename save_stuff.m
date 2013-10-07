@@ -3,7 +3,7 @@
 if (experiment==1)||(experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,0,[],experiment)
+        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,0,experiment)
         sort(cells(1,:))
         
         if experiment==1
@@ -71,7 +71,7 @@ else
         '_numleadfil_',mat2str(numFilopodia(1)),'_div_',mat2str(divide_cells),'_exp_',mat2str(experiment)];
 end
 %% save the results %%
-if (experiment==0||experiment==3||experiment==4||experiment==5)||(((experiment==1)||(experiment==2))&&(in.it~=1))
+if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=1))
     out.t_save = t_save;
     out.xlat_save = xlat_save;
     out.ylat_save = ylat_save;
@@ -89,7 +89,6 @@ if (experiment==0||experiment==3||experiment==4||experiment==5)||(((experiment==
     out.domainHeight = domainHeight;
     out.filolength = filolength;
     out.attach_save = attach_save;
-    out.barrier = barrier;
     out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,make_chemoattractant';
     out.param_names2 = 'chi,domainHeight,zero_bc,insert,tstep,t_start,d,eatRate';
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];

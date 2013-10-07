@@ -24,9 +24,7 @@ t_start = param(13);
 eatRate = param(14);
 
 if (growingDomain==1)
-    out = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,[],t_start);
-    L = out.domainLength;
-    Ldiff = out.Ldiff;
+    [~, L, Ldiff] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
 else
     L = initialDomainLength;
     Ldiff =0;

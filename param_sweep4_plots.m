@@ -84,6 +84,7 @@ ylabel('P')
 % set(figFollowerDirectionality,'PaperUnits','centimeters');
 % set(figLeaderSpeed,'PaperUnits','centimeters');
 % set(figFollowerSpeed,'PaperUnits','centimeters');
+% set(figxProfile,'PaperUnits','centimeters');
 % 
 % exportOptions = struct('Format','eps2',...
 %     'Width','10.0',...
@@ -111,4 +112,8 @@ ylabel('P')
 % 
 % filename = 'results/tmp/statsFollowerSpeed4.eps';
 % exportfig(figFollowerSpeed,filename,exportOptions);
+% system(['epstopdf ' filename]);
+% 
+% filename = 'results/tmp/migrationProfile.eps';
+% exportfig(figxProfile,filename,exportOptions);
 % system(['epstopdf ' filename]);

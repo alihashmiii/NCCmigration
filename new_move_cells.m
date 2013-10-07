@@ -1,6 +1,6 @@
 function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
-                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, barrier, experiment, t_save, in, numFilopodia)
+                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -44,7 +44,7 @@ for i =1:length(cell_order)
     else
         %% if it's an unchained follower
         [foundCellidx,filopodia] = cell_movement5_follow((rand(1,numFilopodia(2))*2 - 1)*pi,cellidx,cells(1,:),cells(2,:),cellRadius,...
-            filolength,filopodia,barrier,experiment);
+            filolength,filopodia,experiment);
         if isempty(foundCellidx)~=1
             %% if another cell was found then find the head of that chain
             head = foundCellidx;
@@ -83,23 +83,12 @@ for i =1:length(cell_order)
         diff = [new_x-other_cells(1,:); new_y-other_cells(2,:)];
         if (length(cell_order)==1)||(min(vnorm(diff))>2*cellRadius)
             if (new_x>cellRadius)&&(new_x<domainLength-cellRadius)&&(new_y>cellRadius)&&(new_y<domainHeight-cellRadius)&&(new_x>min(xlat)+cellRadius)
-                % if we have inserted a barrier and the cell trys
-                % to move through it, stop them
-                if ((experiment==4)||(experiment==5))&&(t_save>in.barrier_time)
-                    previous_side = cells(1,cellidx) + (-1)^max((cells(1,cellidx)-barrier)/abs(cells(1,cellidx)-barrier),0)*cellRadius;
-                    new_side = new_x+ (-1)^max((new_x-barrier)/abs(new_x-barrier),0)*cellRadius;
-                    if (barrier-previous_side)*(barrier-new_side)>0
-                        cells(1,cellidx) = new_x;
-                        cells(2,cellidx) = new_y;
-                    end
-                else
-                    cells(1,cellidx) = new_x;
-                    cells(2,cellidx) = new_y;
-                    if (move==0)&&(cellsFollow(cellidx)==1)
-                        disp('follower moved anyway')
-                    elseif move==0
-                        disp('leader moved anyway')
-                    end
+                cells(1,cellidx) = new_x;
+                cells(2,cellidx) = new_y;
+                if (move==0)&&(cellsFollow(cellidx)==1)
+                    disp('follower moved anyway')
+                elseif move==0
+                    disp('leader moved anyway')
                 end
             end
         end

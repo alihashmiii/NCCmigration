@@ -40,10 +40,10 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 %% Outputs (videos and figures) %%
-movies = 0;
+movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/2/60;                   % time step in hours
@@ -130,7 +130,7 @@ domainLengths = ones(1,numTsteps).*initialDomainLength;  % initialise domain len
 % squares regression in make_domain_plot.m on data in lengths_data.m
 Linf = 870;                            % end domain length
 a = 0.0800;                            % "steepness" of the logistic domain growth -- LJS
-t_start = -16; %parameter used in domain growth
+t_start = -16; %parameter used in domain_growth
 %%
 param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
     chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
@@ -159,7 +159,6 @@ attach = zeros(end_num_cells,1,'uint16'); % indices of which cell each cell is a
 theta = NaN(end_num_cells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);
 xlat_new=[];
-barrier = zeros(numTsteps,1); % x-position of barrier for experiments 4&5, may be obsolete -- LJS
 moved = false(numTsteps,end_num_cells);
 num_better_foll_save = []; %% these may be obsolete -- LJS
 num_foll_save = 0; %% these may be obsolete -- LJS
@@ -173,8 +172,8 @@ for timeCtr=1:numTsteps
         disp('followers start here')
     end
     
-    %% Cells and barrier insertions for experiments
-    insert_cells_and_barrier
+    %% Cells insertions for experiments
+    transplant_cells
     
     %% If we are inserting new cells, do so here %%
     if mod(timeCtr,insert_step)==0
@@ -219,13 +218,8 @@ for timeCtr=1:numTsteps
         %% Fixed chemoattractant %%
         if growingDomain==1
             % Domain Growth Happens at every timestep
-            if ((experiment==4)||(experiment==5))
-                temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,barrier(timeCtr),t_start);
-                barrier(timeCtr+1)=temp.barrier;
-            else
-                temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,[],t_start);
-            end
-            domainLengths(timeCtr) = temp.domainLength;
+            % and starts 6 hours before migration -- LJS
+            [~, domainLengths(timeCtr), ~] = domain_growth(cells(1,:),6 + t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
         end
         
         xlat_save{timeCtr} = 0:domainLengths(timeCtr)/100:domainLengths(timeCtr);
@@ -247,15 +241,8 @@ for timeCtr=1:numTsteps
     %% domain growth %%
     if growingDomain==1
         % Domain Growth Happens at every timestep
-        if ((experiment==4)||(experiment==5))
-            temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,barrier(timeCtr),t_start);
-            barrier(timeCtr+1)=temp.barrier;
-        else
-            temp = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,[],t_start);
-        end
-        domainLengths(timeCtr) = temp.domainLength;
-        cells(1,:) = temp.cells_next;
-        cells(2,:) = cells(2,:);
+        % and starts 6 hours before migration -- LJS
+        [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),6 + t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
     end
     
     %% move cells %%
@@ -263,11 +250,11 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),barrier(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),barrier(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

@@ -1,6 +1,6 @@
 %% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,numFilopodia,attach,cellRadius,edge,barrier,experiment)
+function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,numFilopodia,attach,cellRadius,edge,experiment)
 
 if experiment~=6
     if isempty(ca)==1
@@ -54,11 +54,6 @@ for cellidx = 1:length(cells(1,:))
     end
 end
 
-if (experiment==4)||(experiment==5)
-    hold on
-    y = 0:120;
-    plot(barrier.*ones(length(y)),y)
-end
 hold off
 axis equal
 colorbar, caxis([0 max(max(ca))])

@@ -6,7 +6,7 @@
 
 % theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
-function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cell_radius,filolength,filopodia,barrier,experiment)
+function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cell_radius,filolength,filopodia,experiment)
 %% find the coordinates of our cell
 x_cell = x_cells(cellidx);
 y_cell = y_cells(cellidx);
@@ -15,9 +15,6 @@ y_cell = y_cells(cellidx);
 x_fil = x_cell + cos(theta)*filolength;   % x coordinate of the filopodia
 y_fil = y_cell + sin(theta)*filolength;     % y coordinate of the filopodia
 
-if (experiment==5)&&((x_cell-barrier)*(x_fil-barrier)<0)
-    x_fil = barrier;
-end
 if cellidx>size(filopodia,1)
     filopodia = [filopodia; NaN(1,size(filopodia,2),2)]; % extend list of filopodia if necessary -- LJS
 end
