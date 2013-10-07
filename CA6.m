@@ -42,8 +42,8 @@ insert_cells = 1;           % new cells are inserted at x=0
 %% Outputs (videos and figures) %%
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/2/60;                   % time step in hours
@@ -219,7 +219,7 @@ for timeCtr=1:numTsteps
         if growingDomain==1
             % Domain Growth Happens at every timestep
             % and starts 6 hours before migration -- LJS
-            [~, domainLengths(timeCtr), ~] = domain_growth(cells(1,:),6 + t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
+            [~, domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
         end
         
         xlat_save{timeCtr} = 0:domainLengths(timeCtr)/100:domainLengths(timeCtr);
@@ -242,7 +242,7 @@ for timeCtr=1:numTsteps
     if growingDomain==1
         % Domain Growth Happens at every timestep
         % and starts 6 hours before migration -- LJS
-        [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),6 + t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
+        [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),tstep,Linf,a,initialDomainLength,t_start);
     end
     
     %% move cells %%
@@ -334,11 +334,13 @@ if movies==1
     
     %%% make cells+ca movie (allmovie.avi)%%%
     if all_movie==1
-        make_all_movie
+        make_all_movie_hidden
     end
     
     close all
-    open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+    if frames==1
+        open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+    end
 end
 
 delete('avi_mat/*.mat');
