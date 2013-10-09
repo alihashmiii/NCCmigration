@@ -68,7 +68,7 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 else
     saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',mat2str(followerFraction),'_convert_',mat2str(convert_type),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_div_',mat2str(divide_cells),'_exp_',mat2str(experiment)];
+        '_numleadfil_',mat2str(numFilopodia(1))];
 end
 %% save the results %%
 if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=1))

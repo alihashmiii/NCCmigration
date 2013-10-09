@@ -3,9 +3,9 @@ figure
 
 edge = 1;
 if experiment==0
-    frames = [1, find(t_save<=6,1,'last'), find(t_save<=18,1,'last')] 
+    frames = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
 else
-    frames = [find(t_save<=6,1,'last'), find(t_save<=18,1,'last')]
+    frames = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
 end
 lengths = cellfun(@length,cells_save);
 lengths_change = find(lengths(2:end)-lengths(1:end-1)>2);

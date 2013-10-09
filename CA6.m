@@ -29,7 +29,7 @@ growingDomain = 1;     % the domain grows
 followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-numFilopodia = [6,2];  % the number of filopodia for lead cells and follower cells
+numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -43,7 +43,7 @@ insert_cells = 1;           % new cells are inserted at x=0
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/2/60;                   % time step in hours
@@ -61,9 +61,9 @@ dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a tim
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 1;                      % chemoattractant consumption rate, usually 0.045 -- need to check this -- LJS
+eatRate = 80;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% adjust parameters if they have been provided in input %%
@@ -148,7 +148,7 @@ cellsFollow = false(end_num_cells,1); % cells are leaders by default. For fixed 
 % be inserted due to jamming -- LJS
 
 %% initialise vectors and time %%
-t_save = 0:tstep:tstep*numTsteps;
+t_save = 6+(0:tstep:tstep*numTsteps);
 xlat_save = cell(1,numTsteps); % spatial lattices (lat)
 ylat_save = cell(1,numTsteps);
 ca_save = cell(1,numTsteps); % chemoattractant (ca)
@@ -188,7 +188,7 @@ for timeCtr=1:numTsteps
     if ca_solve==1
         cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
-        if t_save(timeCtr)==0
+        if timeCtr==1
             ind = int64(0); % starts integration at t=0
             iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
             rwk = zeros(1880000,1); % it's unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
@@ -272,7 +272,7 @@ for timeCtr=1:numTsteps
     %% cells can convert from leaders <-> followers
     if (convert_type~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(timeCtr)==in.changeTime))
         out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            eatWidth,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save);
+            eatWidth,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
         num_better_foll_save = out.num_better_foll_save;
@@ -325,6 +325,7 @@ if movies==1
     if frames==1
         make_frames
         disp('made frames')
+%         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
     end
     
     %%% make camovie.avi %%%
@@ -337,10 +338,9 @@ if movies==1
         make_all_movie_hidden
     end
     
-    close all
-    if frames==1
-        open(['avi_mat/frames/frames3',saveInfo,'.fig'])
-    end
+%     if frames==1
+%         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+%     end
 end
 
 delete('avi_mat/*.mat');
