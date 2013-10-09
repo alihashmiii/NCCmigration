@@ -26,7 +26,7 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-followerFraction = 0.7;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
@@ -63,7 +63,7 @@ insert = 0;                     % signal that the chemoattractant has been inser
 %% ca_solve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 80;                      % chemoattractant consumption rate
+eatRate = 1000;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% adjust parameters if they have been provided in input %%
@@ -103,8 +103,8 @@ if convert_type == 1
     num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     num_directions=[];
 elseif convert_type == 2
-    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2)
-    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2)
+    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
+    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
 else
     num_steps=[];
     num_directions=[];

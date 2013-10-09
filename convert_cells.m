@@ -1,23 +1,5 @@
-function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save,xlat,ylat,d,filopodia,convert_type,param,...
-    num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save)
-
-%% using quorum sensing
-% R = 7.5;
-% for i=1:length(cells(1,:))
-%     % find out how many cells there are within filopodia reach
-%     num_cells = sum(sqrt((cells(1,i)-cells(1,(1:end)~=i)).^2 + (cells(2,i)-cells(2,(1:end)~=i)).^2)<=filolength);
-%
-%     % if there are many, and it was a leader, become a follower
-%     if (cellsFollow(i)==1) && (num_cells<3)
-%         disp('foll->lead')
-%         cellsFollow(i)=0;
-%         num_cells
-% %     elseif (cellsFollow(i)==0) && (num_cells>15)
-% %         disp('lead->foll')
-% %         cellsFollow(i)=1;
-% %         num_cells
-%     end
-% end
+function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save,xlat,ylat,eatWidth,filopodia,convert_type,param,...
+    num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
 
 if convert_type==1
     %% using amount of time not found a gradient / another cell
@@ -49,37 +31,41 @@ if convert_type==1
     
 elseif convert_type==2
     %% Using the presence of a c'tant gradient (with integral measures of c'tant)
-
-    num_steps = param(15); % number of directions to sample in (convert type 2)
-    m = param(16);
-    r = rand()*2*pi;
-    theta = (2*pi/num_steps:2*pi/num_steps:2*pi) + r;
     for cellCtr=1:length(cells(1,:))
-        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,d,filolength,num_steps,[]);
-
-        if num_better>=(m*num_steps)
-%             if (rand()<0.7)
-                if cellsFollow(cellCtr)==1
-                    disp('follow -> lead')
-                    cellsFollow(cellCtr)=0;
-                end
-%             else
-%                 cellsFollow(i) = 1;
-%             end
-        elseif num_better<(m*num_steps)
+        if cellsFollow(cellCtr)==1 % if it's a follower
+            num_steps = numFilopodia(2); % number of directions to sample in (convert type 2)
+            num_directions = 1/num_steps; % fraction of directions that need to be better for phenotype switch -- LJS
+        elseif cellsFollow(cellCtr)==0 % if it's a leader
+            num_steps = numFilopodia(1); % number of directions to sample in (convert type 2)
+            num_directions = 1/num_steps; % fraction of directions that need to be better for phenotype switch -- LJS
+        end
+        r = rand()*2*pi;
+        theta = (2*pi/num_steps:2*pi/num_steps:2*pi) + r; % this seems to sample evenly distributed with only a random offset... is that what we want? -- LJS
+        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,num_steps,[]);
+        
+        if num_better>=(num_directions*num_steps)
+            %             if (rand()<0.7)
+            if cellsFollow(cellCtr)==1
+                disp('follow -> lead')
+                cellsFollow(cellCtr)=0;
+            end
+            %             else
+            %                 cellsFollow(i) = 1;
+            %             end
+        elseif num_better<(num_directions*num_steps)
             if cellsFollow(cellCtr)==0
                 disp('lead -> follow')
                 cellsFollow(cellCtr)=1;
             end
-        if cellsFollow(cellCtr)==1
-            num_better_foll_save = [num_better_foll_save, num_better/num_steps];
-            num_foll_save = num_foll_save +1;
-        else
-            num_better_lead_save = [num_better_lead_save, num_better/num_steps];
-            num_lead_save = num_lead_save +1;
-        end
-%         elseif rand()<0.5
-%             cellsFollow(i) = 1-cellsFollow(i);
+            if cellsFollow(cellCtr)==1
+                num_better_foll_save = [num_better_foll_save, num_better/num_steps];
+                num_foll_save = num_foll_save +1;
+            else
+                num_better_lead_save = [num_better_lead_save, num_better/num_steps];
+                num_lead_save = num_lead_save +1;
+            end
+            %         elseif rand()<0.5
+            %             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
 elseif convert_type==3 %% Conversion type 3 was because Ruth kept asking if we couldn't just set some concentration of local chemoattractant at which cells would convert between the types. It doesn't really work, because the overall levels are being diluted as the domain expands, so you can't set just one threshold. (LJS: but what if hte consumption was high enough so that dilution wasn't much of an issue?
@@ -89,8 +75,8 @@ elseif convert_type==3 %% Conversion type 3 was because Ruth kept asking if we c
     for cellCtr=1:length(cells(1,:))
         temp = [cells(1,cellCtr) + dx*cos(temp_thet); cells(2,cellCtr) + dx*sin(temp_thet)];
         temp = [cells(:,cellCtr) temp];
-    
-%         chemo = find_ca(temp,xlat_save,ylat_save,ca_save);
+        
+        %         chemo = find_ca(temp,xlat_save,ylat_save,ca_save);
         chemo = find_ca(temp,xlat,ylat,ca_save); % ?? -- LJS
         if chemo(1)==0
             grad = sign(chemo(2:end)-chemo(1)).*max(abs(chemo(2:end)-chemo(1)))/dx;
@@ -123,11 +109,11 @@ elseif convert_type==3 %% Conversion type 3 was because Ruth kept asking if we c
             %                     cellsFollow(i)=1;
             %                 end
         end
-                    if grad>0.8
-                        cellsFollow(cellCtr) = 0;
-                    elseif grad<0.05
-                        cellsFollow(cellCtr) = 1;
-                    end
+        if grad>0.8
+            cellsFollow(cellCtr) = 0;
+        elseif grad<0.05
+            cellsFollow(cellCtr) = 1;
+        end
         %             pause
     end
 end
