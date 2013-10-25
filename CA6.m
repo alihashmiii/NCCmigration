@@ -26,7 +26,7 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-followerFraction = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 6/8;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
@@ -43,7 +43,7 @@ insert_cells = 1;           % new cells are inserted at x=0
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/2/60;                   % time step in hours
@@ -63,7 +63,7 @@ insert = 0;                     % signal that the chemoattractant has been inser
 %% ca_solve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 1000;                      % chemoattractant consumption rate
+eatRate = 100;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% adjust parameters if they have been provided in input %%
@@ -96,6 +96,11 @@ if isstruct(in)
     end
     if ismember('followerFraction',fields(in))
         followerFraction = in.followerFraction; % proportion of cells that are followers (0<=follow_per<=1)
+    end
+    if ismember('tstep',fields(in))
+        tstep = in.tstep; % time step in hours
+        numTsteps = floor(time/tstep)+1;   % number of time steps
+        dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
     end
 end
 %% convert parameters
@@ -134,7 +139,7 @@ t_start = -16; %parameter used in domain_growth
 %%
 param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
     chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
-save avi_mat/param param
+save avi_mat/param param % is this line still needed?
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%

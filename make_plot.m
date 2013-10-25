@@ -56,7 +56,7 @@ end
 
 hold off
 axis equal
-colorbar, caxis([0 max(max(ca))])
+colorbar, set(gca,'clim',[0 1]) %caxis([0 max(max(ca))])
 
 ylim([0,120])
 set(gca,'YTick',[0,120])
