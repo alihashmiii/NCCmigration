@@ -4,11 +4,11 @@
 % cells(2,:,1), resp.
 % cells is given m+1 timesteps to come
 
-function out = initiate_cells(n,cellRadius,followerFraction,initialDomainLength,domainHeight,initx_frac,inity_frac,cells_in)
+function out = initiate_cells(n,cellRadius,followerFraction,initialDomainLength,domainHeight,initx_frac,inity_frac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
 cells = [cells_in NaN*ones(2,n)];
 cellsFollow = false(length(cells(1,:,1)),1);
-[i,j] = size(cells_in);
+[~,j] = size(cells_in);
 
 %% If there are follower cells, initialise them here %%%
 if followerFraction~=0
@@ -22,7 +22,7 @@ if followerFraction~=0
         end
         celly = (rand().*inity_frac+(0.5-inity_frac/2)).*domainHeight;
         %% Check that there is no overlap with existing cells %%%
-        if j>0
+        if (j>0)%&&(volumeExclusion==1)
             %%% (x_cells,y_cells) are the pre-existing cell coordinates %%%
             x_cells = cells(1,1:j,1);
             y_cells = cells(2,1:j,1);
@@ -31,7 +31,7 @@ if followerFraction~=0
                 cells(:,j+1,1) = [cellx;celly];
                 j = j+1;
             end
-        else
+        elseif (j==0)%||(volumeExclusion==0) % if it's the first cell or if we don't have volume exclusion
             cells(:,j+1,1) = [cellx;celly];
             j = j+1;
         end
@@ -53,7 +53,7 @@ while isnan(cells(1,end,1))&&(it<maxit)
     celly = (rand().*inity_frac+(0.5-inity_frac/2))*domainHeight;
 
     %% Check that there is no overlap with existing cells %%%
-    if j>0
+    if (j>0)%&&(volumeExclusion==1)
         %%% (x_cells,y_cells) are the pre-existing cell coordinates %%%
         x_cells = cells(1,1:j,1);
         y_cells = cells(2,1:j,1);
@@ -65,7 +65,7 @@ while isnan(cells(1,end,1))&&(it<maxit)
         else
             it = it+1;
         end
-    else
+    elseif (j==0)%||(volumeExclusion==0) % if it's the first cell or if we don't have volume exclusion
         cells(:,j+1,1) = [cellx;celly];
         j = j+1;
     end

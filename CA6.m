@@ -38,6 +38,7 @@ zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(
 ca_solve = 1;           % solve for the chemoattractant concentration
 cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
+volumeExclusion = 0;    % 1 = cells can't overlap, 0 = they can -- LJS
 
 %% Outputs (videos and figures) %%
 movies = 1;
@@ -143,7 +144,7 @@ save avi_mat/param param % is this line still needed?
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%
-temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initx_frac,inity_frac,[]);
+temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initx_frac,inity_frac,[],1);
 cells = temp.cells;
 end_num_cells = (n + floor(numTsteps/insert_step)*num_cells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
 cellsFollow = false(end_num_cells,1); % cells are leaders by default. For fixed fractions of followers, all
@@ -184,7 +185,7 @@ for timeCtr=1:numTsteps
     if mod(timeCtr,insert_step)==0
         fprintf(['t = ' mat2str(t_save(timeCtr+1)) '\r'] )
         if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(timeCtr)<in.ablate_time)
-            temp = initiate_cells(num_cells,cellRadius,0,initialDomainLength,domainHeight,0,inity_frac,cells);
+            temp = initiate_cells(num_cells,cellRadius,0,initialDomainLength,domainHeight,0,inity_frac,cells,volumeExclusion);
             cells = temp.cells;
         end
     end
@@ -255,11 +256,11 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

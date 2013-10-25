@@ -1,6 +1,6 @@
 function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
-                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia)
+                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia, volumeExclusion)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -71,7 +71,7 @@ for i =1:length(cell_order)
     end
     if (move==1)
         moved(cellidx)=1;
-        if (cellsFollow(cellidx)==1)&&(move==1) %if it's a follower
+        if (cellsFollow(cellidx)==1) %if it's a follower
                 new_x = cells(1,cellidx) + cos(theta(cellidx))*dist(2);
                 new_y = cells(2,cellidx) + sin(theta(cellidx))*dist(2);
         else
@@ -79,23 +79,26 @@ for i =1:length(cell_order)
             new_y = cells(2,cellidx) + sin(theta(cellidx))*dist(1);
         end
         
-        %% if there is no cell or edge in the way, then move
-        diff = [new_x-other_cells(1,:); new_y-other_cells(2,:)];
-        if (length(cell_order)==1)||(min(vnorm(diff))>2*cellRadius)
-            if (new_x>cellRadius)&&(new_x<domainLength-cellRadius)&&(new_y>cellRadius)&&(new_y<domainHeight-cellRadius)&&(new_x>min(xlat)+cellRadius)
+        if volumeExclusion==1 %% if there is no cell or edge in the way, then move
+            diff = [new_x-other_cells(1,:); new_y-other_cells(2,:)];
+            if (length(cell_order)==1)||(min(vnorm(diff))>2*cellRadius)
+                if (new_x>cellRadius)&&(new_x<domainLength-cellRadius)&&(new_y>cellRadius)&&(new_y<domainHeight-cellRadius)&&(new_x>min(xlat)+cellRadius) % this last condition may be important in tissue transplantation experiments?
+                    cells(1,cellidx) = new_x;
+                    cells(2,cellidx) = new_y;
+                end
+            end
+        elseif volumeExclusion==0 % move regardless of other cell's position
+            if (new_x>cellRadius)&&(new_x<domainLength-cellRadius)&&(new_y>cellRadius)&&(new_y<domainHeight-cellRadius)&&(new_x>min(xlat)+cellRadius) % this last condition may be important in tissue transplantation experiments?
                 cells(1,cellidx) = new_x;
                 cells(2,cellidx) = new_y;
-                if (move==0)&&(cellsFollow(cellidx)==1)
-                    disp('follower moved anyway')
-                elseif move==0
-                    disp('leader moved anyway')
-                end
             end
         end
     end
-    if min(sqrt((cells(1,cellidx)-cells(1,(1:end)~=cellidx)).^2 + (cells(2,cellidx)-cells(2,(1:end)~=cellidx)).^2))<=(2*cellRadius)
-        disp('error - cells moving through each other!')
-        pause
+    if volumeExclusion==1
+        if min(sqrt((cells(1,cellidx)-cells(1,(1:end)~=cellidx)).^2 + (cells(2,cellidx)-cells(2,(1:end)~=cellidx)).^2))<=(2*cellRadius)
+            disp('error - cells moving through each other!')
+            pause
+        end
     end
 end
 
