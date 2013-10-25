@@ -26,7 +26,7 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-followerFraction = 6/8;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 0;        % proportion of cells that are followers (0<=follow_per<=1)
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
@@ -38,13 +38,15 @@ zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(
 ca_solve = 1;           % solve for the chemoattractant concentration
 cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
-volumeExclusion = 0;    % 1 = cells can't overlap, 0 = they can -- LJS
+
+volumeExclusion = 1;    % 1 = cells can't overlap (default), 0 = they can -- LJS
+undirectedStandStill = 1; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/2/60;                   % time step in hours
@@ -64,7 +66,7 @@ insert = 0;                     % signal that the chemoattractant has been inser
 %% ca_solve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 100;                      % chemoattractant consumption rate
+eatRate = 50;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% adjust parameters if they have been provided in input %%
@@ -256,11 +258,11 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, undirectedStandStill);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, undirectedStandStill);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

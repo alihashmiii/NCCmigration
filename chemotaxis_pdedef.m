@@ -16,7 +16,7 @@ diffus = param(3);
 eatWidth = param(4);
 growingDomain = param(5);
 initialDomainLength = param(6);
-make_chemoattractant = param(7);
+makeChemoattractant = param(7);
 chi = param(8);
 domainHeight = param(9);
 tstep = param(12);
@@ -30,7 +30,7 @@ else
     Ldiff =0;
 end
 xcell(xcell>0) = xcell(xcell>0)/L; % rescale the cells x-coordinates to stationary domain of unit length -- LJS
-if make_chemoattractant~=1
+if makeChemoattractant~=1
     chi=0;
 end
 % % the following equation should describe the chemoattractant evolution on

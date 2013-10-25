@@ -89,7 +89,7 @@ if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=
     out.domainHeight = domainHeight;
     out.filolength = filolength;
     out.attach_save = attach_save;
-    out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,make_chemoattractant';
+    out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,makeChemoattractant';
     out.param_names2 = 'chi,domainHeight,zero_bc,insert,tstep,t_start,d,eatRate';
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
     out.moved = moved;
