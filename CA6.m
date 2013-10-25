@@ -26,7 +26,9 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-followerFraction = 0;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
+% this is only an estimated fraction. currently 1/8 leaders mean about 20
+% cells, of a total of about 80-90
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
@@ -45,7 +47,7 @@ undirectedStandStill = 1; % 1 = cells don't move if they don't know where to go 
 %% Outputs (videos and figures) %%
 movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
@@ -66,7 +68,7 @@ insert = 0;                     % signal that the chemoattractant has been inser
 %% ca_solve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 50;                      % chemoattractant consumption rate
+eatRate = 300;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% adjust parameters if they have been provided in input %%

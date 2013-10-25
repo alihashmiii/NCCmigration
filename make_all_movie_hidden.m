@@ -27,12 +27,7 @@ for timeCtr=1:skip:numTsteps
     set(gca,'position',[T_t(1)+0.05 T_t(2) 1-T_t(1)-T_t(3)-0.17 1-T_t(2)-T_t(4)]);
     
     %% Insert title here
-    if experiment>0
-        title(['Cell invasion simulating experiment ' num2str(experiment) ' at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  num2str(size(cells_save{timeCtr},2)) ' cells'])
-    elseif followerFraction==0
-        title(['Cell invasion without followers at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  num2str(size(cells_save{timeCtr},2)) ' cells'])
-    else
-        title(['Cell invasion with followers at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  num2str(size(cells_save{timeCtr},2)) ' cells'])
+    title(['Cell migration at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  num2str(size(cells_save{timeCtr},2)) ' cells and ' num2str(min([size(cells_save{k},2) nnz(cellsFollow_save{k}==0)])) ' leaders.'])
     end
 %     axis image
     print(plotHandle,'-dpng',[filePath,int2str(frameCtr),'.png'])

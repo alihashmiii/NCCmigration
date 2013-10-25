@@ -18,7 +18,7 @@ for j=1:length(frames)
     if growingDomain==0
         xlim([0,300])
     end
-    title(['Cell invasion at time t = ',mat2str(t_save(k)),' hours with ' num2str(size(cells_save{k},2)) ' cells.'])
+    title(['Cell migration at time t = ',mat2str(t_save(k)),' hours with ' num2str(size(cells_save{k},2)) ' cells and ' num2str(min([size(cells_save{k},2) nnz(cellsFollow_save{k}==0)])) ' leaders.'])
     xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 
