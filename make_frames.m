@@ -1,7 +1,7 @@
 % close all
 figure
 
-edge = 1;
+showColorbar = 1;
 if experiment==0
     frames = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
 else
@@ -14,7 +14,7 @@ lengths(lengths_change+1);
 for j=1:length(frames)
     k = frames(j);
     subplot(length(frames),1,j)    
-    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,edge,experiment)
+    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,showColorbar,0)
     if growingDomain==0
         xlim([0,300])
     end

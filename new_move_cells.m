@@ -1,6 +1,6 @@
 function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
-                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia, volumeExclusion, undirectedStandStill)
+                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia, volumeExclusion, standStill)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -66,10 +66,10 @@ for i =1:length(cell_order)
     end
     
     %% Try to move
-    if (undirectedStandStill==0)&&(move==0) % if undirectedStandStill = 0, cells move in a random direction
+    if (standStill==0)&&(move==0) % if standStill = 0, cells move in a random direction
         theta(cellidx) = rand()*2*pi; % pick a random direction for movement
     end
-    if (move==1)||((undirectedStandStill==0)&&(move==0))
+    if (move==1)||((standStill==0)&&(move==0))
         if move==1, moved(cellidx)=1; end
         if (cellsFollow(cellidx)==1) %if it's a follower
                 new_x = cells(1,cellidx) + cos(theta(cellidx))*dist(2);

@@ -18,7 +18,7 @@ frameCtr = 1;
 minx = min([min(xlat_save{end}) 0]);
 for timeCtr=1:skip:numTsteps
     disp(['step ',mat2str(timeCtr),' of ',mat2str(numTsteps)])
-    make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,0,experiment);
+    make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,1,0);
     
 %     xlim([minx,1100]) %this can cause unpleasant jittering in movies
 %     ylim([-50,120+50])

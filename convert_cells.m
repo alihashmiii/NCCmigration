@@ -1,16 +1,10 @@
-function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save,xlat,ylat,eatWidth,filopodia,convert_type,param,...
+function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save,xlat,ylat,eatWidth,filopodia,conversionType,param,...
     num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
 
-if convert_type==1
+if conversionType==1
     %% using amount of time not found a gradient / another cell
     num_steps = param(15); % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
-    [size_attach_save,~] = cellfun(@size,attach_save(1:timeCtr)); % don't consider timesteps that haven't happened yet
-    change = find(size_attach_save~=size_attach_save(1),1,'first');
-    if isempty(change)
-        temp_attach_save = cell2mat(attach_save);
-    else
-        temp_attach_save = cell2mat(attach_save(change:end)); % if an experiment changed the size of attach_save, only consider after that
-    end
+
     for cellCtr=1:length(cells(1,:))
         [~,num_cells_k] = cellfun(@size,cells_save);
         if (timeCtr>num_steps)&&(num_cells_k(timeCtr-num_steps)>=cellCtr)
@@ -29,7 +23,7 @@ if convert_type==1
     % out.cellsFollow = cellsFollow;
     % out.moved = moved;
     
-elseif convert_type==2
+elseif conversionType==2
     %% Using the presence of a c'tant gradient (with integral measures of c'tant)
     for cellCtr=1:length(cells(1,:))
         if cellsFollow(cellCtr)==1 % if it's a follower
@@ -68,7 +62,7 @@ elseif convert_type==2
             %             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
-elseif convert_type==3 %% Conversion type 3 was because Ruth kept asking if we couldn't just set some concentration of local chemoattractant at which cells would convert between the types. It doesn't really work, because the overall levels are being diluted as the domain expands, so you can't set just one threshold. (LJS: but what if hte consumption was high enough so that dilution wasn't much of an issue?
+elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we couldn't just set some concentration of local chemoattractant at which cells would convert between the types. It doesn't really work, because the overall levels are being diluted as the domain expands, so you can't set just one threshold. (LJS: but what if hte consumption was high enough so that dilution wasn't much of an issue?
     %% using maximum chemoattractant gradient (with point measures of c'tant)
     dx = 10;
     temp_thet = 0:0.1*pi:2*pi;

@@ -3,7 +3,7 @@
 if (experiment==1)||(experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,0,experiment)
+        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,0,0)
         sort(cells(1,:))
         
         if experiment==1
@@ -66,13 +66,22 @@ end
 %%% saveInfo included in the naming of files %%%
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
-else
-    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',mat2str(followerFraction),'_convert_',mat2str(convert_type),...
+elseif ~exist('saveInfo','var')
+    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
         '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate)];
 end
 %% save the results %%
 if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=1))
+    % convert floats to single precision for saving, to reduces disk space
+    % used
     out.t_save = t_save;
+    for timeCtr=1:numTsteps
+        xlat_save{timeCtr} = single(xlat_save{timeCtr});
+        ylat_save{timeCtr} = single(ylat_save{timeCtr});
+        ca_save{timeCtr} = single(ca_save{timeCtr});
+        cells_save{timeCtr} = single(cells_save{timeCtr});
+        filopodia_save{timeCtr} = single(filopodia_save{timeCtr});
+    end
     out.xlat_save = xlat_save;
     out.ylat_save = ylat_save;
     out.ca_save = ca_save;
@@ -104,12 +113,9 @@ if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=
     out.divide_cells = divide_cells;
     out.experiment = experiment;
     
-    if isunix==1
-        save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
-        fprintf(['saved results to /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
-    else
-        save(['avi_mat/mat/',saveInfo,'.mat'],'out')
-        fprintf(['saved results to avi_mat/mat/',saveInfo,'.mat \n'])
-    end
+    save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
+    delete(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
+    fprintf(['saved results to /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
+
     
 end

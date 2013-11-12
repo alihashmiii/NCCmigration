@@ -30,8 +30,8 @@ followerFraction = 7/8;        % proportion of cells that are followers (0<=foll
 % this is only an estimated fraction. currently 1/8 leaders mean about 20
 % cells, of a total of about 80-90
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-convert_type = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-numFilopodia = [3,1];  % the number of filopodia for lead cells and follower cells
+conversionType = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -42,16 +42,16 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap (default), 0 = they can -- LJS
-undirectedStandStill = 1; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
+standStill = 1; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-movies = 1;
+movies = 0;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
-tstep = 5/2/60;                   % time step in hours
+tstep = 5/4/60;                   % time step in hours
 numTsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
@@ -107,12 +107,21 @@ if isstruct(in)
         numTsteps = floor(time/tstep)+1;   % number of time steps
         dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
     end
+    if ismember('volumeExclusion',fields(in))
+        volumeExclusion = in.volumeExclusion;
+    end
+    if ismember('standStill',fields(in))
+        standStill = in.standStill;
+    end
+    if ismember('conversionType',fields(in))
+        conversionType = in.conversionType;
+    end
 end
 %% convert parameters
-if convert_type == 1
+if conversionType == 1
     num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     num_directions=[];
-elseif convert_type == 2
+elseif conversionType == 2
     num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
     num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
 else
@@ -144,7 +153,9 @@ t_start = -16; %parameter used in domain_growth
 %%
 param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
     chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
-save avi_mat/param param % is this line still needed?
+% save avi_mat/param param % global variables are faster than saving & loading to disk
+
+presave_stuff % create results file with parameters to signal that this simulation is being worked on
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%
@@ -187,7 +198,7 @@ for timeCtr=1:numTsteps
     
     %% If we are inserting new cells, do so here %%
     if mod(timeCtr,insert_step)==0
-        fprintf(['t = ' mat2str(t_save(timeCtr+1)) '\r'] )
+        fprintf(['t = ' num2str(t_save(timeCtr+1)) '\r'] )
         if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(timeCtr)<in.ablate_time)
             temp = initiate_cells(num_cells,cellRadius,0,initialDomainLength,domainHeight,0,inity_frac,cells,volumeExclusion);
             cells = temp.cells;
@@ -260,11 +271,11 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, undirectedStandStill);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, standStill);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, undirectedStandStill);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, standStill);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;
@@ -280,9 +291,9 @@ for timeCtr=1:numTsteps
     cells_save{timeCtr}=cells;
     
     %% cells can convert from leaders <-> followers
-    if (convert_type~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(timeCtr)==in.changeTime))
+    if (conversionType~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(timeCtr)==in.changeTime))
         out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            eatWidth,filopodia,convert_type,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
+            eatWidth,filopodia,conversionType,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
         num_better_foll_save = out.num_better_foll_save;
