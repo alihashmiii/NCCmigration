@@ -1,19 +1,19 @@
 % close all
-figure
+framesFig = figure;
 
 showColorbar = 1;
 if experiment==0
-    frames = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
+    frames2show = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
 else
-    frames = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
+    frames2show = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
 end
 lengths = cellfun(@length,cells_save);
 lengths_change = find(lengths(2:end)-lengths(1:end-1)>2);
 lengths(lengths_change);
 lengths(lengths_change+1);
-for j=1:length(frames)
-    k = frames(j);
-    subplot(length(frames),1,j)    
+for j=1:length(frames2show)
+    k = frames2show(j);
+    subplot(length(frames2show),1,j)    
     make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,showColorbar,0)
     if growingDomain==0
         xlim([0,300])
@@ -22,4 +22,5 @@ for j=1:length(frames)
     xlabel('x (\mum)'), ylabel('y (\mum)') % -- LJS
 end
 
-saveas(gcf,['avi_mat/frames/frames3',saveInfo,'.fig'])
+saveas(framesFig,['avi_mat/frames/frames3',saveInfo,'.fig'])
+close(framesFig)

@@ -5,7 +5,7 @@
 
 input.time = 18;
 input.conversionType = 0;
-numReps = 20;
+numReps = 100;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 

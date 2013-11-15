@@ -67,8 +67,13 @@ end
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 elseif ~exist('saveInfo','var')
-    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate)];
+    if conversionType~=0
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(num_steps),...
+        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+    else
+            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
+        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+    end
 end
 %% save the results %%
 if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=1))
@@ -102,6 +107,7 @@ if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=
     out.param_names2 = 'chi,domainHeight,zero_bc,insert,tstep,t_start,d,eatRate';
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
     out.moved = moved;
+    out.happiness = happiness;
     
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;

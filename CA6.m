@@ -30,7 +30,7 @@ followerFraction = 7/8;        % proportion of cells that are followers (0<=foll
 % this is only an estimated fraction. currently 1/8 leaders mean about 20
 % cells, of a total of about 80-90
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-conversionType = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
+conversionType = 4;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
@@ -42,13 +42,13 @@ cells_move = 1;             % the cells move
 insert_cells = 1;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap (default), 0 = they can -- LJS
-standStill = 1; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
+standStill = 0; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-movies = 0;
+movies = 1;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/4/60;                   % time step in hours
@@ -66,7 +66,7 @@ dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a tim
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 1000;%0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 eatRate = 300;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
@@ -119,13 +119,16 @@ if isstruct(in)
 end
 %% convert parameters
 if conversionType == 1
-    num_steps = 10; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
+    num_steps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     num_directions=[];
 elseif conversionType == 2
     num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
     num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
+elseif conversionType == 4
+    num_steps = 20; % number of happiness levels between dedicated leader/follower and switching
+    num_directions = [];
 else
-    num_steps=[];
+    num_steps=10;
     num_directions=[];
 end
     
@@ -181,6 +184,7 @@ theta = NaN(end_num_cells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);
 xlat_new=[];
 moved = false(numTsteps,end_num_cells);
+happiness = NaN(numTsteps,end_num_cells); % for integrate-and-switch cell behaviour conversion
 num_better_foll_save = []; %% these may be obsolete -- LJS
 num_foll_save = 0; %% these may be obsolete -- LJS
 num_better_lead_save = []; %% these may be obsolete -- LJS
@@ -283,7 +287,13 @@ for timeCtr=1:numTsteps
         theta = temp.theta;
         cells = temp.cells;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))];
-        
+        if timeCtr ==1
+            happiness(timeCtr,1:length(cells(1,:))) = num_steps*ones(1,length(cells(1,:))); % cells start at maximum happiness -- LJS
+        else
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = num_steps; % cells start at maximum happiness -- LJS
+            happiness(timeCtr,moved(timeCtr,1:length(cells(1,:)))) = min(num_steps,happiness(timeCtr-1,moved(timeCtr,1:length(cells(1,:))))+1); % cells that moved become happier, with maximum num_steps -- LJS
+            happiness(timeCtr,~moved(timeCtr,1:length(cells(1,:)))) = max(0,happiness(timeCtr-1,~moved(timeCtr,1:length(cells(1,:))))-1); % cells that haven't moved become sadder, with minimum 0 -- LJS
+        end
         attach_save{timeCtr} = attach;
         cellsFollow_save{timeCtr} = cellsFollow;
         filopodia_save{timeCtr} = filopodia;
@@ -292,10 +302,11 @@ for timeCtr=1:numTsteps
     
     %% cells can convert from leaders <-> followers
     if (conversionType~=0)&&((experiment==0)||experiment==3||(in.it==1)||(t_save(timeCtr)==in.changeTime))
-        out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+        out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             eatWidth,filopodia,conversionType,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
+        happiness = out.happiness;
         num_better_foll_save = out.num_better_foll_save;
         num_foll_save = out.num_foll_save;
         num_better_lead_save = out.num_better_lead_save;
@@ -359,9 +370,9 @@ if movies==1
         make_all_movie_hidden
     end
     
-%     if frames==1
-%         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
-%     end
+    if frames==1
+        open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+    end
 end
 
 delete('avi_mat/*.mat');

@@ -5,7 +5,8 @@ close all
 clear
 
 time = 18;
-numRepeats = 20;
+numRepeats = 100;
+maxRuns2plot = 20;
 numParamCombinations = 42;
 % to calculate the density profile of cells and chemoattractant along the x-direction
 cellRadius = 7.5;
@@ -29,7 +30,7 @@ exportOptions = struct('Format','eps2',...
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
 eatRateValues = [100, 150, 300];
-followFracValues = [0,(10:15)/16];
+followFracValues = [0, (10:15)/16];
 followFracColors = jet(length(followFracValues));
 for volumeExclusion = 1
     for standStill = [1, 0]
@@ -47,10 +48,12 @@ for volumeExclusion = 1
                             '_tstep_' num2str(tstep, precision) '_Run_' num2str(repCtr)];
                         load(['results/' loadInfo '.mat'])
                         % make a plot of all repeats
-                        subplot(numRepeats/2 + 2,2,repCtr+2)
-                        make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},out.ylat_save{end}, ...
-                            out.ca_save{end},out.filopodia_save{end},out.numFilopodia,out.attach_save{end},out.cellRadius,0,1)
-                        title([num2str(size(out.cells_save{end},2)) ' cells, ' num2str(min([size(out.cells_save{end},2) nnz(out.cellsFollow{end}==0)])) ' leaders.'])
+                        if repCtr <= maxRuns2plot
+                            subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,repCtr+2)
+                            make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},out.ylat_save{end}, ...
+                                out.ca_save{end},out.filopodia_save{end},out.numFilopodia,out.attach_save{end},out.cellRadius,0,1)
+                            title([num2str(size(out.cells_save{end},2)) ' cells, ' num2str(min([size(out.cells_save{end},2) nnz(out.cellsFollow{end}==0)])) ' leaders.'])
+                        end
                         % calculate migration profile
                         numberOfCells = size(out.cells_save{end},2);
                         cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==0),xBins); % leaders
@@ -59,7 +62,7 @@ for volumeExclusion = 1
                         caDistribution(paramCtr,repCtr,:) = sum(out.ca_save{end},2);
                     end
                     % plot migration profile
-                    subplot(numRepeats/2 + 2,2,[1 2])
+                    subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,[1 2])
                     plot_migration_profile
                     xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
                     legend([H3(3);H3(2);H3(1)],'lead','follow','lost');

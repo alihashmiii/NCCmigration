@@ -1,4 +1,4 @@
-function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,ca_save,xlat,ylat,eatWidth,filopodia,conversionType,param,...
+function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,filopodia,conversionType,param,...
     num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
 
 if conversionType==1
@@ -20,8 +20,6 @@ if conversionType==1
             end
         end
     end
-    % out.cellsFollow = cellsFollow;
-    % out.moved = moved;
     
 elseif conversionType==2
     %% Using the presence of a c'tant gradient (with integral measures of c'tant)
@@ -110,6 +108,19 @@ elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we
         end
         %             pause
     end
+elseif conversionType == 4
+     %% integrate-and-switch, or time-frustration with hysteresis -- LJS
+    num_steps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
+    cells2switch = happiness(timeCtr,:)<=0; % unhappy cells to switch type
+    if any(cells2switch)
+        cellsFollow(cells2switch) = ~cellsFollow(cells2switch); % switch cell type
+        happiness(timeCtr,cells2switch) = num_steps; % cells that switch become maximally happy (hysteresis) -- LJS
+        moved(timeCtr,cells2switch) = 1;
+        
+        if any(cellsFollow(cells2switch)), disp([num2str(nnz(cellsFollow(cells2switch))) 'lead->foll']); end
+        if any(~cellsFollow(cells2switch)), disp([num2str(nnz(~cellsFollow(cells2switch))) 'foll->lead']); end
+    end
+    
 end
 out.num_better_foll_save = num_better_foll_save;
 out.num_foll_save = num_foll_save;
@@ -117,3 +128,5 @@ out.num_better_lead_save = num_better_lead_save;
 out.num_lead_save = num_lead_save;
 out.cellsFollow = cellsFollow;
 out.moved = moved;
+out.happiness = happiness;
+

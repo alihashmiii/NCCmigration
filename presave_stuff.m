@@ -2,8 +2,13 @@
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 else
-    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate)];
+    if conversionType~=0
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(num_steps),...
+        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+    else
+            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
+        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+    end
 end
 % don't overwrite existing file
 if isempty(dir(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'])) % check if this run hasn't been done, if previous sweeps have been aborted

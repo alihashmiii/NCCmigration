@@ -7,12 +7,12 @@
 
 % close all
 
-plotHandle = figure('units','points','outerposition',[0 0 1600 430],'position',[1 1 1599 363],...
+movieFig = figure('units','points','outerposition',[0 0 1600 430],'position',[1 1 1599 363],...
     'PaperPositionMode','manual','PaperUnits','points','PaperPosition',[0 0 1600 430],'visible','off');
 filePath = ['avi_mat/allmovie/',saveInfo,'/'];
 mkdir(filePath)
 frameRate = 30;    % frames per second - fewer frames will make the movie slower
-skip = 2; % skip more time steps for faster saving
+skip = round(5/60/tstep); % skip more time steps for faster saving
 frameCtr = 1;
 % % set(gcf,'Renderer','zbuffer')
 minx = min([min(xlat_save{end}) 0]);
@@ -28,9 +28,9 @@ for timeCtr=1:skip:numTsteps
     
     %% Insert title here
     title(['Cell migration at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  num2str(size(cells_save{timeCtr},2)) ' cells and ' num2str(min([size(cells_save{k},2) nnz(cellsFollow_save{k}==0)])) ' leaders.'])
-    end
+    
 %     axis image
-    print(plotHandle,'-dpng',[filePath,int2str(frameCtr),'.png'])
+    print(movieFig,'-dpng',[filePath,int2str(frameCtr),'.png'])
     frameCtr = frameCtr + 1;
 end
 % using external video compiling as recommended by Jochen Kursawe (JK)
@@ -47,3 +47,4 @@ system(['avconv -r ', int2str(frameRate), ' -i ', filePath,...
 % delete the individual frames
 system(['rm -f ' filePath '*.png']);
 disp(['saved to ',filePath])
+close(movieFig)
