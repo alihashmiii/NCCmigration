@@ -26,7 +26,7 @@ end
 tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
-followerFraction = 7/8;        % proportion of cells that are followers (0<=follow_per<=1)
+followerFraction = 0;        % proportion of cells that are followers (0<=follow_per<=1)
 % this is only an estimated fraction. currently 1/8 leaders mean about 20
 % cells, of a total of about 80-90
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
@@ -45,9 +45,9 @@ volumeExclusion = 1;    % 1 = cells can't overlap (default), 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-movies = 1;
+movies = 0;
 ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
@@ -66,10 +66,36 @@ dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a tim
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
 %% ca_solve parameters %%
-diffus = 1000;%0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
+diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 eatRate = 300;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
+
+%% convert parameters
+if conversionType == 1
+    num_steps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
+    num_directions=[];
+elseif conversionType == 2
+    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
+    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
+elseif conversionType == 4
+    num_steps = 20; % number of happiness levels between dedicated leader/follower and switching
+    num_directions = [];
+else
+    num_steps=10;
+    num_directions=[];
+end
+
+%% insert_cells parameters %%
+insert_time_step = 0.1;         % the time in hours between each new cell insertion
+insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
+num_cells = 1;                  % how many new cells are inserted at each timepoint
+if insert_cells==1
+    n = 6;              % initial number of cells
+else
+    n = 1;
+end
+initx_frac = 0;                 % initial fraction of x with cells
 
 %% adjust parameters if they have been provided in input %%
 if isstruct(in)
@@ -116,32 +142,17 @@ if isstruct(in)
     if ismember('conversionType',fields(in))
         conversionType = in.conversionType;
     end
+    if ismember('num_steps',fields(in))
+        num_steps = in.num_steps;
+    end
+    if ismember('num_directions',fields(in))
+        num_directions = in.num_directions;
+    end
+    if ismember('insert_step',fields(in))
+        insert_step = in.insert_step;
+    end
 end
-%% convert parameters
-if conversionType == 1
-    num_steps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
-    num_directions=[];
-elseif conversionType == 2
-    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
-    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
-elseif conversionType == 4
-    num_steps = 20; % number of happiness levels between dedicated leader/follower and switching
-    num_directions = [];
-else
-    num_steps=10;
-    num_directions=[];
-end
-    
-%% insert_cells parameters %%
-insert_time_step = 0.1;         % the time in hours between each new cell insertion
-insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
-num_cells = 1;                  % how many new cells are inserted at each timepoint
-if insert_cells==1
-    n = 6;              % initial number of cells
-else
-    n = 1;
-end
-initx_frac = 0;                 % initial fraction of x with cells
+
 followStart = floor(18/tstep) - floor(18*followerFraction/tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
 
 %% domain growth parameters %%

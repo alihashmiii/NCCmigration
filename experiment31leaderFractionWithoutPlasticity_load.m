@@ -10,9 +10,11 @@ maxRuns2plot = 20;
 numParamCombinations = 42;
 % to calculate the density profile of cells and chemoattractant along the x-direction
 cellRadius = 7.5;
-xBins = 0:2*cellRadius:49*2*cellRadius; % check the end length for time step run, or try loading this from the out-file somehow
+filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
+xBins = 0:(cellRadius + filolength):24*(cellRadius + filolength); % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-caDistribution = NaN(numParamCombinations,numRepeats,length(xBins));
+caDistribution = NaN(numParamCombinations,numRepeats,50);
+xlat_save = NaN(50,1);
 % preallocate variables for saving collated results
 actualLeaderFraction = NaN(numParamCombinations,1);
 eatRates = NaN(numParamCombinations,1);
@@ -59,7 +61,8 @@ for volumeExclusion = 1
                         cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==0),xBins); % leaders
                         cellDistributions(paramCtr,repCtr,2,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)~=0)),xBins); % followers, attached
                         cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, attached
-                        caDistribution(paramCtr,repCtr,:) = sum(out.ca_save{end},2);
+                        caDistribution(paramCtr,repCtr,:) = mean(out.ca_save{end},2);
+                        if paramCtr==1, xlat_save = out.xlat_save{end}; end % load the x-coordinated of the CA profile, only once as they're always the same
                     end
                     % plot migration profile
                     subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,[1 2])
@@ -70,7 +73,7 @@ for volumeExclusion = 1
                     % title has parameter values and actual leader fraction
                     actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
                     actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-                    title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) ', volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
+                    title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) ', volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
                     % save plot
                     filename = ['results/experiment31/figures/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                         '_volumeExclusion_' num2str(volumeExclusion) '_standStill_' num2str(standStill) ...
@@ -90,7 +93,7 @@ for volumeExclusion = 1
 
                     % title has parameter values and actual leader fraction
                     if eatRateCtr==1&&followFracCtr==1
-                        title(['volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
+                        title(['Exp3.1: volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
                     else
                         title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate)])
                     end
@@ -100,9 +103,9 @@ for volumeExclusion = 1
                     if followFracCtr==1, hold on, end
                     plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',followFracColors(followFracCtr,:));
                     if followFracCtr==length(followFracValues)
-                        title(['eatRate=' num2str(eatRate) ', volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
+                        title(['Exp3.1: eatRate=' num2str(eatRate) ', volExcl=' num2str(volumeExclusion) ', standStill=' num2str(standStill) ', tstep=' num2str(tstep,precision) ])
                         xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(actualLeaderFraction((length(eatRateValues):length(eatRateValues):length(eatRateValues)*length(followFracValues)) - length(eatRateValues)*length(followFracValues) + paramCtr),precision))
-                        ylim([0 7]), xlim([0 735]), set(gca,'YTick',[0 2 4 6])
+                        ylim([0 10]), xlim([0 735]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
                     end
                     
                     eatRates(paramCtr) = eatRate;
