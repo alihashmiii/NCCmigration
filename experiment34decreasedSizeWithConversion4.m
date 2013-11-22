@@ -11,23 +11,26 @@ precision = 2; % significant figures for filenames and plot labels etc.
 input.volumeExclusion = 1;
 input.standStill = 0;
 input.tstep = 1/4*5/60;
-input.insert_step = 8;
 
-for insert_step = [8 16]
-    input.insert_step = insert_step;
+for insertEverySteps = [8 16]
+    input.insertEverySteps = insertEverySteps;
     for followerFraction = [0, 1] % determines which is the default behaviour of cells, before switching
         input.followerFraction = followerFraction;
         for eatRate = 100
             input.eatRate = eatRate;
-            for num_steps = 4*4
-                for repCtr = 1:numReps
-                    input.saveInfo = ['experiment34/exp34_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                        '_conversion_' num2str(input.conversionType) '_numSteps_' num2str(num_steps) ...
-                        '_insertSteps_' num2str(input.insert_step) '_tstep_' num2str(input.tstep,precision) '_Run_' num2str(repCtr)];
-                    if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
-                        rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
-                        CA6(input,0);
-%                         quit
+            for diffus = [0.1 100]
+                input.diffus = diffus;
+                for numSteps = 4*4
+                    input.numSteps = numSteps;
+                    for repCtr = 1:numReps
+                        input.saveInfo = ['experiment34/exp34_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
+                            '_diff_' num2str(diffus) '_conversion_' num2str(input.conversionType) '_numSteps_' num2str(numSteps) ...
+                            '_insertSteps_' num2str(input.insertEverySteps) '_tstep_' num2str(input.tstep,precision) '_Run_' num2str(repCtr)];
+                        if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
+                            rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
+                            CA6(input,0);
+                            %                         quit
+                        end
                     end
                 end
             end

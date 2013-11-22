@@ -3,7 +3,7 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 else
     if conversionType~=0
-        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(num_steps),...
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
         '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     else
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
@@ -22,7 +22,7 @@ if isempty(dir(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2
     out.cellRadius = cellRadius;
     out.domainHeight = domainHeight;
     out.filolength = filolength;
-    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
+    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
     
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;

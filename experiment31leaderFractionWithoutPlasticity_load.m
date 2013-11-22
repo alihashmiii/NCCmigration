@@ -136,11 +136,8 @@ for volumeExclusion = 1
             system(['epstopdf ' filename]);
             close(profiles2getherFig);
             
-            paramCtr = paramCtr + 1;
         end
-        paramCtr = paramCtr + 1;
     end
-    paramCtr = paramCtr + 1;
 end
 
 save('results/experiment31/figures/experiment31collatedResults','xBins','cellDistributions','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')

@@ -5,9 +5,9 @@
 % at each timestep the list of cells is worked through in a random order
 % and each cell extends filopodia in a set number of random directions
 % Domain growth in steps intervals can be added with growingDomain=1,
-% Chemoattractant concentration can be solved (rather than fixed) with ca_solve=1
-% Cells move if cells_move=1,
-% Cells are inserted at x=0 if insert_cells=1
+% Chemoattractant concentration can be solved (rather than fixed) with caSolve=1
+% Cells move if cellsMove=1,
+% Cells are inserted at x=0 if insertCells=1
 
 % Cells have a fixed radius cellRadius and can't move through each other or out of the box
 % Uses cell_movement5.m, chemotaxis_solve.m (with associated files),
@@ -37,18 +37,18 @@ numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cel
 makeChemoattractant = 1;   % there is a chemoattranctant source term
 zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(edge) = 0 (has smoothed initial conditions)
                             % else no flux boundary conditions
-ca_solve = 1;           % solve for the chemoattractant concentration
-cells_move = 1;             % the cells move
-insert_cells = 1;           % new cells are inserted at x=0
+caSolve = 1;           % solve for the chemoattractant concentration
+cellsMove = 1;             % the cells move
+insertCells = 1;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap (default), 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go (default); 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-movies = 0;
-ca_movie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-all_movie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-frames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+makeMovies = 0;
+makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
+makeAllMovie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/4/60;                   % time step in hours
@@ -59,13 +59,13 @@ followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
 domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-inity_frac = (domainHeight-2*cellRadius)/domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
+initYFrac = (domainHeight-2*cellRadius)/domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 
 %% experimental parameters %%
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 
-%% ca_solve parameters %%
+%% caSolve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 eatRate = 300;                      % chemoattractant consumption rate
@@ -73,29 +73,29 @@ eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to 
 
 %% convert parameters
 if conversionType == 1
-    num_steps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
-    num_directions=[];
+    numSteps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
+    numDirections=[];
 elseif conversionType == 2
-    num_steps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
-    num_directions = 1/num_steps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
+    numSteps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
+    numDirections = 1/numSteps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
 elseif conversionType == 4
-    num_steps = 20; % number of happiness levels between dedicated leader/follower and switching
-    num_directions = [];
+    numSteps = 20; % number of happiness levels between dedicated leader/follower and switching
+    numDirections = [];
 else
-    num_steps=10;
-    num_directions=[];
+    numSteps=10;
+    numDirections=[];
 end
 
-%% insert_cells parameters %%
-insert_time_step = 0.1;         % the time in hours between each new cell insertion
-insert_step = floor(insert_time_step/tstep);    % how often are new cells inserted
-num_cells = 1;                  % how many new cells are inserted at each timepoint
-if insert_cells==1
+%% insertCells parameters %%
+insertTimeStep = 0.1;         % the time in hours between each new cell insertion
+insertEverySteps = floor(insertTimeStep/tstep);    % how often are new cells inserted
+insertNumCells = 1;                  % how many new cells are inserted at each timepoint
+if insertCells==1
     n = 6;              % initial number of cells
 else
     n = 1;
 end
-initx_frac = 0;                 % initial fraction of x with cells
+initXFrac = 0;                 % initial fraction of x with cells
 
 %% adjust parameters if they have been provided in input %%
 if isstruct(in)
@@ -142,14 +142,14 @@ if isstruct(in)
     if ismember('conversionType',fields(in))
         conversionType = in.conversionType;
     end
-    if ismember('num_steps',fields(in))
-        num_steps = in.num_steps;
+    if ismember('numSteps',fields(in))
+        numSteps = in.numSteps;
     end
-    if ismember('num_directions',fields(in))
-        num_directions = in.num_directions;
+    if ismember('numDirections',fields(in))
+        numDirections = in.numDirections;
     end
-    if ismember('insert_step',fields(in))
-        insert_step = in.insert_step;
+    if ismember('insertEverySteps',fields(in))
+        insertEverySteps = in.insertEverySteps;
     end
 end
 
@@ -166,17 +166,17 @@ a = 0.0800;                            % "steepness" of the logistic domain grow
 t_start = -16; %parameter used in domain_growth
 %%
 param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant,...
-    chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
+    chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
 % save avi_mat/param param % global variables are faster than saving & loading to disk
 
 presave_stuff % create results file with parameters to signal that this simulation is being worked on
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%
-temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initx_frac,inity_frac,[],1);
+temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initXFrac,initYFrac,[],1);
 cells = temp.cells;
-end_num_cells = (n + floor(numTsteps/insert_step)*num_cells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
-cellsFollow = false(end_num_cells,1); % cells are leaders by default. For fixed fractions of followers, all
+finalNumCells = (n + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
+cellsFollow = false(finalNumCells,1); % cells are leaders by default. For fixed fractions of followers, all
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
 % on expected total cell numbers, which are too high when many cells cannot
@@ -190,12 +190,12 @@ ca_save = cell(1,numTsteps); % chemoattractant (ca)
 cells_save = cell(numTsteps,1);
 filopodia_save = cell(numTsteps,1);
 cellsFollow_save = cell(numTsteps,1);
-attach = zeros(end_num_cells,1,'uint16'); % indices of which cell each cell is attached to
-theta = NaN(end_num_cells,1); % cells' movement directions-- LJS
+attach = zeros(finalNumCells,1,'uint16'); % indices of which cell each cell is attached to
+theta = NaN(finalNumCells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);
 xlat_new=[];
-moved = false(numTsteps,end_num_cells);
-happiness = NaN(numTsteps,end_num_cells); % for integrate-and-switch cell behaviour conversion
+moved = false(numTsteps,finalNumCells);
+happiness = NaN(numTsteps,finalNumCells); % for integrate-and-switch cell behaviour conversion
 num_better_foll_save = []; %% these may be obsolete -- LJS
 num_foll_save = 0; %% these may be obsolete -- LJS
 num_better_lead_save = []; %% these may be obsolete -- LJS
@@ -212,16 +212,16 @@ for timeCtr=1:numTsteps
     transplant_cells
     
     %% If we are inserting new cells, do so here %%
-    if mod(timeCtr,insert_step)==0
+    if mod(timeCtr,insertEverySteps)==0
         fprintf(['t = ' num2str(t_save(timeCtr+1)) '\r'] )
-        if (insert_cells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(timeCtr)<in.ablate_time)
-            temp = initiate_cells(num_cells,cellRadius,0,initialDomainLength,domainHeight,0,inity_frac,cells,volumeExclusion);
+        if (insertCells==1)&&((experiment==0)||(experiment>3)||(in.it==1)||(in.ablate_type~=2)||t_save(timeCtr)<in.ablate_time)
+            temp = initiate_cells(insertNumCells,cellRadius,0,initialDomainLength,domainHeight,0,initYFrac,cells,volumeExclusion);
             cells = temp.cells;
         end
     end
     
     %% chemoattractant %%
-    if ca_solve==1
+    if caSolve==1
         cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
         if timeCtr==1
@@ -282,7 +282,7 @@ for timeCtr=1:numTsteps
     end
     
     %% move cells %%
-    if cells_move==1
+    if cellsMove==1
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
@@ -299,10 +299,10 @@ for timeCtr=1:numTsteps
         cells = temp.cells;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))];
         if timeCtr ==1
-            happiness(timeCtr,1:length(cells(1,:))) = num_steps*ones(1,length(cells(1,:))); % cells start at maximum happiness -- LJS
+            happiness(timeCtr,1:length(cells(1,:))) = numSteps*ones(1,length(cells(1,:))); % cells start at maximum happiness -- LJS
         else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = num_steps; % cells start at maximum happiness -- LJS
-            happiness(timeCtr,moved(timeCtr,1:length(cells(1,:)))) = min(num_steps,happiness(timeCtr-1,moved(timeCtr,1:length(cells(1,:))))+1); % cells that moved become happier, with maximum num_steps -- LJS
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = numSteps; % cells start at maximum happiness -- LJS
+            happiness(timeCtr,moved(timeCtr,1:length(cells(1,:)))) = min(numSteps,happiness(timeCtr-1,moved(timeCtr,1:length(cells(1,:))))+1); % cells that moved become happier, with maximum numSteps -- LJS
             happiness(timeCtr,~moved(timeCtr,1:length(cells(1,:)))) = max(0,happiness(timeCtr-1,~moved(timeCtr,1:length(cells(1,:))))-1); % cells that haven't moved become sadder, with minimum 0 -- LJS
         end
         attach_save{timeCtr} = attach;
@@ -363,7 +363,7 @@ save_stuff
 %% make movies %%
 % make_figure
 
-if movies==1    
+if makeMovies==1    
     %%% make frames %%%
     if frames==1
         make_frames
@@ -372,16 +372,16 @@ if movies==1
     end
     
     %%% make camovie.avi %%%
-    if ca_movie==1
+    if makeCaMovie==1
         make_ca_movie
     end
     
     %%% make cells+ca movie (allmovie.avi)%%%
-    if all_movie==1
+    if makeAllMovie==1
         make_all_movie_hidden
     end
     
-    if frames==1
+    if makeFrames==1
         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
     end
 end

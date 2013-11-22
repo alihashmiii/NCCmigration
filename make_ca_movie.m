@@ -1,7 +1,7 @@
 close all
 clear mex
 fig = figure('units','normalized','outerposition',[0 0 1 1],'visible','off');
-comp = input('ca_movie with compression? (1 for yes): ');
+comp = input('caMovie with compression? (1 for yes): ');
 if comp==1&&isunix==1
     aviobj = VideoWriter(['avi_mat/camovie/camovie_',saveInfo,'compressed.avi'],'Motion JPEG AVI');
 elseif comp==1

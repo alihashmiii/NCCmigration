@@ -58,9 +58,9 @@ if (experiment==1)||(experiment==2)
         out.extracted_x_end = x_end;
         out.extracted_y_start = y_start;
         out.extracted_y_end = y_end;
-        movies=0;
+        makeMovies=0;
     elseif in.it==2
-        movies=1;
+        makeMovies=1;
     end
 end
 %%% saveInfo included in the naming of files %%%
@@ -68,7 +68,7 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 elseif ~exist('saveInfo','var')
     if conversionType~=0
-        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(num_steps),...
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
         '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     else
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
@@ -105,7 +105,7 @@ if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=
     out.attach_save = attach_save;
     out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,makeChemoattractant';
     out.param_names2 = 'chi,domainHeight,zero_bc,insert,tstep,t_start,d,eatRate';
-    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, num_steps, num_directions];
+    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
     out.moved = moved;
     out.happiness = happiness;
     

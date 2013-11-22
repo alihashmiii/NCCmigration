@@ -16,10 +16,11 @@ for followerFraction = [0, 1] % determines which is the default behaviour of cel
     input.followerFraction = followerFraction;
     for eatRate = [100, 300, 900]
         input.eatRate = eatRate;
-        for num_steps = 4*[1 2 3 4 5 6 7]
+        for numSteps = 4*[1 2 3 4 5 6 7]
+            input.numSteps = numSteps;
             for repCtr = 1:numReps
                 input.saveInfo = ['experiment31conversion4/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                    '_conversion_' num2str(input.conversionType) '_numSteps_' num2str(num_steps) ...
+                    '_conversion_' num2str(input.conversionType) '_numSteps_' num2str(numSteps) ...
                     '_tstep_' num2str(input.tstep,precision) '_Run_' num2str(repCtr)];
                 if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                     rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions

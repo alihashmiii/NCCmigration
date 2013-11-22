@@ -3,12 +3,12 @@ function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,fi
 
 if conversionType==1
     %% using amount of time not found a gradient / another cell
-    num_steps = param(15); % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
+    numSteps = param(15); % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
 
     for cellCtr=1:length(cells(1,:))
-        [~,num_cells_k] = cellfun(@size,cells_save);
-        if (timeCtr>num_steps)&&(num_cells_k(timeCtr-num_steps)>=cellCtr)
-            if ~any(moved(timeCtr-num_steps:timeCtr,cellCtr)) % if none moved -- LJS
+        [~,numCellsInTime] = cellfun(@size,cells_save);
+        if (timeCtr>numSteps)&&(numCellsInTime(timeCtr-numSteps)>=cellCtr)
+            if ~any(moved(timeCtr-numSteps:timeCtr,cellCtr)) % if none moved -- LJS
                 if cellsFollow(cellCtr)==1
                     disp('foll->lead')
                     cellsFollow(cellCtr)=0;
@@ -25,17 +25,17 @@ elseif conversionType==2
     %% Using the presence of a c'tant gradient (with integral measures of c'tant)
     for cellCtr=1:length(cells(1,:))
         if cellsFollow(cellCtr)==1 % if it's a follower
-            num_steps = numFilopodia(2); % number of directions to sample in (convert type 2)
-            num_directions = 1/num_steps; % fraction of directions that need to be better for phenotype switch -- LJS
+            numSteps = numFilopodia(2); % number of directions to sample in (convert type 2)
+            numDirections = 1/numSteps; % fraction of directions that need to be better for phenotype switch -- LJS
         elseif cellsFollow(cellCtr)==0 % if it's a leader
-            num_steps = numFilopodia(1); % number of directions to sample in (convert type 2)
-            num_directions = 1/num_steps; % fraction of directions that need to be better for phenotype switch -- LJS
+            numSteps = numFilopodia(1); % number of directions to sample in (convert type 2)
+            numDirections = 1/numSteps; % fraction of directions that need to be better for phenotype switch -- LJS
         end
         r = rand()*2*pi;
-        theta = (2*pi/num_steps:2*pi/num_steps:2*pi) + r; % this seems to sample evenly distributed with only a random offset... is that what we want? -- LJS
-        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,num_steps,[]);
+        theta = (2*pi/numSteps:2*pi/numSteps:2*pi) + r; % this seems to sample evenly distributed with only a random offset... is that what we want? -- LJS
+        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[]);
         
-        if num_better>=(num_directions*num_steps)
+        if num_better>=(numDirections*numSteps)
             %             if (rand()<0.7)
             if cellsFollow(cellCtr)==1
                 disp('follow -> lead')
@@ -44,16 +44,16 @@ elseif conversionType==2
             %             else
             %                 cellsFollow(i) = 1;
             %             end
-        elseif num_better<(num_directions*num_steps)
+        elseif num_better<(numDirections*numSteps)
             if cellsFollow(cellCtr)==0
                 disp('lead -> follow')
                 cellsFollow(cellCtr)=1;
             end
             if cellsFollow(cellCtr)==1
-                num_better_foll_save = [num_better_foll_save, num_better/num_steps];
+                num_better_foll_save = [num_better_foll_save, num_better/numSteps];
                 num_foll_save = num_foll_save +1;
             else
-                num_better_lead_save = [num_better_lead_save, num_better/num_steps];
+                num_better_lead_save = [num_better_lead_save, num_better/numSteps];
                 num_lead_save = num_lead_save +1;
             end
             %         elseif rand()<0.5
@@ -110,11 +110,11 @@ elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we
     end
 elseif conversionType == 4
      %% integrate-and-switch, or time-frustration with hysteresis -- LJS
-    num_steps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
+    numSteps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
     cells2switch = happiness(timeCtr,:)<=0; % unhappy cells to switch type
     if any(cells2switch)
         cellsFollow(cells2switch) = ~cellsFollow(cells2switch); % switch cell type
-        happiness(timeCtr,cells2switch) = num_steps; % cells that switch become maximally happy (hysteresis) -- LJS
+        happiness(timeCtr,cells2switch) = numSteps; % cells that switch become maximally happy (hysteresis) -- LJS
         moved(timeCtr,cells2switch) = 1;
         
         if any(cellsFollow(cells2switch)), disp([num2str(nnz(cellsFollow(cells2switch))) 'lead->foll']); end

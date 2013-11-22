@@ -2,7 +2,7 @@
 % L.J. Schumacher 28.10.13
 
 close all
-clear
+clear all
 
 time = 18;
 numRepeats = 100;
@@ -33,8 +33,8 @@ precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
 eatRateValues = [100, 300, 900];
 conversionType = 4;
-num_stepsValues = 4*[1 2 3 4 5 6 7];
-num_stepsColors = jet(length(num_stepsValues));
+numStepsValues = 4*[1 2 3 4 5 6 7];
+numStepsColors = jet(length(numStepsValues));
 standStill = 0;
 volumeExclusion = 1;
 tstep = 1/4*5/60;
@@ -42,14 +42,14 @@ tstep = 1/4*5/60;
 for followerFraction = [0, 1]
     profilesFig = figure('Visible','off');
     profiles2getherFig = figure('Visible','off');
-    for num_stepsCtr = 1:length(num_stepsValues)
-        num_steps = num_stepsValues(num_stepsCtr);
+    for numStepsCtr = 1:length(numStepsValues)
+        numSteps = numStepsValues(numStepsCtr);
         for eatRateCtr = 1:length(eatRateValues)
             eatRate = eatRateValues(eatRateCtr);
             runsFig = figure('Visible','off');
             for repCtr = 1:numRepeats
                 loadInfo = ['experiment31conversion4/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                    '_conversion_' num2str(conversionType) '_numSteps_' num2str(num_steps) ...
+                    '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps) ...
                     '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
                 try % sometime we get corrupt files, which crashes the script
                     load(['results/' loadInfo '.mat'])
@@ -69,7 +69,7 @@ for followerFraction = [0, 1]
                 numberOfCells = size(out.cells_save{end},2);
                 cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==0),xBins); % leaders
                 cellDistributions(paramCtr,repCtr,2,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)~=0)),xBins); % followers, attached
-                cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, attached
+                cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, dettached
                 caDistribution(paramCtr,repCtr,:) = mean(out.ca_save{end},2);
                 if paramCtr==1, xlat_save = out.xlat_save{end}; end % load the x-coordinated of the CA profile, only once as they're always the same
             end
@@ -82,10 +82,10 @@ for followerFraction = [0, 1]
             % title has parameter values and actual leader fraction
             actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
             actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', num_steps=' num2str(num_steps) ])
+            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
             % save plot 
             filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                '_numSteps_' num2str(num_steps) ...
+                '_numSteps_' num2str(numSteps) ...
                 '_tstep_' num2str(tstep,precision) '_allRuns.eps'];
             pos = get(runsFig,'Position');
             pos(4) = 3/2*pos(3);% adjust height to 3/2 width
@@ -95,30 +95,30 @@ for followerFraction = [0, 1]
             close(runsFig);
             
             set(0,'CurrentFigure',profilesFig);
-            subplot(length(num_stepsValues),length(eatRateValues),length(eatRateValues)*(num_stepsCtr - 1) + eatRateCtr)
+            subplot(length(numStepsValues),length(eatRateValues),length(eatRateValues)*(numStepsCtr - 1) + eatRateCtr)
             plot_migration_profile
             % xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
             % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
             
             % title has parameter values and actual leader fraction
-            if eatRateCtr==1&&num_stepsCtr==1
+            if eatRateCtr==1&&numStepsCtr==1
                 title(['Exp3.1: followDefault=' num2str(followerFraction) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
-            elseif num_stepsCtr==1
+            elseif numStepsCtr==1
                 title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate)])
-            elseif num_stepsCtr==2&&eatRateCtr==1
+            elseif numStepsCtr==2&&eatRateCtr==1
                 title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate)])
             else
-                title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', steps=' num2str(num_steps)])
+                title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', steps=' num2str(numSteps)])
             end
             
             set(0,'CurrentFigure',profiles2getherFig);
             subplot(length(eatRateValues),1,eatRateCtr)
-            if num_stepsCtr==1, hold on, end
-            plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',num_stepsColors(num_stepsCtr,:));
-            if num_stepsCtr==length(num_stepsValues)
+            if numStepsCtr==1, hold on, end
+            plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',numStepsColors(numStepsCtr,:));
+            if numStepsCtr==length(numStepsValues)
                 title(['Exp3.1: eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
-                xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(num_stepsValues'))
-                ylim([0 10]), xlim([0 735]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
+                xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(numStepsValues'))
+                ylim([0 10]), xlim([0 800]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
             end
             
             eatRates(paramCtr) = eatRate;
@@ -149,7 +149,6 @@ for followerFraction = [0, 1]
     system(['epstopdf ' filename]);
     close(profiles2getherFig);
     
-    paramCtr = paramCtr + 1;
 end
 
 save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')

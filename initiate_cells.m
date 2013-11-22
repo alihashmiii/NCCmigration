@@ -4,7 +4,7 @@
 % cells(2,:,1), resp.
 % cells is given m+1 timesteps to come
 
-function out = initiate_cells(n,cellRadius,followerFraction,initialDomainLength,domainHeight,initx_frac,inity_frac,cells_in,volumeExclusion)
+function out = initiate_cells(n,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
 cells = [cells_in NaN*ones(2,n)];
 cellsFollow = false(length(cells(1,:,1)),1);
@@ -15,12 +15,12 @@ if followerFraction~=0
     %% Iterate until the cells vector is full to the correct amount %%%
     while isnan(cells(1,floor(end*followerFraction),1))
         %% postulate coordinates for a new cell %%%
-        if initx_frac==0
+        if initXFrac==0
             cellx=cellRadius;
         else
-            cellx = rand().*initx_frac.*followerFraction.*initialDomainLength;
+            cellx = rand().*initXFrac.*followerFraction.*initialDomainLength;
         end
-        celly = (rand().*inity_frac+(0.5-inity_frac/2)).*domainHeight;
+        celly = (rand().*initYFrac+(0.5-initYFrac/2)).*domainHeight;
         %% Check that there is no overlap with existing cells %%%
         if (j>0)%&&(volumeExclusion==1)
             %%% (x_cells,y_cells) are the pre-existing cell coordinates %%%
@@ -45,12 +45,12 @@ it = 0;
 maxit = 50;
 while isnan(cells(1,end,1))&&(it<maxit)
     %% postulate coordinates for a new cell %%%
-    if initx_frac==0
+    if initXFrac==0
         cellx = cellRadius;
     else
-        cellx = (rand().*initx_frac.*(1-followerFraction)+initx_frac*followerFraction).*initialDomainLength;
+        cellx = (rand().*initXFrac.*(1-followerFraction)+initXFrac*followerFraction).*initialDomainLength;
     end
-    celly = (rand().*inity_frac+(0.5-inity_frac/2))*domainHeight;
+    celly = (rand().*initYFrac+(0.5-initYFrac/2))*domainHeight;
 
     %% Check that there is no overlap with existing cells %%%
     if (j>0)%&&(volumeExclusion==1)
