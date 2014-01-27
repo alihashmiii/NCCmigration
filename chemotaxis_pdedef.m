@@ -23,6 +23,11 @@ tstep = param(12);
 t_start = param(13);
 eatRate = param(14);
 
+experiment = param(17);
+transplantTime = param(18);
+transplantXLocation = param(19);
+secondaryChi = param(20);
+
 if (growingDomain==1)
     [~, L, Ldiff] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
 else
@@ -45,6 +50,14 @@ bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth
     (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
 eatTerm = sum(bigEat,2);
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
-          - eatTerm...
-          + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
+    - eatTerm...
+    + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
+if (experiment==11||experiment==12||experiment==13)&&t>=transplantTime
+    if (experiment==12||experiment==13)
+        indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/2);
+    elseif experiment==11
+        indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/20);
+    end
+    res(indcs) = res(indcs) - secondaryChi.*u(indcs).*(1 - u(indcs)); % increased CA production
+end
 res(x>0) = res(x>0) + Ldiff/L*u(x>0); % dilution through tissue growth -- LJS

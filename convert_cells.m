@@ -33,7 +33,7 @@ elseif conversionType==2
         end
         r = rand()*2*pi;
         theta = (2*pi/numSteps:2*pi/numSteps:2*pi) + r; % this seems to sample evenly distributed with only a random offset... is that what we want? -- LJS
-        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[]);
+        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[],sensingAccuracy);
         
         if num_better>=(numDirections*numSteps)
             %             if (rand()<0.7)

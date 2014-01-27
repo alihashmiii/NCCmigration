@@ -1,6 +1,6 @@
 function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                             ca_save,xlat,ylat,...
-                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia, volumeExclusion, standStill)
+                            cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, t_save, in, numFilopodia, volumeExclusion, standStill, sensingAccuracy)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -13,7 +13,7 @@ for i =1:length(cell_order)
     if cellsFollow(cellidx)~=1   
         %% if it's a leader
             [filopodia(cellidx,:,:),caDiff,move,theta(cellidx),~] = cell_movement5((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
-                eatWidth,filolength,numFilopodia(1),[]);        
+                eatWidth,filolength,numFilopodia(1),[],sensingAccuracy);        
     elseif attach(cellidx)~=0     
         %% if it's a chained follower that can reach the cell ahead
         if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (filolength + cellRadius)^2
