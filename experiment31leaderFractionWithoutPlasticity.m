@@ -28,7 +28,7 @@ for followerFraction = [0, 3/4, 15/16, 1]
                             if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                                 rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                                 CA6(input,0);
-                                quit
+                                %quit
                             end
                         end
                     end

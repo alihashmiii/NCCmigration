@@ -75,7 +75,7 @@ for volumeExclusion = 1
                     % title has parameter values and actual leader fraction
                     actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
                     actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-                    title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensingAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
+                    title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
                     % save plot
                     filename = ['results/experiment31/figures/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                                 '_sensingAcc_' num2str(sensingAccuracy) ...
@@ -97,7 +97,7 @@ for volumeExclusion = 1
                     if sensingAccCtr==1&&followFracCtr==1
                         title(['Exp3.1: tstep=' num2str(tstep,precision) ])
                     else
-                        title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensingAcc=' num2str(sensingAccuracy)])
+                        title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy)])
                     end
                     
                     set(0,'CurrentFigure',profiles2getherFig);
@@ -105,7 +105,7 @@ for volumeExclusion = 1
                     if followFracCtr==1, hold on, end
                     plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',followFracColors(followFracCtr,:));
                     if followFracCtr==length(followFracValues)
-                        title(['Exp3.1: sensingAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
+                        title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
                         xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(actualLeaderFraction((length(sensingAccuracyValues):length(sensingAccuracyValues):length(sensingAccuracyValues)*length(followFracValues)) - length(sensingAccuracyValues)*length(followFracValues) + paramCtr),precision))
                         ylim([0 10]), xlim([0 735]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
                     end

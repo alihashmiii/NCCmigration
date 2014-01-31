@@ -12,8 +12,8 @@ multiplier = 1/(eatWidth^2*2*pi)*exp(-(x-x_cell).^2/2/eatWidth^2)*exp(-(y'-y_cel
 
 %% Trapezoid sum computed with vector-matrix multiply. %
 intgrand = ca.*multiplier;
-intgrand = sum((intgrand(1:end-1,:) + intgrand(2:end,:))./2,1);
-present_area = sum((intgrand(1:end-1) + intgrand(2:end))./2);
+intgrand = diff(x')*(intgrand(1:end-1,:) + intgrand(2:end,:))./2; 
+present_area = (intgrand(1:end-1) + intgrand(2:end))*diff(y)./2; % include the lattice spacing to get correct intergral result -- LJS
 
 %% Integrate the chemoattractant in the area of the filopodia %%%
 new_area = 0;
@@ -36,8 +36,9 @@ for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best
 
 %%    Trapezoid sum computed with vector-matrix multiply. %
     intgrand = ca.*multiplier;
-    intgrand = sum((intgrand(1:end-1,:) + intgrand(2:end,:))./2,1);
-    new_area = sum((intgrand(1:end-1) + intgrand(2:end))./2);
+    intgrand = diff(x')*(intgrand(1:end-1,:) + intgrand(2:end,:))./2; 
+    new_area = (intgrand(1:end-1) + intgrand(2:end))*diff(y)./2; % include the lattice spacing to get correct intergral result -- LJS
+
     if new_area>present_area
         num_better = num_better+1;
     end
@@ -50,7 +51,7 @@ end
 
 %% If the present area is better then stay put, else move in the theta direction%%%
 caDiff = (new_area - present_area)/present_area;    % energy difference. So if caDiff > sensingAccuracy then the cell definitely moves
-if caDiff < sensingAccuracy % then present_area > new_area and the cell doesn't try to move
+if caDiff < sensingAccuracy/sqrt(present_area) % then present_area > new_area and the cell doesn't try to move
     move = 0;
     theta = NaN; % direction of movement is undefined -- LJS
 else   % else the cell does try to move
