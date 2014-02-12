@@ -7,7 +7,7 @@ clear
 time = 18;
 numRepeats = 100;
 maxRuns2plot = 20;
-numParamCombinations = 12;
+numParamCombinations = 24;
 % to calculate the density profile of cells and chemoattractant along the x-direction
 cellRadius = 7.5;
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
@@ -32,12 +32,12 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
-eatRate = [100];
+standStill = [0];
 followFracValues = [0, 3/4, 15/16, 1];
 sensingAccuracyValues = [0.1, 0.01, 0.001];
 followFracColors = jet(length(followFracValues));
 for volumeExclusion = 1
-    for standStill = [0]
+    for eatRate = [100, 1000]
         for tstep = 1/4*5/60
             profilesFig = figure('Visible','off');
             profiles2getherFig = figure('Visible','off');
@@ -48,10 +48,15 @@ for volumeExclusion = 1
                     runsFig = figure('Visible','off');
                     for repCtr = 1:numRepeats
                         loadInfo = ['experiment31/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                                '_sensingAcc_' num2str(sensingAccuracy) ...
-                                '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
-                        load(['results/' loadInfo '.mat'])
-                        % make a plot of all repeats
+                            '_sensingAcc_' num2str(sensingAccuracy) ...
+                            '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
+                        try % sometimes we get corrupt files, which crashes the script
+                            load(['results/' loadInfo '.mat'])
+                        catch
+                            delete(['results/' loadInfo '.mat']) % delete the corrupt file
+                            experiment31leaderFractionWithoutPlasticity; % recreate the missing results file
+                            load(['results/' loadInfo '.mat']) % load again
+                        end                        % make a plot of all repeats
                         if repCtr <= maxRuns2plot
                             subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,repCtr+2)
                             make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},out.ylat_save{end}, ...
@@ -75,7 +80,7 @@ for volumeExclusion = 1
                     % title has parameter values and actual leader fraction
                     actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
                     actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-                    title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
+                    title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', eatRate=' num2str(eatRate) ', tstep=' num2str(tstep,precision) ])
                     % save plot
                     filename = ['results/experiment31/figures/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                                 '_sensingAcc_' num2str(sensingAccuracy) ...
@@ -95,7 +100,7 @@ for volumeExclusion = 1
 
                     % title has parameter values and actual leader fraction
                     if sensingAccCtr==1&&followFracCtr==1
-                        title(['Exp3.1: tstep=' num2str(tstep,precision) ])
+                        title(['Exp3.1: tstep=' num2str(tstep,precision) ', eatRate=' num2str(eatRate)])
                     else
                         title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy)])
                     end
@@ -105,7 +110,7 @@ for volumeExclusion = 1
                     if followFracCtr==1, hold on, end
                     plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',followFracColors(followFracCtr,:));
                     if followFracCtr==length(followFracValues)
-                        title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', tstep=' num2str(tstep,precision) ])
+                        title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', eatRate=' num2str(eatRate) ', tstep=' num2str(tstep,precision) ])
                         xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(actualLeaderFraction((length(sensingAccuracyValues):length(sensingAccuracyValues):length(sensingAccuracyValues)*length(followFracValues)) - length(sensingAccuracyValues)*length(followFracValues) + paramCtr),precision))
                         ylim([0 10]), xlim([0 735]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
                     end
@@ -124,7 +129,7 @@ for volumeExclusion = 1
             pos = get(profilesFig,'Position');
             %pos(4) = 3/2*pos(3);% adjust height to 3/2 width
             set(profilesFig,'PaperUnits','centimeters','Position',pos);
-            filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
+            filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision)  '_eatRate_' num2str(eatRate) '_migrationProfiles.eps'];
             exportfig(profilesFig,filename,exportOptions);
             system(['epstopdf ' filename]);
             close(profilesFig);
@@ -132,7 +137,7 @@ for volumeExclusion = 1
             pos = get(profiles2getherFig,'Position');
             pos(4) = 3/2*pos(3);% adjust height to 3/2 width
             set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
-            filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
+            filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision) '_eatRate_' num2str(eatRate) '_migrationProfiles2gether.eps'];
             exportfig(profiles2getherFig,filename,exportOptions);
             system(['epstopdf ' filename]);
             close(profiles2getherFig);

@@ -39,7 +39,7 @@ zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(
                             % else no flux boundary conditions
 caSolve = 1;           % solve for the chemoattractant concentration
 cellsMove = 1;             % the cells move
-insertCells = 0;           % new cells are inserted at x=0
+insertCells = 1;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
@@ -83,7 +83,7 @@ end
 %% caSolve parameters %%
 diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
-eatRate = 100;                      % chemoattractant consumption rate
+eatRate = 1000;                      % chemoattractant consumption rate
 eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% convert parameters
@@ -106,9 +106,9 @@ insertTimeStep = 0.1;         % the time in hours between each new cell insertio
 insertEverySteps = floor(insertTimeStep/tstep);    % how often are new cells inserted
 insertNumCells = 1;                  % how many new cells are inserted at each timepoint
 if insertCells==1
-    n = 6;              % initial number of cells
+    numCellsInitial = 6;              % initial number of cells
 else
-    n = 1;
+    numCellsInitial = 1;
 end
 initXFrac = 0;                 % initial fraction of x with cells
 
@@ -192,9 +192,9 @@ presave_stuff % create results file with parameters to signal that this simulati
 
 %% set up the initial cells so that they aren't too close to each other or
 %% the edge %%
-temp = initiate_cells(n,cellRadius,0,initialDomainLength,domainHeight,initXFrac,initYFrac,[],1);
+temp = initiate_cells(numCellsInitial,cellRadius,0,initialDomainLength,domainHeight,initXFrac,initYFrac,[],1);
 cells = temp.cells;
-finalNumCells = (n + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
+finalNumCells = (numCellsInitial + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
 cellsFollow = false(finalNumCells,1); % cells are leaders by default. For fixed fractions of followers, all
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based

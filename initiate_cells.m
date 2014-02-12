@@ -4,12 +4,15 @@
 % cells(2,:,1), resp.
 % cells is given m+1 timesteps to come
 
-function out = initiate_cells(n,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
+function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
-cells = [cells_in NaN*ones(2,n)];
+cells = [cells_in NaN*ones(2,numCells2Insert)];
 cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
-
+if j==0 % if we're inserting the first set of cells, position themn uniformly, to have repeatable initial conditions
+    deltaY = domainHeight/(numCells2Insert + 1); % spacing between uniformly spread cells
+    cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert)); deltaY:deltaY:(domainHeight - cellRadius)];
+end
 %% If there are follower cells, initialise them here %%%
 if followerFraction~=0
     %% Iterate until the cells vector is full to the correct amount %%%

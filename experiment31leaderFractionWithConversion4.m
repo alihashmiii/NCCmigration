@@ -8,15 +8,15 @@ input.conversionType = 4;
 numReps = 100;
 
 precision = 2; % significant figures for filenames and plot labels etc.
-input.volumeExclusion = 1;
+input.sensingAccuracy = 0.01;
 input.standStill = 0;
-input.tstep = 1/4*5/60;
+input.tstep = 5/4/60;
 
 for followerFraction = [0, 1] % determines which is the default behaviour of cells, before switching
     input.followerFraction = followerFraction;
-    for eatRate = [100, 300, 900]
+    for eatRate = [1000]
         input.eatRate = eatRate;
-        for numSteps = 4*[1 2 3 4 5 6 7]
+        for numSteps = [1 2 3 6 12 24 36]
             input.numSteps = numSteps;
             for repCtr = 1:numReps
                 input.saveInfo = ['experiment31conversion4/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
@@ -25,7 +25,13 @@ for followerFraction = [0, 1] % determines which is the default behaviour of cel
                 if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                     rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                     CA6(input,0);
-                    %quit
+                    % check if anyone else is logged into the
+                    % current machine. If so, quit. If not,
+                    % keep looping and run next job.
+                    [~, logins_check] = system('/mi/libexec/check-logins | grep -v schumacher');
+                    if size(logins_check,1)>0
+                        quit
+                    end
                 end
             end
         end

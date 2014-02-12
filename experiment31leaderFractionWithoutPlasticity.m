@@ -11,10 +11,8 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 for followerFraction = [0, 3/4, 15/16, 1]
     input.followerFraction = followerFraction;
-    for eatRate = [100]
+    for eatRate = [100, 1000]
         input.eatRate = eatRate;
-        for volumeExclusion = 1
-            input.volumeExclusion = volumeExclusion;
             for standStill = [0]
                 input.standStill = standStill;
                 for tstep = 1/4*5/60
@@ -28,12 +26,17 @@ for followerFraction = [0, 3/4, 15/16, 1]
                             if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                                 rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                                 CA6(input,0);
-                                %quit
+                                % check if anyone else is logged into the
+                                % current machine. If so, quit. If not,
+                                % keep looping and run next job.
+                                [~, logins_check] = system('/mi/libexec/check-logins | grep -v schumacher');
+                                if size(logins_check,1)>0
+                                    quit
+                                end
                             end
                         end
                     end
                 end
             end
-        end
     end
 end

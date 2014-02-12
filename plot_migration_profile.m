@@ -4,7 +4,7 @@ leaderCounts = squeeze(cellDistributions(paramCtr,:,1,:));
 lostCounts = squeeze(cellDistributions(paramCtr,:,3,:));
 caProfile = mean(squeeze(caDistribution(paramCtr,:,:)));
 caGrad = diff(caProfile)./diff(xlat_save')*filolength;
-caCutOffIndcs = caGrad./caProfile(1:end-1) < sensingAccuracy;
+caCutOffIndcs = caGrad./sqrt(caProfile(1:end-1)) < sensingAccuracy;
 [AX,H1,H2] = plotyy(xBins,mean(followerCounts),...
     xlat_save,caProfile);
 hold(AX(1));
