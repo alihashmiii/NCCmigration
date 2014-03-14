@@ -1,4 +1,4 @@
-function out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,filopodia,conversionType,param,...
+function out = convert_cells(cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,conversionType,param,...
     num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
 
 if conversionType==1
@@ -33,7 +33,7 @@ elseif conversionType==2
         end
         r = rand()*2*pi;
         theta = (2*pi/numSteps:2*pi/numSteps:2*pi) + r; % this seems to sample evenly distributed with only a random offset... is that what we want? -- LJS
-        [~,~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[],sensingAccuracy);
+        [~,~,~,num_better] = cell_movement5(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[],sensingAccuracy);
         
         if num_better>=(numDirections*numSteps)
             %             if (rand()<0.7)
@@ -111,16 +111,18 @@ elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we
 elseif conversionType == 4
      %% integrate-and-switch, or time-frustration with hysteresis -- LJS
     numSteps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
-    cells2switch = happiness(timeCtr,:)<=0; % unhappy cells to switch type
-    if any(cells2switch)
-        cellsFollow(cells2switch) = ~cellsFollow(cells2switch); % switch cell type
-        happiness(timeCtr,cells2switch) = numSteps; % cells that switch become maximally happy (hysteresis) -- LJS
-        moved(timeCtr,cells2switch) = 1;
-        
-        if any(cellsFollow(cells2switch)), disp([num2str(nnz(cellsFollow(cells2switch))) 'lead->foll']); end
-        if any(~cellsFollow(cells2switch)), disp([num2str(nnz(~cellsFollow(cells2switch))) 'foll->lead']); end
+    lead2follow = cellsFollow'==0&happiness(timeCtr,:)<=0; % indices of leaders to switch to followers
+    follow2lead = cellsFollow'==1&happiness(timeCtr,:)>=numSteps; % indices of followers to switch to leaders
+    if any(lead2follow)
+        cellsFollow(lead2follow) = 1; % switch cell type
+        moved(timeCtr,lead2follow) = 1;
+        disp([num2str(nnz(lead2follow)) 'lead->foll']);
     end
-    
+    if any(follow2lead)
+        cellsFollow(follow2lead) = 0; % switch cell type
+        moved(timeCtr,follow2lead) = 1;
+        disp([num2str(nnz(follow2lead)) 'foll->lead']);
+    end
 end
 out.num_better_foll_save = num_better_foll_save;
 out.num_foll_save = num_foll_save;

@@ -4,7 +4,7 @@
 % movement for the cell and a parameter, d, that is related to the radius
 % of sensing of ca.
 
-function [filopodia,caDiff,move,theta,num_better] = cell_movement5(theta,x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil,sensingAccuracy)
+function [filopodia,move,theta,num_better] = cell_movement5(sampledDirections,x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil,sensingAccuracy)
 
 
 %% Integrate the chemoattractant in the present area %%%
@@ -22,9 +22,9 @@ chosen_theta_idx = NaN;
 filopodia = NaN(numFilopodia,2); % store the x-y coordinates of all the cell's filopodia -- LJS
 for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best direction -- LJS
     if isempty(fil)
-        %% the cell extends a filopodia in the theta direction %%%
-        x_fil = x_cell + cos(theta(filo_ctr))*filolength;  % x coordinate of the filopodia
-        y_fil = y_cell + sin(theta(filo_ctr))*filolength;  % y coordinate of the filopodia
+        %% the cell extends a filopodia in the sampledDirections direction %%%
+        x_fil = x_cell + cos(sampledDirections(filo_ctr))*filolength;  % x coordinate of the filopodia
+        y_fil = y_cell + sin(sampledDirections(filo_ctr))*filolength;  % y coordinate of the filopodia
         filopodia(filo_ctr,:) = [x_fil,y_fil];
     else
         x_fil = fil(filo_ctr,1);
@@ -49,12 +49,16 @@ for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best
     end
 end
 
-%% If the present area is better then stay put, else move in the theta direction%%%
+%% If the present area is better then stay put, else choose to move in the theta direction%%%
 caDiff = (new_area - present_area)/present_area;    % energy difference. So if caDiff > sensingAccuracy then the cell definitely moves
 if caDiff < sensingAccuracy/sqrt(present_area) % then present_area > new_area and the cell doesn't try to move
     move = 0;
     theta = NaN; % direction of movement is undefined -- LJS
 else   % else the cell does try to move
-    move=1; 
-    theta = theta(chosen_theta_idx);
+    move=1;
+    if ~isempty(sampledDirections)
+        theta = sampledDirections(chosen_theta_idx);
+    else
+        theta = NaN;
+    end
 end

@@ -1,10 +1,12 @@
-function out = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
+function out = new_move_cells(cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,...
     cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, numFilopodia,...
     volumeExclusion, standStill, sensingAccuracy, needNeighbours)
+global cells
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
+sensed = false(1,length(cells(1,:)));
 for i =1:length(cell_order)
     move = 0;
     cellidx = cell_order(i);  % look at the ith cell
@@ -17,8 +19,9 @@ for i =1:length(cell_order)
     %% Decide whether to try to move
     if cellsFollow(cellidx)~=1
         %% if it's a leader
-        [filopodia(cellidx,1:numFilopodia(1),:),caDiff,move,theta(cellidx),~] = cell_movement5((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+        [filopodia(cellidx,1:numFilopodia(1),:),move,theta(cellidx),~] = cell_movement5((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
             eatWidth,filolength,numFilopodia(1),[],sensingAccuracy);
+        sensed(cellidx) = move; % -- LJS
     elseif attach(cellidx)~=0
         %% if it's a chained follower that can reach the cell ahead
         if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (filolength + cellRadius)^2
@@ -30,6 +33,7 @@ for i =1:length(cell_order)
             phi = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx))); % the angle towards the cell being followed -- LJS
             filopodia(cellidx,1,1) = cells(1,attach(cellidx)) - cellRadius*cos(phi);
             filopodia(cellidx,1,2) = cells(2,attach(cellidx)) - cellRadius*sin(phi);
+            move = 1;
         else
             %% if the cell ahead is too far, then dettach the chain
             % set (first) filopodial position and movement angle in the direction of cell
@@ -45,7 +49,10 @@ for i =1:length(cell_order)
             filopodia(cellidx,2:numFilopodia(2),1) = cells(1,cellidx) + filolength.*cos(phi);
             filopodia(cellidx,2:numFilopodia(2),2) = cells(2,cellidx) + filolength.*sin(phi);
         end
-        move = 1;
+        % check if favourable chemoattractant gradients can be sensed, for
+        % phenotype conversion -- LJS
+        [~,sensed(cellidx),~,~] = cell_movement5([],cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            eatWidth,filolength,numFilopodia(2),squeeze(filopodia(cellidx,:,:)),sensingAccuracy);
     else
         %% if it's an unchained follower
         [foundCellidx,filopodia] = cell_movement5_follow((rand(1,numFilopodia(2))*2 - 1)*pi,cellidx,cells(1,:),cells(2,:),cellRadius,...
@@ -68,6 +75,10 @@ for i =1:length(cell_order)
                 move = 1;
             end
         end
+         % check if favourable chemoattractant gradients can be sensed, for
+        % phenotype conversion -- LJS
+        [~,sensed(cellidx),~,~] = cell_movement5([],cells(1,cellidx),cells(2,cellidx),ca_save,xlat,ylat,...
+            eatWidth,filolength,numFilopodia(2),squeeze(filopodia(cellidx,:,:)),sensingAccuracy);
     end
     if numberOfNeighbours < needNeighbours % check if a cell should wait around for others
         move = 0;
@@ -114,5 +125,5 @@ out.attach = attach;
 out.cellsFollow = cellsFollow;
 out.filopodia = filopodia;
 out.theta = theta;
-out.cells = cells;
 out.moved = moved;
+out.sensed = sensed;

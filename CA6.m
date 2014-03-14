@@ -308,12 +308,12 @@ for timeCtr=1:numTsteps
     %% move cells %%
     if cellsMove==1
         if timeCtr==1
-            temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
+            temp = new_move_cells(cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours);
         else
-            temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
+            temp = new_move_cells(cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours);
@@ -322,14 +322,13 @@ for timeCtr=1:numTsteps
         cellsFollow = temp.cellsFollow;
         filopodia = temp.filopodia;
         theta = temp.theta;
-        cells = temp.cells;
-        moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))];
+        moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
         if timeCtr ==1
             happiness(timeCtr,1:length(cells(1,:))) = numSteps*ones(1,length(cells(1,:))); % cells start at maximum happiness -- LJS
         else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = numSteps; % cells start at maximum happiness -- LJS
-            happiness(timeCtr,moved(timeCtr,1:length(cells(1,:)))) = min(numSteps,happiness(timeCtr-1,moved(timeCtr,1:length(cells(1,:))))+1); % cells that moved become happier, with maximum numSteps -- LJS
-            happiness(timeCtr,~moved(timeCtr,1:length(cells(1,:)))) = max(0,happiness(timeCtr-1,~moved(timeCtr,1:length(cells(1,:))))-1); % cells that haven't moved become sadder, with minimum 0 -- LJS
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = numSteps; % new cells start at maximum happiness -- LJS
+            happiness(timeCtr,temp.sensed) = min(numSteps,happiness(timeCtr-1,temp.sensed)+1); % cells that sensed CA become happier, with maximum numSteps -- LJS
+            happiness(timeCtr,~temp.sensed) = max(0,happiness(timeCtr-1,~temp.sensed)-1); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
         end
         attach_save{timeCtr} = attach;
         cellsFollow_save{timeCtr} = cellsFollow;
@@ -339,8 +338,8 @@ for timeCtr=1:numTsteps
     
     %% cells can convert from leaders <-> followers
     if (conversionType~=0)&&((experiment==0)||experiment==3||experiment==11||experiment==12||experiment==13||(in.it==1)||(t_save(timeCtr)==in.changeTime))
-        out = convert_cells(cells,cellsFollow,attach_save,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            eatWidth,filopodia,conversionType,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
+        out = convert_cells(cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+            eatWidth,conversionType,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
         happiness = out.happiness;
