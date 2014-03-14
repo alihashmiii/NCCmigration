@@ -45,7 +45,7 @@ volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-makeMovies = 1;
+makeMovies = 0;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
@@ -62,6 +62,8 @@ filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell ce
 initYFrac = (domainHeight-2*cellRadius)/domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
+
+needNeighbours = 1; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 %% experimental parameters %%
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 % do this with case instead
@@ -168,6 +170,9 @@ if isstruct(in)
     end
     if ismember('sensingAccuracy',fields(in))
         sensingAccuracy = in.sensingAccuracy;
+    end
+    if ismember('needNeighbours',fields(in))
+        needNeighbours = in.needNeighbours;
     end
 end
 
@@ -305,11 +310,13 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cells,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, standStill,sensingAccuracy);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours);
         else
             temp = new_move_cells(cells,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,t_save(timeCtr),in,numFilopodia, volumeExclusion, standStill,sensingAccuracy);
+                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

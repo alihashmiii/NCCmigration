@@ -5,9 +5,9 @@ close all
 clear all
 
 time = 18;
-numRepeats = 100;
+numRepeats = 20;
 maxRuns2plot = 20;
-numParamCombinations = 14;
+numParamCombinations = 42;
 % to calculate the density profile of cells and chemoattractant along the x-direction
 cellRadius = 7.5;
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
@@ -31,7 +31,7 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
-eatRate = [1000];
+eatRate = 1000;
 conversionType = 4;
 numStepsValues = [1 2 3 6 12 24 36];
 numStepsColors = jet(length(numStepsValues));
@@ -41,17 +41,19 @@ tstep = 1/4*5/60;
 followFracValues = [0, 1];
 sensingAccuracy = 0.01;
 
-profilesFig = figure('Visible','off');
-profiles2getherFig = figure('Visible','off');
-for followFracCtr = 1:length(followFracValues)
-    followerFraction = followFracValues(followFracCtr);
-    
-    for numStepsCtr = 1:length(numStepsValues)
-        numSteps = numStepsValues(numStepsCtr);
+for needNeighbours = [0, 1 ,2]
+    profilesFig = figure('Visible','off');
+    profiles2getherFig = figure('Visible','off');
+    for followFracCtr = 1:length(followFracValues)
+        followerFraction = followFracValues(followFracCtr);
+        
+        for numStepsCtr = 1:length(numStepsValues)
+            numSteps = numStepsValues(numStepsCtr);
             runsFig = figure('Visible','off');
             for repCtr = 1:numRepeats
                 loadInfo = ['experiment31conversion4/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                     '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps) ...
+                    '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours)...
                     '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
                 try % sometime we get corrupt files, which crashes the script
                     load(['results/' loadInfo '.mat'])
@@ -84,9 +86,10 @@ for followFracCtr = 1:length(followFracValues)
             % title has parameter values and actual leader fraction
             actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
             actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
-            % save plot 
+            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
+            % save plot
             filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
+                '_needNeighbours_' num2str(needNeighbours) ...
                 '_numSteps_' num2str(numSteps) ...
                 '_tstep_' num2str(tstep,precision) '_allRuns.eps'];
             pos = get(runsFig,'Position');
@@ -98,14 +101,13 @@ for followFracCtr = 1:length(followFracValues)
             
             set(0,'CurrentFigure',profilesFig);
             subplot(length(numStepsValues),length(followFracValues),length(followFracValues)*(numStepsCtr - 1) + followFracCtr)
-            length(numStepsValues),length(followFracValues),length(followFracValues)*(numStepsCtr - 1) + followFracCtr
             plot_migration_profile
             % xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
             % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
             
             % title has parameter values and actual leader fraction
             if numStepsCtr==1
-                title(['Exp3.1: followDefault=' num2str(followerFraction) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
+                title(['Exp3.1: followDefault=' num2str(followerFraction) ' needNbrs=' num2str(needNeighbours) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
             else
                 title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', steps=' num2str(numSteps)])
             end
@@ -115,7 +117,7 @@ for followFracCtr = 1:length(followFracValues)
             if numStepsCtr==1, hold on, end
             plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',numStepsColors(numStepsCtr,:));
             if numStepsCtr==length(numStepsValues)
-                title(['Exp3.1: eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
+                title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
                 xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(numStepsValues'))
                 ylim([0 10]), xlim([0 800]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
             end
@@ -126,14 +128,14 @@ for followFracCtr = 1:length(followFracValues)
             tsteps(paramCtr) = tstep;
             
             paramCtr = paramCtr + 1;
+        end
     end
-end
     % make a plot with migration profiles for all parameter combinations
     pos = get(profilesFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profilesFig,'PaperUnits','centimeters','Position',pos);
     filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction) ...
-        '_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
+        '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
     exportfig(profilesFig,filename,exportOptions);
     system(['epstopdf ' filename]);
     close(profilesFig);
@@ -142,9 +144,9 @@ end
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
     filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction) ...
-        '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
+        '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
     exportfig(profiles2getherFig,filename,exportOptions);
     system(['epstopdf ' filename]);
     close(profiles2getherFig);
-
+end
 save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')
