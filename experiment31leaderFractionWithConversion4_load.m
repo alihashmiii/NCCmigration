@@ -86,7 +86,7 @@ for needNeighbours = [0, 1 ,2]
             % title has parameter values and actual leader fraction
             actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
             actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', eatRate=' num2str(eatRate) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
+            title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
             % save plot
             filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                 '_needNeighbours_' num2str(needNeighbours) ...
@@ -106,8 +106,10 @@ for needNeighbours = [0, 1 ,2]
             % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
             
             % title has parameter values and actual leader fraction
-            if numStepsCtr==1
+            if numStepsCtr==1&&followerFraction==0
                 title(['Exp3.1: followDefault=' num2str(followerFraction) ' needNbrs=' num2str(needNeighbours) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
+            elseif numStepsCtr==1&&followerFraction==1
+                title(['followDefault=' num2str(followerFraction) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
             else
                 title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', steps=' num2str(numSteps)])
             end
@@ -134,8 +136,7 @@ for needNeighbours = [0, 1 ,2]
     pos = get(profilesFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profilesFig,'PaperUnits','centimeters','Position',pos);
-    filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction) ...
-        '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
+    filename = ['results/experiment31conversion4/figures/exp31conv4_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
     exportfig(profilesFig,filename,exportOptions);
     system(['epstopdf ' filename]);
     close(profilesFig);
@@ -143,8 +144,7 @@ for needNeighbours = [0, 1 ,2]
     pos = get(profiles2getherFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
-    filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction) ...
-        '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
+    filename = ['results/experiment31conversion4/figures/exp31conv4_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
     exportfig(profiles2getherFig,filename,exportOptions);
     system(['epstopdf ' filename]);
     close(profiles2getherFig);

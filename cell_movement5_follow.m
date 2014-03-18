@@ -35,17 +35,17 @@ for i=1:length(x_cells)
         
         dot = A*C+B*D;
         len_sq = C*C+D*D;
-        param = dot/len_sq;
+        temp = dot/len_sq;
         
-        if param<0
+        if temp<0
             xx = x_fil(j);
             yy = y_fil(j);
-        elseif param>1
+        elseif temp>1
             xx = x_cell;
             yy = y_cell;
         else
-            xx = x_fil(j) + param*C;
-            yy = y_fil(j) + param*D;
+            xx = x_fil(j) + temp*C;
+            yy = y_fil(j) + temp*D;
         end
         d(j,i) = sqrt((x-xx)^2 + (y-yy)^2);
     end

@@ -45,7 +45,7 @@ volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-makeMovies = 0;
+makeMovies = 1;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
@@ -294,8 +294,7 @@ for timeCtr=1:numTsteps
     end
     %% divide cells %%
     if (divide_cells==1)
-        temp = cells_divide(cells,cellsFollow,cellRadius,domainLengths(timeCtr),0,domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},tstep);
-        cells = temp.cells;
+        temp = cells_divide(cellsFollow,cellRadius,domainLengths(timeCtr),0,domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},tstep);
         cellsFollow = temp.cellsFollow;
     end
     %% domain growth %%
@@ -324,11 +323,15 @@ for timeCtr=1:numTsteps
         theta = temp.theta;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
         if timeCtr ==1
-            happiness(timeCtr,1:length(cells(1,:))) = numSteps*ones(1,length(cells(1,:))); % cells start at maximum happiness -- LJS
+            happiness(timeCtr,1:length(cells(1,:))) = round(numSteps/2); % cells start at half maximum happiness, rounded up -- LJS
         else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = numSteps; % new cells start at maximum happiness -- LJS
-            happiness(timeCtr,temp.sensed) = min(numSteps,happiness(timeCtr-1,temp.sensed)+1); % cells that sensed CA become happier, with maximum numSteps -- LJS
-            happiness(timeCtr,~temp.sensed) = max(0,happiness(timeCtr-1,~temp.sensed)-1); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = round(numSteps/2); % cells start at half maximum happiness, rounded up -- LJS
+            happiness(timeCtr,temp.sensed) = min(numSteps,... % the maximum happiness is numSteps -- LJS
+                min(happiness(timeCtr,temp.sensed),happiness(timeCtr-1,temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness (which is NaN for existing cells) -- LJS
+                +1); % cells that sensed CA become happier, with maximum numSteps -- LJS
+            happiness(timeCtr,~temp.sensed) = max(0,... % minimum happiness is 0 -- LJS
+                max(happiness(timeCtr,~temp.sensed),happiness(timeCtr-1,~temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness (which is NaN for existing cells) -- LJS
+                -1); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
         end
         attach_save{timeCtr} = attach;
         cellsFollow_save{timeCtr} = cellsFollow;
@@ -338,11 +341,10 @@ for timeCtr=1:numTsteps
     
     %% cells can convert from leaders <-> followers
     if (conversionType~=0)&&((experiment==0)||experiment==3||experiment==11||experiment==12||experiment==13||(in.it==1)||(t_save(timeCtr)==in.changeTime))
-        out = convert_cells(cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            eatWidth,conversionType,param,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
+        out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+            eatWidth,conversionType,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
-        happiness = out.happiness;
         num_better_foll_save = out.num_better_foll_save;
         num_foll_save = out.num_foll_save;
         num_better_lead_save = out.num_better_lead_save;

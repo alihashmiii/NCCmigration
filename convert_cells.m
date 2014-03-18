@@ -1,5 +1,7 @@
-function out = convert_cells(cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,conversionType,param,...
+function out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,conversionType,...
     num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
+
+global param cells % using global variables is much faster than saving & loading from disk -- LJS
 
 if conversionType==1
     %% using amount of time not found a gradient / another cell
@@ -130,5 +132,4 @@ out.num_better_lead_save = num_better_lead_save;
 out.num_lead_save = num_lead_save;
 out.cellsFollow = cellsFollow;
 out.moved = moved;
-out.happiness = happiness;
 
