@@ -3,7 +3,7 @@
 if (experiment==1)||(experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,0,0)
+        make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,filolength,sensingAccuracy,0,0)
         sort(cells(1,:))
         
         if experiment==1

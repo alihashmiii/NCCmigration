@@ -9,8 +9,8 @@ lostCounts = squeeze(cellDistributions(paramCtr,:,3,:));
 % lostCounts = lostCounts./totalNumCells(:,ones(1,size(lostCounts,2)));
 
 caProfile = mean(squeeze(caDistribution(paramCtr,:,:)));
-caGrad = diff(caProfile)./diff(xlat_save')*filolength;
-caCutOffIndcs = caGrad./sqrt(caProfile(1:end-1)) < sensingAccuracy;
+caGrad = gradient(caProfile,xlat_save)*filolength;
+caCutOffIndcs = caGrad./sqrt(caProfile) < sensingAccuracy;
 [AX,H1,H2] = plotyy(xBins,mean(followerCounts),...
     xlat_save,caProfile);
 hold(AX(1));
