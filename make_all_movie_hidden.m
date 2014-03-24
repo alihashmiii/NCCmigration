@@ -18,7 +18,7 @@ frameCtr = 1;
 minx = min([min(xlat_save{end}) 0]);
 for timeCtr=1:skip:numTsteps
     disp(['step ',mat2str(timeCtr),' of ',mat2str(numTsteps)])
-    make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,1,0);
+    make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,1,caCmap,0);
     
 %     xlim([minx,1100]) %this can cause unpleasant jittering in movies
 %     ylim([-50,120+50])
@@ -41,8 +41,11 @@ disp('compiling the movie now');
 %the latter is the new version of the first):
 %http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide -- JK
 
-system(['avconv -r ', int2str(frameRate), ' -i ', filePath,...
-    '%d.png -c:v libx264 -crf 35 -loglevel quiet -y ',filePath,saveInfo,'.mp4']);
+system(['avconv -r ', int2str(frameRate), ' -i ', filePath, '%d.png -c:v libx264 -crf 23 -loglevel quiet -y ',filePath,saveInfo,'.mp4']);
+%Choose a CRF value
+%The range of the quantizer scale is 0-51: where 0 is lossless, 23 is default, and 51 is worst possible. A lower value is a higher quality and a subjectively sane range is 18-28. Consider 18 to be visually lossless or nearly so: it should look the same or nearly the same as the input but it isn't technically lossless.
+%The range is exponential, so increasing the CRF value +6 is roughly half the bitrate while -6 is roughly twice the bitrate. General usage is to choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try a higher value and if it looks bad then choose a lower value.
+%Note: The CRF quantizer scale mentioned on this page only applies to 8-bit x264 (10-bit x264 quantizer scale is 0-63). You can see what you are using with x264 --help listed under Output bit depth. 8-bit is more common among distributors.
 
 % delete the individual frames
 system(['rm -f ' filePath '*.png']);

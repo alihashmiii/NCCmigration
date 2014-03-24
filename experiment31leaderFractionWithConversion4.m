@@ -9,11 +9,12 @@ input.conversionType = 4;
 numReps = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
-sensingAccuracy = 0.01;
 input.standStill = 0;
 input.tstep = 5/4/60;
 eatRate = 1000;
 
+for sensingAccuracy = [0.1, 0.01]
+    input.sensingAccuracy = sensingAccuracy;
 for followerFraction = [0, 1] % determines which is the default behaviour of cells, before switching
     input.followerFraction = followerFraction;
     for needNeighbours = [0, 1, 2]
@@ -39,4 +40,5 @@ for followerFraction = [0, 1] % determines which is the default behaviour of cel
             end
         end
     end
+end
 end

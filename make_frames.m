@@ -14,7 +14,7 @@ lengths(lengths_change+1);
 for j=1:length(frames2show)
     k = frames2show(j);
     subplot(length(frames2show),1,j)    
-    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,filolength,sensingAccuracy,showColorbar,0)
+    make_plot(cells_save{k},cellsFollow_save{k},xlat_save{k},ylat_save{k},ca_save{k},filopodia_save{k},numFilopodia,attach_save{k},cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,0)
     if growingDomain==0
         xlim([0,300])
     end
