@@ -13,8 +13,8 @@ cellRadius = 7.5;              % radius in um (= 7.5um)
 filolength = cellRadius + 9*2;
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-caDistribution = NaN(numParamCombinations,numRepeats,50);
-xlat_save = NaN(50,1);
+caDistribution = NaN(numParamCombinations,numRepeats,64);
+xlat_save = NaN(64,1);
 % preallocate variables for saving collated results
 actualLeaderFraction = NaN(numParamCombinations,1);
 eatRates = NaN(numParamCombinations,1);

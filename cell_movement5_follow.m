@@ -6,7 +6,7 @@
 
 % theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
-function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cell_radius,filolength,filopodia,experiment)
+function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cellRadius,filolength,filopodia,experiment)
 %% find the coordinates of our cell
 x_cell = x_cells(cellidx);
 y_cell = y_cells(cellidx);
@@ -20,7 +20,7 @@ if cellidx>size(filopodia,1)
 end
 filopodia(cellidx,1:length(theta),:) = [x_fil', y_fil'];
 
-%% find the minimum distance from a line (the filopodia) to each of the points (each other cell) %%
+%% find the minimum distance from a line (the filopodium) to each of the points (each other cell) %%
 % by finding the closest point using x.y = |x||y|cos(theta) (see green
 % notebook 8/12/09 onwards)
 d = NaN(length(theta),length(x_cells));
@@ -54,11 +54,11 @@ d(:,cellidx) = 10000*ones(length(theta),1); % so that we don't get our cell back
 
 %% If there is a cell there, [or a cell's filopodium - follow that cell  %%]
 
-if (min(min(d))<cell_radius)
+if (min(min(d))<cellRadius)
     %% if the filopodium finds a cell body then find out which was the
     %% nearest such cell that was found
     
-    cells_found = find(min(d,[],1)<cell_radius);
+    cells_found = find(min(d,[],1)<cellRadius);
     %% find the distance from our cell to the cells found
     dist = NaN(1,length(cells_found));
     for i=1:length(cells_found)
