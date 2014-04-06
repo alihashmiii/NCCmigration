@@ -5,7 +5,7 @@ close all
 clear
 
 time = 18;
-numRepeats = 100;
+numRepeats = 20;
 maxRuns2plot = 20;
 numParamCombinations = 8;
 % to calculate the density profile of cells and chemoattractant along the x-direction
@@ -13,8 +13,8 @@ cellRadius = 7.5;
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 xBins = 0:(cellRadius + filolength):24*(cellRadius + filolength); % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-caDistribution = NaN(numParamCombinations,numRepeats,50);
-xlat_save = NaN(50,1);
+caDistribution = NaN(numParamCombinations,numRepeats,64);
+xlat_save = NaN(64,1);
 % preallocate variables for saving collated results
 actualLeaderFraction = NaN(numParamCombinations,1);
 eatRates = NaN(numParamCombinations,1);
@@ -31,17 +31,18 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
-eatRate = 100;
+eatRate = 1000;
 conversionType = 4;
-numSteps = 4*5;
+numSteps = 4*4;
 standStill = 0;
 volumeExclusion = 1;
 tstep = 1/4*5/60;
 insertStepsValues = [8 16];
 followFracValues = [0, 1];
 diffValues = [0.1 100];
+sensingAccuracy = 0.01;
 
-caCmap = load('cmap_erdc_green2yellow_BW.txt');
+caCmap = load('cmap_blue2cyan.txt');
 
 profilesFig = figure('Visible','off');
 for insertStepsCtr = 1:length(insertStepsValues)

@@ -1,3 +1,4 @@
+function experiment34decreasedSizeWithConversion4
 % run the next job in line of a bunch
 % called by scan-submit shell script
 % looks which job is the next one to do,runs this one job, then quits
@@ -5,19 +6,18 @@
 
 input.time = 18;
 input.conversionType = 4;
-numReps = 100;
+numReps = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 input.volumeExclusion = 1;
 input.standStill = 0;
 input.tstep = 1/4*5/60;
+eatRate = 1000;
 
 for insertEverySteps = [8 16]
     input.insertEverySteps = insertEverySteps;
     for followerFraction = [0, 1] % determines which is the default behaviour of cells, before switching
         input.followerFraction = followerFraction;
-        for eatRate = 100
-            input.eatRate = eatRate;
             for diffus = [0.1 100]
                 input.diffus = diffus;
                 for numSteps = 4*4
@@ -34,6 +34,5 @@ for insertEverySteps = [8 16]
                     end
                 end
             end
-        end
     end
 end

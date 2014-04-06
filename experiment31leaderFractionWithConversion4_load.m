@@ -21,6 +21,8 @@ eatRates = NaN(numParamCombinations,1);
 volumeExclusions = NaN(numParamCombinations,1);
 standStills = NaN(numParamCombinations,1);
 tsteps = NaN(numParamCombinations,1);
+sensingAccuracies = NaN(numParamCombinations,1);
+neighboursNeeds = NaN(numParamCombinations,1);
 
 exportOptions = struct('Format','eps2',...
     'Width','18.0',...
@@ -40,14 +42,16 @@ volumeExclusion = 1;
 tstep = 1/4*5/60;
 followFracValues = [0, 1];
 
-caCmap = load('cmap_erdc_green2yellow_BW.txt');
+caCmap = load('cmap_blue2cyan.txt');
 
 for sensingAccuracy = [0.1, 0.01]
     for needNeighbours = [0, 1 ,2]
         profilesFig = figure('Visible','off');
         profiles2getherFig = figure('Visible','off');
+        neighbourRelationsFig = figure('Visible','off');
         for followFracCtr = 1:length(followFracValues)
             followerFraction = followFracValues(followFracCtr);
+            %% load and plot data for every run of this parameter combination
             for numStepsCtr = 1:length(numStepsValues)
                 numSteps = numStepsValues(numStepsCtr);
                 runsFig = figure('Visible','off');
@@ -77,17 +81,29 @@ for sensingAccuracy = [0.1, 0.01]
                     cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, dettached
                     caDistribution(paramCtr,repCtr,:) = mean(out.ca_save{end},2);
                     if paramCtr==1, xlat_save = out.xlat_save{end}; end % load the x-coordinated of the CA profile, only once as they're always the same
+                    % calculate neighbour relationships
+                    if paramCtr==1&&repCtr==1
+                        neighbours = neighbourRelationships(out.cells_save{end});
+                    elseif repCtr==1
+                        neighbours(paramCtr) = neighbourRelationships(out.cells_save{end});
+                    else
+                        tempNeighbours = neighbourRelationships(out.cells_save{end});
+                        neighbours(paramCtr).numbers = neighbours(paramCtr).numbers + tempNeighbours.numbers;
+                        neighbours(paramCtr).distances = neighbours(paramCtr).distances + tempNeighbours.distances;
+                        neighbours(paramCtr).areas = neighbours(paramCtr).areas + tempNeighbours.areas;
+                    end
                 end
                 % plot migration profile
                 subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,[1 2])
                 plot_migration_profile
                 xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
-                legend([H3(3);H3(2);H3(1)],'lead','follow','lost');
+                %legend([H3(3);H3(2);H3(1)],'lead','follow','lost');
                 
                 % title has parameter values and actual leader fraction
                 actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
                 actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
                 title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
+                
                 % save plot
                 filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                     '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
@@ -100,6 +116,7 @@ for sensingAccuracy = [0.1, 0.01]
                 system(['epstopdf ' filename]);
                 close(runsFig);
                 
+                %% plot summary migration profiles
                 set(0,'CurrentFigure',profilesFig);
                 subplot(length(numStepsValues),length(followFracValues),length(followFracValues)*(numStepsCtr - 1) + followFracCtr)
                 plot_migration_profile
@@ -125,11 +142,39 @@ for sensingAccuracy = [0.1, 0.01]
                     ylim([0 10]), xlim([0 800]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
                 end
                 
+                %% plot neighbour relations
+                set(0,'CurrentFigure',neighbourRelationsFig);
+                subplot(length(followFracValues),3,1 + (followFracCtr - 1)*3)
+                if numStepsCtr ==1, hold on, end
+                plot(1:length(neighbours(paramCtr).numbers),neighbours(paramCtr).numbers./numRepeats,'Color',numStepsColors(numStepsCtr,:))
+                if numStepsCtr==length(numStepsValues)
+                    xlabel('#neighbours'), ylabel('N(cells)'), grid on
+                end
+                
+                subplot(length(followFracValues),3,2 + (followFracCtr - 1)*3)
+                if numStepsCtr ==1, hold on, end
+                plot(neighbours(paramCtr).distancesBinEdges, neighbours(paramCtr).distances./numRepeats,'Color',numStepsColors(numStepsCtr,:))
+                if numStepsCtr==length(numStepsValues)
+                    title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
+                    xlabel('distance/\mum'), ylabel('N(cells)')
+                    xlim([0 max(neighbours(paramCtr).distancesBinEdges)]), grid on
+                end
+                
+                subplot(length(followFracValues),3,3 + (followFracCtr - 1)*3)
+                if numStepsCtr ==1, hold on, end
+                plot(neighbours(paramCtr).areasBinEdges, neighbours(paramCtr).areas./numRepeats,'Color',numStepsColors(numStepsCtr,:))
+                if numStepsCtr==length(numStepsValues)
+                    xlabel('area/\mum^2'), ylabel('N(cells)'), legend(num2str(numStepsValues'))
+                    xlim([0 max(neighbours(paramCtr).areasBinEdges)]), grid on
+                end
+                
+                %% save summary of results
                 eatRates(paramCtr) = eatRate;
                 volumeExclusions(paramCtr) = volumeExclusion;
                 standStills(paramCtr) = standStill;
                 tsteps(paramCtr) = tstep;
-                
+                sensingAccuracies(paramCtr) = sensingAccuracy;
+                neighboursNeeds(paramCtr) = needNeighbours;
                 paramCtr = paramCtr + 1;
             end
         end
@@ -143,11 +188,19 @@ for sensingAccuracy = [0.1, 0.01]
         close(profilesFig);
         
         pos = get(profiles2getherFig,'Position');
-        pos(4) = 3/2*pos(3);% adjust height to 3/2 width
+%         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
         set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
         filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
         exportfig(profiles2getherFig,filename,exportOptions);
         system(['epstopdf ' filename]);
+        
+        pos = get(neighbourRelationsFig,'Position');
+%         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
+        set(neighbourRelationsFig,'PaperUnits','centimeters','Position',pos);
+        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_neighbourRelations.eps'];
+        exportfig(neighbourRelationsFig,filename,exportOptions);
+        system(['epstopdf ' filename]);
+        close(neighbourRelationsFig);
     end
 end
-save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')
+save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps','sensingAccuracies','neighboursNeeds')

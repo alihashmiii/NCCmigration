@@ -45,10 +45,10 @@ volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-makeMovies = 1;
+makeMovies = 0;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-makeFrames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 5/4/60;                   % time step in hours

@@ -12,7 +12,7 @@ input.eatRate = eatRate;
         
 precision = 2; % significant figures for filenames and plot labels etc.
 
-for followerFraction = [0, 3/4, 15/16, 1]
+for followerFraction = [0, 3/4, 7/8, 15/16, 1]
     input.followerFraction = followerFraction;
     for needNeighbours = [0, 1, 2]
         input.needNeighbours = needNeighbours;

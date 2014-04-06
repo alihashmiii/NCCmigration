@@ -10,11 +10,11 @@ hold on
 % calculate and plot the CA gradient in regions where it can be sensed
 [dcadx, dcady] = gradient(ca',xlat,ylat);
 indices2plot = sqrt(dcadx.^2 + dcady.^2)*filolength./sqrt(ca')>=sensingAccuracy;
-if ~quickMode
-    [Xlat,Ylat] = meshgrid(xlat,ylat);
-    quiver(Xlat(indices2plot),Ylat(indices2plot),dcadx(indices2plot),dcady(indices2plot),'w');
-end
-contour(xlat,ylat,indices2plot,1,'w')
+% if ~quickMode
+%     [Xlat,Ylat] = meshgrid(xlat,ylat);
+%     quiver(Xlat(indices2plot),Ylat(indices2plot),dcadx(indices2plot),dcady(indices2plot),'w');
+% end
+contour(xlat,ylat,indices2plot,1,'w','LineWidth',2)
 
 if cellRadius < 1
     filopodia = cells';
