@@ -76,7 +76,7 @@ elseif ~exist('saveInfo','var')
     end
 end
 %% save the results %%
-if (experiment==0||experiment==3)||(((experiment==1)||(experiment==2))&&(in.it~=1))
+if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experiment==2))&&(in.it~=1))
     % convert floats to single precision for saving, to reduces disk space
     % used
     out.t_save = t_save;

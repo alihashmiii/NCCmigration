@@ -59,7 +59,7 @@ followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
 domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-initYFrac = (domainHeight-2*cellRadius)/domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
+
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
 
@@ -112,6 +112,7 @@ if insertCells==1
 else
     numCellsInitial = 1;
 end
+initYFrac = (domainHeight-2*cellRadius)/domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
 initXFrac = 0;                 % initial fraction of x with cells
 
 %% adjust parameters if they have been provided in input %%
@@ -228,7 +229,11 @@ num_lead_save = 0; %% these may be obsolete -- LJS
 for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
     if timeCtr==followStart
-        cellsFollow(length(cells(1,:))+1:end) = 1;
+        if experiment==35 % makes only half of trailers followers, half leaders
+            cellsFollow(length(cells(1,:))+1:2:end) = 1;
+        else
+            cellsFollow(length(cells(1,:))+1:end) = 1;
+        end
         disp('followers start here')
     end
     

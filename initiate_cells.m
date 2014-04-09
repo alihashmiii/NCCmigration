@@ -6,7 +6,7 @@
 
 function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
-cells = [cells_in NaN*ones(2,numCells2Insert)];
+cells = [cells_in NaN(2,numCells2Insert)];
 cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
 if j==0 % if we're inserting the first set of cells, position themn uniformly, to have repeatable initial conditions
@@ -14,6 +14,9 @@ if j==0 % if we're inserting the first set of cells, position themn uniformly, t
     cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert)); deltaY:deltaY:(domainHeight - cellRadius)];
 end
 %% If there are follower cells, initialise them here %%%
+% I'm fairly sure this part is only relevant if we want to seed more than
+% just the very left edge with cells at the start - leave this here for now
+% as it might be important for the old transplantation experiments
 if followerFraction~=0
     %% Iterate until the cells vector is full to the correct amount %%%
     while isnan(cells(1,floor(end*followerFraction),1))

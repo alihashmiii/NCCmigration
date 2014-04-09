@@ -108,12 +108,13 @@ for sensingAccuracy = [0.1, 0.01]
                 filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
                     '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
                     '_numSteps_' num2str(numSteps) ...
-                    '_tstep_' num2str(tstep,precision) '_allRuns.eps'];
+                    '_tstep_' num2str(tstep,precision) '_allRuns'];
                 pos = get(runsFig,'Position');
                 pos(4) = 3/2*pos(3);% adjust height to 3/2 width
                 set(runsFig,'PaperUnits','centimeters','Position',pos);
                 exportfig(runsFig,filename,exportOptions);
-                system(['epstopdf ' filename]);
+                system(['epstopdf ' filename '.eps']);
+                system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
                 close(runsFig);
                 
                 %% plot summary migration profiles
@@ -182,24 +183,27 @@ for sensingAccuracy = [0.1, 0.01]
         pos = get(profilesFig,'Position');
         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
         set(profilesFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles.eps'];
+        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles'];
         exportfig(profilesFig,filename,exportOptions);
-        system(['epstopdf ' filename]);
+        system(['epstopdf ' filename '.eps']);
+        system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
         close(profilesFig);
         
         pos = get(profiles2getherFig,'Position');
 %         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
         set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether.eps'];
+        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_migrationProfiles2gether'];
         exportfig(profiles2getherFig,filename,exportOptions);
-        system(['epstopdf ' filename]);
+        system(['epstopdf ' filename '.eps']);
+        system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
         
         pos = get(neighbourRelationsFig,'Position');
 %         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
         set(neighbourRelationsFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_neighbourRelations.eps'];
+        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_tstep_' num2str(tstep,precision) '_neighbourRelations'];
         exportfig(neighbourRelationsFig,filename,exportOptions);
-        system(['epstopdf ' filename]);
+        system(['epstopdf ' filename '.eps']);
+        system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
         close(neighbourRelationsFig);
     end
 end
