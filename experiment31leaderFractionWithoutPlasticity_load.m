@@ -109,9 +109,9 @@ for sensingAccuracy = sensingAccuracyValues
             pos = get(runsFig,'Position');
             pos(4) = 3/2*pos(3);% adjust height to 3/2 width
             set(runsFig,'PaperUnits','centimeters','Position',pos);
-            exportfig(runsFig,filename,exportOptions);
+            exportfig(runsFig,[filename '.eps'],exportOptions);
             system(['epstopdf ' filename '.eps']);
-            system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+            system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
             close(runsFig);
             
             %% plot summary migration profiles
@@ -182,27 +182,27 @@ for sensingAccuracy = sensingAccuracyValues
     %pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profilesFig,'PaperUnits','centimeters','Position',pos);
     filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision)  '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles'];
-    exportfig(profilesFig,filename,exportOptions);
+    exportfig(profilesFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
     close(profilesFig);
     
     pos = get(profiles2getherFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
     filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision) '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles2gether'];
-    exportfig(profiles2getherFig,filename,exportOptions);
+    exportfig(profiles2getherFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
     close(profiles2getherFig);
     
     pos = get(neighbourRelationsFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(neighbourRelationsFig,'PaperUnits','centimeters','Position',pos);
     filename = ['results/experiment31/figures/exp31_tstep_' num2str(tstep,precision) '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_neighbourRelations'];
-    exportfig(neighbourRelationsFig,filename,exportOptions);
+    exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
     close(neighbourRelationsFig);
 end
 

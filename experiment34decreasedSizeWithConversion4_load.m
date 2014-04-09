@@ -95,9 +95,9 @@ for insertStepsCtr = 1:length(insertStepsValues)
             pos = get(runsFig,'Position');
             pos(4) = 3/2*pos(3);% adjust height to 3/2 width
             set(runsFig,'PaperUnits','centimeters','Position',pos);
-            exportfig(runsFig,filename,exportOptions);
+            exportfig(runsFig,[filename '.eps'],exportOptions);
             system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
             close(runsFig);
             
             set(0,'CurrentFigure',profilesFig);
@@ -130,9 +130,9 @@ set(profilesFig,'PaperUnits','centimeters','Position',pos);
 filename = ['results/experiment34/figures/exp34_eatRate_' num2str(eatRate) ...
                 '_numSteps_' num2str(numSteps) ...
                 '_tstep_' num2str(tstep,precision) '_migrationProfiles'];
-exportfig(profilesFig,filename,exportOptions);
+exportfig(profilesFig,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
 close(profilesFig);
 
 save('results/experiment34/figures/experiment34collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')
