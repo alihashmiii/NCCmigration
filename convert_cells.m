@@ -114,7 +114,7 @@ elseif conversionType == 4
      %% integrate-and-switch, or time-frustration with hysteresis -- LJS
     numSteps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
     lead2follow = cellsFollow'==0&happiness(timeCtr,:)<=0; % indices of leaders to switch to followers
-    follow2lead = cellsFollow'==1&happiness(timeCtr,:)>=numSteps; % indices of followers to switch to leaders
+    follow2lead = cellsFollow'==1&happiness(timeCtr,:)>=1; % indices of followers to switch to leaders
     if any(lead2follow)
         cellsFollow(lead2follow) = 1; % switch cell type
         moved(timeCtr,lead2follow) = 1;

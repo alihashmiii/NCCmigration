@@ -45,7 +45,7 @@ volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-makeMovies = 0;
+makeMovies = 1;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
@@ -59,6 +59,7 @@ followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
 domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
+maxFilolength = filolength; % maximum length of filopodium before folloer dettaches from leader. default = filolength (non-extensible)
 
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
@@ -96,7 +97,7 @@ elseif conversionType == 2
     numSteps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
     numDirections = 1/numSteps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
 elseif conversionType == 4
-    numSteps = 20; % number of happiness levels between dedicated leader/follower and switching
+    numSteps = [8, 16]; % timescale in minutes for switching [lead2follow, follow2lead]
     numDirections = NaN;
 else
     numSteps=10;
@@ -130,6 +131,9 @@ if isstruct(in)
     end
     if ismember('filolength',fields(in))
         filolength = in.filolength; % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
+    end
+    if ismember('maxFilolength',fields(in))
+        maxFilolength = in.maxFilolength; % maximum length of filopodium before folloer dettaches from leader
     end
     if ismember('diffus',fields(in))
         diffus = in.diffus; % chemoattractant diffusivity (in (mu)^2/h?), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
@@ -314,12 +318,12 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = new_move_cells(cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
+                cellRadius,filolength,maxFilolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours);
         else
             temp = new_move_cells(cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
+                cellRadius,filolength,maxFilolength,eatWidth,domainHeight,dist,domainLengths(timeCtr),experiment,numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours);
         end
         attach = temp.attach;
@@ -327,16 +331,18 @@ for timeCtr=1:numTsteps
         filopodia = temp.filopodia;
         theta = temp.theta;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
+        if conversionType==4
         if timeCtr ==1
-            happiness(timeCtr,1:length(cells(1,:))) = round(numSteps/2); % cells start at half maximum happiness, rounded up -- LJS
+            happiness(timeCtr,1:length(cells(1,:))) = 0.5; % cells start at half maximum happiness-- LJS
         else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = round(numSteps/2); % cells start at half maximum happiness, rounded up -- LJS
-            happiness(timeCtr,temp.sensed) = min(numSteps,... % the maximum happiness is numSteps -- LJS
-                min(happiness(timeCtr,temp.sensed),happiness(timeCtr-1,temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness (which is NaN for existing cells) -- LJS
-                +1); % cells that sensed CA become happier, with maximum numSteps -- LJS
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = 0.5; % cells start at half maximum happiness, rounded up -- LJS
+            happiness(timeCtr,temp.sensed) = min(1,... % the maximum happiness is 1 -- LJS
+                min(happiness(timeCtr,temp.sensed),happiness(timeCtr-1,temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness -- LJS
+                + tstep/numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
             happiness(timeCtr,~temp.sensed) = max(0,... % minimum happiness is 0 -- LJS
-                max(happiness(timeCtr,~temp.sensed),happiness(timeCtr-1,~temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness (which is NaN for existing cells) -- LJS
-                -1); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+                max(happiness(timeCtr,~temp.sensed),happiness(timeCtr-1,~temp.sensed))... % for new cells the previous happiness is NaN, hence take max of previous and current happiness -- LJS
+                - tstep/numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+        end
         end
         attach_save{timeCtr} = attach;
         cellsFollow_save{timeCtr} = cellsFollow;

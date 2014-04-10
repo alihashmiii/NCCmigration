@@ -1,6 +1,6 @@
 function out = new_move_cells(cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,...
-    cellRadius, filolength, eatWidth, domainHeight, dist, domainLength, experiment, numFilopodia,...
+    cellRadius, filolength, maxFilolength, eatWidth, domainHeight, dist, domainLength, experiment, numFilopodia,...
     volumeExclusion, standStill, sensingAccuracy, needNeighbours)
 global cells
 %% iterate through the cell movement in a random order %%%
@@ -26,7 +26,7 @@ for i =1:length(cell_order)
         %% if it's a follower -- LJS
         if attach(cellidx)~=0 
             %% if it's a chained follower
-            if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (filolength + cellRadius)^2
+            if (cells(1,attach(cellidx)) - cells(1,cellidx))^2 + (cells(2,attach(cellidx)) - cells(2,cellidx))^2 < (maxFilolength + cellRadius)^2
                 %% if it can reach the cell ahead
                 %             % set angle of movement towards cell being followed -- LJS
                 %             theta(cellidx) = atan2((cells(2,attach(cellidx)) - cells(2,cellidx)),(cells(1,attach(cellidx)) - cells(1,cellidx)));

@@ -162,7 +162,7 @@ for sensingAccuracy = sensingAccuracyValues
             plot(neighbours(paramCtr).areasBinEdges, neighbours(paramCtr).areas./numRepeats,'Color',followFracColors(followFracCtr,:))
             if followFracCtr==length(followFracValues)
                 xlabel('area/\mum^2'), ylabel('N(cells)'), legend(num2str(actualLeaderFraction((length(needNeighboursValues):length(needNeighboursValues):length(needNeighboursValues)*length(followFracValues)) - length(needNeighboursValues)*length(followFracValues) + paramCtr),precision))
-                xlim([0 max(neighbours(paramCtr).areasBinEdges)]), grid on
+                xlim([0 max(neighbours(paramCtr).areasBinEdges)/2]), grid on
             end
             
             %% save summary of results

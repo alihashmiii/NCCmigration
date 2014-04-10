@@ -42,7 +42,7 @@ followFracValues = [0, 1];
 diffValues = [0.1 100];
 sensingAccuracy = 0.01;
 
-caCmap = load('cmap_erdc_green2yellow_BW.txt');
+caCmap = load('cmap_blue2cyan.txt');
 
 profilesFig = figure('Visible','off');
 for insertStepsCtr = 1:length(insertStepsValues)
@@ -97,7 +97,7 @@ for insertStepsCtr = 1:length(insertStepsValues)
             set(runsFig,'PaperUnits','centimeters','Position',pos);
             exportfig(runsFig,filename,exportOptions);
             system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
+            system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
             close(runsFig);
             
             set(0,'CurrentFigure',profilesFig);

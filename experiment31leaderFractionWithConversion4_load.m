@@ -7,7 +7,7 @@ clear all
 time = 18;
 numRepeats = 20;
 maxRuns2plot = 20;
-numParamCombinations = 84;
+numParamCombinations = 36;
 % to calculate the density profile of cells and chemoattractant along the x-direction
 cellRadius = 7.5;
 filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
@@ -35,13 +35,13 @@ precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
 eatRate = 1000;
 conversionType = 4;
-numStepsValues = [1 2 3 6 12 24 36];
-numStepsColors = jet(length(numStepsValues));
 standStill = 0;
 volumeExclusion = 1;
 tstep = 1/4*5/60;
-followFracValues = [0, 1];
-
+followerFraction = 1;
+lead2followValues = [4 8];
+follow2leadValues = [8 16 30];
+follow2leadColors = jet(length(follow2leadValues));
 caCmap = load('cmap_blue2cyan.txt');
 
 for sensingAccuracy = [0.1, 0.01]
@@ -49,15 +49,16 @@ for sensingAccuracy = [0.1, 0.01]
         profilesFig = figure('Visible','off');
         profiles2getherFig = figure('Visible','off');
         neighbourRelationsFig = figure('Visible','off');
-        for followFracCtr = 1:length(followFracValues)
-            followerFraction = followFracValues(followFracCtr);
             %% load and plot data for every run of this parameter combination
-            for numStepsCtr = 1:length(numStepsValues)
-                numSteps = numStepsValues(numStepsCtr);
+            for lead2followCtr = 1:length(lead2followValues)
+                lead2follow = lead2followValues(lead2followCtr);
+            for follow2leadCtr = 1:length(follow2leadValues)
+                follow2lead = follow2leadValues(follow2leadCtr);
+                numSteps = [lead2follow, follow2lead];
                 runsFig = figure('Visible','off');
                 for repCtr = 1:numRepeats
                     loadInfo = ['experiment31conversion4/exp31_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                        '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps) ...
+                        '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
                         '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours)...
                         '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
                     try % sometime we get corrupt files, which crashes the script
@@ -102,12 +103,12 @@ for sensingAccuracy = [0.1, 0.01]
                 % title has parameter values and actual leader fraction
                 actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
                 actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-                title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ])
+                title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow) ', follow2lead=' num2str(follow2lead) ])
                 
                 % save plot
-                filename = ['results/experiment31conversion4/figures/exp31conv4_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
+                filename = ['results/experiment31conversion4/figures/exp31conv4_eatRate_' num2str(eatRate) ...
                     '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
-                    '_numSteps_' num2str(numSteps) ...
+                    'numSteps' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
                     '_tstep_' num2str(tstep,precision) '_allRuns'];
                 pos = get(runsFig,'Position');
                 pos(4) = 3/2*pos(3);% adjust height to 3/2 width
@@ -119,54 +120,54 @@ for sensingAccuracy = [0.1, 0.01]
                 
                 %% plot summary migration profiles
                 set(0,'CurrentFigure',profilesFig);
-                subplot(length(numStepsValues),length(followFracValues),length(followFracValues)*(numStepsCtr - 1) + followFracCtr)
+                subplot(length(follow2leadValues),length(lead2followValues),length(lead2followValues)*(follow2leadCtr - 1) + lead2followCtr)
                 plot_migration_profile
                 % xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
                 % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
                 
                 % title has parameter values and actual leader fraction
-                if numStepsCtr==1&&followerFraction==0
-                    title(['Exp3.1: followDefault=' num2str(followerFraction) ', sensAcc=' num2str(sensingAccuracy) ' needNbrs=' num2str(needNeighbours) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
-                elseif numStepsCtr==1&&followerFraction==1
-                    title(['followDefault=' num2str(followerFraction) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
+                if follow2leadCtr==1&&lead2followCtr==1
+                    title(['Exp3.1: lead2follow=' num2str(lead2follow) ', sensAcc=' num2str(sensingAccuracy) ' needNbrs=' num2str(needNeighbours) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
+                elseif follow2leadCtr==1&&lead2followCtr==2
+                    title(['lead2follow=' num2str(lead2follow) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
                 else
-                    title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', steps=' num2str(numSteps)])
+                    title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', follow2lead=' num2str(follow2lead)])
                 end
                 
                 set(0,'CurrentFigure',profiles2getherFig);
-                subplot(length(followFracValues),1,followFracCtr)
-                if numStepsCtr==1, hold on, end
-                plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',numStepsColors(numStepsCtr,:));
-                if numStepsCtr==length(numStepsValues)
-                    title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
-                    xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(numStepsValues'))
+                subplot(length(lead2followValues),1,lead2followCtr)
+                if follow2leadCtr==1, hold on, end
+                plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',follow2leadColors(follow2leadCtr,:));
+                if follow2leadCtr==length(follow2leadValues)
+                    title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow) ', tstep=' num2str(tstep,precision) ])
+                    xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(follow2leadValues'))
                     ylim([0 10]), xlim([0 800]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
                 end
                 
                 %% plot neighbour relations
                 set(0,'CurrentFigure',neighbourRelationsFig);
-                subplot(length(followFracValues),3,1 + (followFracCtr - 1)*3)
-                if numStepsCtr ==1, hold on, end
-                plot(1:length(neighbours(paramCtr).numbers),neighbours(paramCtr).numbers./numRepeats,'Color',numStepsColors(numStepsCtr,:))
-                if numStepsCtr==length(numStepsValues)
+                subplot(length(lead2followValues),3,1 + (lead2followCtr - 1)*3)
+                if follow2leadCtr ==1, hold on, end
+                plot(1:length(neighbours(paramCtr).numbers),neighbours(paramCtr).numbers./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
+                if follow2leadCtr==length(follow2leadValues)
                     xlabel('#neighbours'), ylabel('N(cells)'), grid on
                 end
                 
-                subplot(length(followFracValues),3,2 + (followFracCtr - 1)*3)
-                if numStepsCtr ==1, hold on, end
-                plot(neighbours(paramCtr).distancesBinEdges, neighbours(paramCtr).distances./numRepeats,'Color',numStepsColors(numStepsCtr,:))
-                if numStepsCtr==length(numStepsValues)
-                    title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', followDefault=' num2str(followerFraction) ', tstep=' num2str(tstep,precision) ])
+                subplot(length(lead2followValues),3,2 + (lead2followCtr - 1)*3)
+                if follow2leadCtr ==1, hold on, end
+                plot(neighbours(paramCtr).distancesBinEdges, neighbours(paramCtr).distances./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
+                if follow2leadCtr==length(follow2leadValues)
+                    title(['Exp3.1: eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow) ', tstep=' num2str(tstep,precision) ])
                     xlabel('distance/\mum'), ylabel('N(cells)')
                     xlim([0 max(neighbours(paramCtr).distancesBinEdges)]), grid on
                 end
                 
-                subplot(length(followFracValues),3,3 + (followFracCtr - 1)*3)
-                if numStepsCtr ==1, hold on, end
-                plot(neighbours(paramCtr).areasBinEdges, neighbours(paramCtr).areas./numRepeats,'Color',numStepsColors(numStepsCtr,:))
-                if numStepsCtr==length(numStepsValues)
-                    xlabel('area/\mum^2'), ylabel('N(cells)'), legend(num2str(numStepsValues'))
-                    xlim([0 max(neighbours(paramCtr).areasBinEdges)]), grid on
+                subplot(length(lead2followValues),3,3 + (lead2followCtr - 1)*3)
+                if follow2leadCtr ==1, hold on, end
+                plot(neighbours(paramCtr).areasBinEdges, neighbours(paramCtr).areas./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
+                if follow2leadCtr==length(follow2leadValues)
+                    xlabel('area/\mum^2'), ylabel('N(cells)'), legend(num2str(follow2leadValues'))
+                    xlim([0 max(neighbours(paramCtr).areasBinEdges)/2]), grid on
                 end
                 
                 %% save summary of results
@@ -178,7 +179,7 @@ for sensingAccuracy = [0.1, 0.01]
                 neighboursNeeds(paramCtr) = needNeighbours;
                 paramCtr = paramCtr + 1;
             end
-        end
+            end
         % make a plot with migration profiles for all parameter combinations
         pos = get(profilesFig,'Position');
         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
