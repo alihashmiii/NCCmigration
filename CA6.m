@@ -45,26 +45,26 @@ volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
 
 %% Outputs (videos and figures) %%
-makeMovies = 1;
+makeMovies = 0;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
 makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
-tstep = 5/4/60;                   % time step in hours
+tstep = 1/60;                   % time step in hours
 numTsteps = floor(time/tstep)+1;   % number of time steps
 cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
 followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
 domainHeight = 120;                   % maximum y value
-filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-maxFilolength = filolength; % maximum length of filopodium before folloer dettaches from leader. default = filolength (non-extensible)
+filolength = cellRadius + 10*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
+maxFilolength = 45; % maximum length of filopodium before folloer dettaches from leader. default = filolength (non-extensible)
 
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
 
-needNeighbours = 1; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
+needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 %% experimental parameters %%
 insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 % do this with case instead
