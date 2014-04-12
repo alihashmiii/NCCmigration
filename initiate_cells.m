@@ -45,38 +45,41 @@ if followerFraction~=0
     cellsFollow(1:floor(end*followerFraction))=ones(floor(length(cells(1,:,1))*followerFraction),1);
 end
 
-%% Initialise all other cells here 
-%% Iterate until the cells vector is full (if we're inserting multiple cells this timestep)
-it = 0;
-maxit = 50;
-while isnan(cells(1,end,1))&&(it<maxit)
-    %% postulate x-coordinates for a new cell %%%
-    if initXFrac==0
-        cellx = cellRadius;
-    else % this next bit is probably only needed for odd cases where we want to insert cells beyond the left edge of the domain, and if we want to use it it should be changed to not randomly sample x-coordinates
-        cellx = (rand().*initXFrac.*(1 - followerFraction) + initXFrac*followerFraction).*initialDomainLength;
-    end
-    %% generate a set of possible y-coordinates
-    yIndcs = false(maxit,1);
-    yValues = ((linspace(0,1,maxit).*initYFrac + (0.5 - initYFrac/2))*domainHeight);
-    %% Check that there is no overlap with existing cells %%%
-        %%% (x_cells,y_cells) are the pre-existing cell coordinates %%%
-        x_cells = cells(1,1:j,1);
-        y_cells = cells(2,1:j,1);
-    for yCtr = 1:length(yValues)
+%% Initialise all other cells here
+if isnan(cells(1,end,1))
+    % (x_cells,y_cells) are the pre-existing cell coordinates
+    x_cells = cells(1,1:j,1);
+    y_cells = cells(2,1:j,1);
+    %% try to insert all the cells that need to be inserted -- LJS
+    % generate a number of candidate y-values -- LJS
+    numSamples = 30;
+    yValues = ((linspace(0,1,numSamples).*initYFrac + (0.5 - initYFrac/2))*domainHeight);
+    % try putting cells at these y-values in a random order -- LJS
+    yIndcs = randperm(length(yValues));
+    for yCtr = yIndcs
         celly = yValues(yCtr);
-        %% If there is no overlap, take that coordinate else increase 'it' %%
+        %% postulate x-coordinates for a new cell %%%
+        if initXFrac==0
+            cellx = cellRadius;
+        else % this next bit is probably only needed for odd cases where we want to insert cells beyond the left edge of the domain, and if we want to use it it should be changed to not randomly sample x-coordinates
+            cellx = (rand().*initXFrac.*(1 - followerFraction) + initXFrac*followerFraction).*initialDomainLength;
+        end
+        %% If there is no overlap, take that coordinate
         if (sqrt(min((cellx - x_cells).^2+(celly-y_cells).^2))>2*cellRadius)...
                 &&(cellx>=cellRadius)&&(cellx<initialDomainLength-cellRadius)...
                 &&(celly>cellRadius)&&(celly<domainHeight-cellRadius)
-            yIndcs(yCtr) = true;
-        end
-    end
-    if any(yIndcs)
-    cells(:,j+1,1) = [cellx;randsample(yValues(yIndcs),1)];
+            % if it fits, insert cell
+            cells(:,j+1,1) = [cellx; celly];
             j = j+1;
-    else
-        break
+            % if this was the last cell, break out of the loop, else keep
+            % going through the other yValues
+            if ~isnan(cells(1,end))
+                break
+            end
+            % update coordinates of cells that might be in the way
+            x_cells = cells(1,1:j,1);
+            y_cells = cells(2,1:j,1);
+        end
     end
 end
 %%

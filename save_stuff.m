@@ -120,7 +120,7 @@ if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experimen
     out.experiment = experiment;
     
     save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
-    delete(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
+    system(['rm -f /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
     fprintf(['saved results to /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
 
     

@@ -21,7 +21,7 @@ if insert==1
     xmin = min(xlat_new);
 else
     nx = int64(64); % number of x grid points including boundary
-    ny = int64(64);
+    ny = int64(32);
 end
 
 % tolerances
