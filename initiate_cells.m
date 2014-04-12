@@ -9,7 +9,7 @@ function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initia
 cells = [cells_in NaN(2,numCells2Insert)];
 cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
-if j==0 % if we're inserting the first set of cells, position themn uniformly, to have repeatable initial conditions
+if j==0 % if we're inserting the first set of cells, position them uniformly, to have repeatable initial conditions
     deltaY = domainHeight/(numCells2Insert + 1); % spacing between uniformly spread cells
     cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert)); deltaY:deltaY:(domainHeight - cellRadius)];
 end
@@ -46,36 +46,40 @@ if followerFraction~=0
 end
 
 %% Initialise all other cells here 
-%% Iterate until the cells vector is full %%%
+%% Iterate until the cells vector is full (if we're inserting multiple cells this timestep)
 it = 0;
 maxit = 50;
 while isnan(cells(1,end,1))&&(it<maxit)
-    %% postulate coordinates for a new cell %%%
+    %% postulate x-coordinates for a new cell %%%
     if initXFrac==0
         cellx = cellRadius;
-    else
-        cellx = (rand().*initXFrac.*(1-followerFraction)+initXFrac*followerFraction).*initialDomainLength;
+    else % this next bit is probably only needed for odd cases where we want to insert cells beyond the left edge of the domain, and if we want to use it it should be changed to not randomly sample x-coordinates
+        cellx = (rand().*initXFrac.*(1 - followerFraction) + initXFrac*followerFraction).*initialDomainLength;
     end
-    celly = (rand().*initYFrac+(0.5-initYFrac/2))*domainHeight;
-
+    %% generate a set of possible y-coordinates
+    yIndcs = false(maxit,1);
+    yValues = ((linspace(0,1,maxit).*initYFrac + (0.5 - initYFrac/2))*domainHeight);
     %% Check that there is no overlap with existing cells %%%
-    if (j>0)%&&(volumeExclusion==1)
         %%% (x_cells,y_cells) are the pre-existing cell coordinates %%%
         x_cells = cells(1,1:j,1);
         y_cells = cells(2,1:j,1);
+    for yCtr = 1:length(yValues)
+        celly = yValues(yCtr);
         %% If there is no overlap, take that coordinate else increase 'it' %%
         if (sqrt(min((cellx - x_cells).^2+(celly-y_cells).^2))>2*cellRadius)...
-                &&(cellx>=cellRadius)&&(cellx<initialDomainLength-cellRadius)&&(celly>cellRadius)&&(celly<domainHeight-cellRadius)
-            cells(:,j+1,1) = [cellx;celly];
-            j = j+1;
-        else
-            it = it+1;
+                &&(cellx>=cellRadius)&&(cellx<initialDomainLength-cellRadius)...
+                &&(celly>cellRadius)&&(celly<domainHeight-cellRadius)
+            yIndcs(yCtr) = true;
         end
-    elseif (j==0)%||(volumeExclusion==0) % if it's the first cell or if we don't have volume exclusion
-        cells(:,j+1,1) = [cellx;celly];
-        j = j+1;
+    end
+    if any(yIndcs)
+    cells(:,j+1,1) = [cellx;randsample(yValues(yIndcs),1)];
+            j = j+1;
+    else
+        break
     end
 end
+%%
 if length(cells(1,any(cells,1)==0))==1
     disp([mat2str(length(cells(1,any(cells,1)==0))),' cell could not be initialised'])
 elseif length(cells(1,any(cells,1)==0))>1
