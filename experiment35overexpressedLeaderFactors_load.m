@@ -17,10 +17,6 @@ caDistribution = NaN(numParamCombinations,numRepeats,64);
 xlat_save = NaN(64,1);
 % preallocate variables for saving collated results
 actualLeaderFraction = NaN(numParamCombinations,1);
-eatRates = NaN(numParamCombinations,1);
-volumeExclusions = NaN(numParamCombinations,1);
-standStills = NaN(numParamCombinations,1);
-tsteps = NaN(numParamCombinations,1);
 sensingAccuracies = NaN(numParamCombinations,1);
 neighboursNeeds = NaN(numParamCombinations,1);
 
@@ -33,15 +29,10 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
-standStill = 0;
 followFracValues = [7/8, 15/16, 1];
 sensingAccuracyValues = [0.1, 0.01, 0.001];
 needNeighboursValues = [0, 1, 2];
 followFracColors = jet(length(followFracValues));
-
-volumeExclusion = 1;
-eatRate = 1000;
-tstep = 1/4*5/60;
 
 caCmap = load('cmap_blue2cyan.txt');
 
@@ -56,9 +47,9 @@ for sensingAccuracy = sensingAccuracyValues
             runsFig = figure('Visible','off');
             %% load and plot data for every run of this parameter combination
             for repCtr = 1:numRepeats
-                loadInfo = ['experiment35/exp35_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
+                loadInfo = ['experiment35/exp35_followFrac_' num2str(followerFraction,precision) ...
                     '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
-                    '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
+                    '_Run_' num2str(repCtr)];
                 try % sometimes we get corrupt files, which crashes the script
                     load(['results/' loadInfo '.mat'])
                 catch
@@ -100,18 +91,18 @@ for sensingAccuracy = sensingAccuracyValues
             % title has parameter values and actual leader fraction
             actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
             actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-            title(['Exp3.5: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', eatRate=' num2str(eatRate) ', tstep=' num2str(tstep,precision) ])
+            title(['Exp3.5: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours)])
             
             % save plot
-            filename = ['results/experiment35/figures/exp35_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
+            filename = ['results/experiment35/figures/exp35_followFrac_' num2str(followerFraction,precision) ...
                 '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
-                '_tstep_' num2str(tstep,precision) '_allRuns'];
+                '_allRuns'];
             pos = get(runsFig,'Position');
             pos(4) = 3/2*pos(3);% adjust height to 3/2 width
             set(runsFig,'PaperUnits','centimeters','Position',pos);
             exportfig(runsFig,[filename '.eps'],exportOptions);
             system(['epstopdf ' filename '.eps']);
-    system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
+            system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
             close(runsFig);
             
             %% plot summary migration profiles
@@ -123,7 +114,7 @@ for sensingAccuracy = sensingAccuracyValues
             
             % title has parameter values and actual leader fraction
             if needNeighboursCtr==1&&followFracCtr==1
-                title(['Exp3.5: tstep=' num2str(tstep,precision) ', eatRate=' num2str(eatRate) ', sensAcc=' num2str(sensingAccuracy)])
+                title(['Exp3.5: sensAcc=' num2str(sensingAccuracy)])
             elseif followFracCtr==1
                 title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision)])
             else
@@ -152,7 +143,7 @@ for sensingAccuracy = sensingAccuracyValues
             if followFracCtr ==1, hold on, end
             plot(neighbours(paramCtr).distancesBinEdges, neighbours(paramCtr).distances./numRepeats,'Color',followFracColors(followFracCtr,:))
             if followFracCtr==length(followFracValues)
-                title(['Exp3.5: sensAcc=' num2str(sensingAccuracy) ', eatRate=' num2str(eatRate) ', needNbrs=' num2str(needNeighbours) ', tstep=' num2str(tstep,precision) ])
+                title(['Exp3.5: sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours)])
                 xlabel('distance/\mum'), ylabel('N(cells)')
                 xlim([0 max(neighbours(paramCtr).distancesBinEdges)]), grid on
             end
@@ -166,21 +157,17 @@ for sensingAccuracy = sensingAccuracyValues
             end
             
             %% save summary of results
-            eatRates(paramCtr) = eatRate;
-            volumeExclusions(paramCtr) = volumeExclusion;
-            standStills(paramCtr) = standStill;
-            tsteps(paramCtr) = tstep;
             sensingAccuracies(paramCtr) = sensingAccuracy;
             neighboursNeeds(paramCtr) = needNeighbours;
             paramCtr = paramCtr + 1;
         end
     end
-    % for each volumeExclusion, standStill and timeStep, make a plot with migration profiles for all set leader fractions and
-    % sensing accuracies - in total numParamCombinations plots with maxRuns2plot+1 subplots each
+    % for each sensing Accuracy make a plot with migration profiles for all set leader fractions and
+    % needNeighbours - in total numParamCombinations plots with maxRuns2plot+1 subplots each
     pos = get(profilesFig,'Position');
     %pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profilesFig,'PaperUnits','centimeters','Position',pos);
-    filename = ['results/experiment35/figures/exp35_tstep_' num2str(tstep,precision)  '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles'];
+    filename = ['results/experiment35/figures/exp35_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles'];
     exportfig(profilesFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
     system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
@@ -189,7 +176,7 @@ for sensingAccuracy = sensingAccuracyValues
     pos = get(profiles2getherFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
-    filename = ['results/experiment35/figures/exp35_tstep_' num2str(tstep,precision) '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles2gether'];
+    filename = ['results/experiment35/figures/exp35_sensingAcc_' num2str(sensingAccuracy) '_migrationProfiles2gether'];
     exportfig(profiles2getherFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
     system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
@@ -198,11 +185,11 @@ for sensingAccuracy = sensingAccuracyValues
     pos = get(neighbourRelationsFig,'Position');
     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(neighbourRelationsFig,'PaperUnits','centimeters','Position',pos);
-    filename = ['results/experiment35/figures/exp35_tstep_' num2str(tstep,precision) '_eatRate_' num2str(eatRate) '_sensingAcc_' num2str(sensingAccuracy) '_neighbourRelations'];
+    filename = ['results/experiment35/figures/exp35_sensingAcc_' num2str(sensingAccuracy) '_neighbourRelations'];
     exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
     system(['epstopdf ' filename '.eps']);
     system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
     close(neighbourRelationsFig);
 end
 
-save('results/experiment35/figures/experiment35collatedResults','xBins','cellDistributions','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps','sensingAccuracies','neighboursNeeds')
+save('results/experiment35/figures/experiment35collatedResults','xBins','cellDistributions','caDistribution','actualLeaderFraction','sensingAccuracies','neighboursNeeds')

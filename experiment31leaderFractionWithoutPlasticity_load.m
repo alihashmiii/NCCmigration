@@ -136,7 +136,6 @@ for sensingAccuracy = sensingAccuracyValues
             if followFracCtr ==1, hold on, end
             plot(1:length(neighbours(paramCtr).numbers),neighbours(paramCtr).numbers./numRepeats,'Color',followFracColors(followFracCtr,:))
             if followFracCtr==length(followFracValues)
-                title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours)])
                 xlabel('#neighbours'), ylabel('N(cells)'), grid on
             end
             

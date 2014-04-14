@@ -47,8 +47,8 @@ standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells
 %% Outputs (videos and figures) %%
 makeMovies = 0;
 makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant concentration -- LJS
-makeAllMovie = 1; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
-makeFrames = 1; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
+makeAllMovie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
+makeFrames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
 %% General parameters %%
 tstep = 1/60;                   % time step in hours
@@ -178,6 +178,18 @@ if isstruct(in)
     end
     if ismember('needNeighbours',fields(in))
         needNeighbours = in.needNeighbours;
+    end
+    if ismember('makeMovies',fields(in))
+        makeMovies = in.makeMovies;
+    end
+    if ismember('makeCaMovie',fields(in))
+        makeCaMovie = in.makeCaMovie;
+    end
+    if ismember('makeAllMovie',fields(in))
+        makeAllMovie = in.makeAllMovie;
+    end
+    if ismember('makeFrames',fields(in))
+        makeFrames = in.makeFrames;
     end
 end
 

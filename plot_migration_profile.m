@@ -20,7 +20,7 @@ hold(AX(2));
 % threshold
 plot(AX(2),xlat_save(caCutOffIndcs),caProfile(caCutOffIndcs),'x','Color',[0 0.5 0]);
 set(H2,'LineStyle','--','Color',[0 0.5 0]), set(H3,'LineStyle','-','EdgeColor','b')
-set(H3(3),'FaceColor','y'), set(H3(2),'FaceColor','w'), set(H3(1),'FaceColor','r')
+set(H3(3),'FaceColor','y'), set(H3(2),'FaceColor','w'), set(H3(1),'FaceColor',[0.5 0.5 0.5])
 ylim(AX(1),[0, 12]), xlim(AX(1),[0 800]), xlim(AX(2),[0 800]), ylim(AX(2),[0 0.4])
 set(AX(2),'YTick',[0 1])
 set(AX(1),'YTick',[0 3 6 9 12])

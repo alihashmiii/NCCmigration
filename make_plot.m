@@ -32,7 +32,7 @@ for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
         filoNum = numFilopodia(2);
         if attach(cellidx)==0
-            cellColor = 'r';
+            cellColor = [0.5 0.5 0.5];
         else
             cellColor = 'w';
         end
@@ -47,7 +47,7 @@ for cellidx = 1:length(cells(1,:))
     if ~quickMode
         % draw the filopodia
         for filoidx = 1:filoNum
-            plot([cells(1,cellidx),filopodia(cellidx,filoidx,1)],[cells(2,cellidx),filopodia(cellidx,filoidx,2)],cellColor,'LineWidth',1)
+            plot([cells(1,cellidx),filopodia(cellidx,filoidx,1)],[cells(2,cellidx),filopodia(cellidx,filoidx,2)],'color',cellColor,'LineWidth',1)
         end
     end
 end
