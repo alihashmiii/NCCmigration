@@ -4,10 +4,10 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
 else
     if conversionType~=0
         saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     else
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
 % don't overwrite existing file

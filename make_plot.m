@@ -4,17 +4,17 @@ function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,numFilopodia,at
 
 if ~quickMode, whitebg('white'), end
 %  plot the chemoattractant
-contourf(xlat,ylat,ca',10,'EdgeColor','none')
-colormap(caCmap)
+contourf(xlat,ylat,ca',20,'EdgeColor','none')
 hold on
 % calculate and plot the CA gradient in regions where it can be sensed
 [dcadx, dcady] = gradient(ca',xlat,ylat);
 indices2plot = sqrt(dcadx.^2 + dcady.^2)*filolength./sqrt(ca')>=sensingAccuracy;
-% if ~quickMode
-%     [Xlat,Ylat] = meshgrid(xlat,ylat);
-%     quiver(Xlat(indices2plot),Ylat(indices2plot),dcadx(indices2plot),dcady(indices2plot),'w');
-% end
-contour(xlat,ylat,indices2plot,1,'w','LineWidth',2)
+% plot a shaded region of sensible region of CA
+sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
+set(sensAccRegion,'EdgeColor','none','FaceColor',[0.5 0.5 0.5],...
+    'AlphaData',0.5*double(~indices2plot),'FaceAlpha','interp','AlphaDataMapping','none')
+% sensAccContour = contour(xlat,ylat,indices2plot,1,'EdgeColor',[0.5 0.5 0.5]./2, 'LineWidth', 2);
+colormap(caCmap)
 
 if cellRadius < 1
     filopodia = cells';
