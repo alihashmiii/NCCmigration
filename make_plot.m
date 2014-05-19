@@ -6,14 +6,24 @@ if ~quickMode, whitebg('white'), end
 %  plot the chemoattractant
 contourf(xlat,ylat,ca',20,'EdgeColor','none')
 hold on
+
 % calculate and plot the CA gradient in regions where it can be sensed
 [dcadx, dcady] = gradient(ca',xlat,ylat);
-indices2plot = sqrt(dcadx.^2 + dcady.^2)*filolength./sqrt(ca')>=sensingAccuracy;
-% plot a shaded region of sensible region of CA
-sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
-set(sensAccRegion,'EdgeColor','none','FaceColor',[0.5 0.5 0.5],...
-    'AlphaData',0.5*double(~indices2plot),'FaceAlpha','interp','AlphaDataMapping','none')
-% sensAccContour = contour(xlat,ylat,indices2plot,1,'EdgeColor',[0.5 0.5 0.5]./2, 'LineWidth', 2);
+indicesSensible = sqrt(dcadx.^2 + dcady.^2)*filolength./sqrt(ca')>=sensingAccuracy;
+if any(~indicesSensible(:))
+%     % plot a shaded region of sensible region of CA
+%     sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
+%     set(sensAccRegion,'EdgeColor','none','FaceColor',[0.75 0.75 0.75],...
+%         'AlphaData',0.5*double(~indicesSensible),'FaceAlpha','interp','AlphaDataMapping','none');
+    % plot markers on the lattice points in the non-sensible region
+    [yIndcsSnsbl, xIndcsSnsbl] = find(~indicesSensible);
+    scatter(xlat(xIndcsSnsbl),ylat(yIndcsSnsbl),20,[0.75 0.75 0.75],'x');
+    % draw a contour around the non-sensible region
+    sensAccContour = contour(xlat,ylat,indicesSensible,1,'EdgeColor',[0.75 0.75 0.75], 'LineWidth', 2);
+else
+    pause()
+end
+
 colormap(caCmap)
 
 if cellRadius < 1

@@ -108,11 +108,13 @@ if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experimen
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
     out.moved = moved;
     out.happiness = happiness;
+    out.caCmap = 
     
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;
     out.followSpeed = followSpeed;
     out.numFilopodia = numFilopodia;
+    out.sensingAccuracy = sensingAccuracy;
     
     out.growingDomain = growingDomain;
     out.followerFraction = followerFraction;

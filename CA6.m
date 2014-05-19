@@ -27,8 +27,8 @@ tic
 %% Model Type Inputs %%
 growingDomain = 1;     % the domain grows
 followerFraction = 1;        % proportion of cells that are followers (0<=follow_per<=1)
-% this is only an estimated fraction. currently 1/8 leaders mean about 20
-% cells, of a total of about 80-90
+% this is only an estimated fraction. actual leader fraction currently
+% turns out to be ca. (1 - followerFraction)/2 -- LJS
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 conversionType = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
 numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
@@ -39,7 +39,7 @@ zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(
                             % else no flux boundary conditions
 caSolve = 1;           % solve for the chemoattractant concentration
 cellsMove = 1;             % the cells move
-insertCells = 1;           % new cells are inserted at x=0
+insertCells = 0;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
