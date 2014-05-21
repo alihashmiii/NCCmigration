@@ -11,10 +11,10 @@ hold on
 [dcadx, dcady] = gradient(ca',xlat,ylat);
 indicesSensible = sqrt(dcadx.^2 + dcady.^2)*filolength./sqrt(ca')>=sensingAccuracy;
 if any(~indicesSensible(:))
-%     % plot a shaded region of sensible region of CA
-%     sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
-%     set(sensAccRegion,'EdgeColor','none','FaceColor',[0.75 0.75 0.75],...
-%         'AlphaData',0.5*double(~indicesSensible),'FaceAlpha','interp','AlphaDataMapping','none');
+    % plot a shaded region of sensible region of CA
+    sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
+    set(sensAccRegion,'EdgeColor','none','FaceColor',[0.75 0.75 0.75],...
+        'AlphaData',0.5*double(~indicesSensible),'FaceAlpha','interp','AlphaDataMapping','none');
     % plot markers on the lattice points in the non-sensible region
     [yIndcsSnsbl, xIndcsSnsbl] = find(~indicesSensible);
     scatter(xlat(xIndcsSnsbl),ylat(yIndcsSnsbl),20,[0.75 0.75 0.75],'x');
