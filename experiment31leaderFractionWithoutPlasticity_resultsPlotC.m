@@ -57,15 +57,15 @@ for followFracCtr = length(followFracValues):-1:1
     % plot migration profile
     f_L = mean(actualLeaderFraction(followFracCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
-%     stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),'Color',plotColor)
-    h = bar(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),1,...
+    stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),'Color',plotColor)
+    h(followFracCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),1,...
         'FaceColor', plotColor, 'EdgeColor', 'none');
-%     h = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
-%         'FaceColor', plotColor, 'EdgeColor', plotColor);
-%     alpha(get(h,'children'),0.5)
+    %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
+    %         'FaceColor', plotColor, 'EdgeColor', plotColor);
+    alpha(get(h(followFracCtr),'children'),0.5)
 end
 xlabel('x/\mum'), ylabel('# cells / 50\mu m'), 
-legend(num2str(flipud(mean(actualLeaderFraction,2)),precision))
+legend(h,num2str(mean(actualLeaderFraction,2),precision))
 ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
 
@@ -79,8 +79,8 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 
 pos = get(gcf,'Position');
-%     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-set(gcf,'PaperUnits','centimeters','Position',pos);
+pos(4) = 1/2*pos(3);% adjust height to fraction of width
+set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 filename = ['manuscripts/subpopulations/figures/resultsFig1C'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
