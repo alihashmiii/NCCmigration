@@ -14,6 +14,9 @@ followFracValues = [0, 3/4, 7/8, 15/16, 1];
 sensingAccuracy = 0.1;
 needNeighbours = 0;
 
+cellRadius = 7.5;
+opacity = 3/numRepeats;
+
 actualLeaderFraction = NaN(length(followFracValues),numRepeats);
 distanceMigrated = cell(size(followFracValues));
 totalCellNumbers = NaN(size(followFracValues));
@@ -21,7 +24,7 @@ totalCellNumbers = NaN(size(followFracValues));
 scatterFig = figure('Visible','on');
 axis equal
 hold all
-markerSize = 176.7146; % area in points squared
+markerSize = 4; % area in points squared
  
 %% load and plot data for every run of this parameter combination
 for followFracCtr = 1:length(followFracValues)
@@ -46,10 +49,13 @@ for followFracCtr = 1:length(followFracValues)
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
         losts = cells(:,followIdcs==1&attachIdcs==0);
-        scatter(leaders(1,:),leaders(2,:) + yOffset,markerSize,[251 101 4]/255,'fill')
-        scatter(followers(1,:),followers(2,:) + yOffset,markerSize,[113 18 160]/255,'fill')
-        scatter(losts(1,:),losts(2,:) + yOffset,markerSize,0.5*[1 1 1],'fill')
-        
+%         scatter(leaders(1,:),leaders(2,:) + yOffset,markerSize,[251 101 4]/255,'fill')
+%         scatter(followers(1,:),followers(2,:) + yOffset,markerSize,[113 18 160]/255,'fill')
+%         scatter(losts(1,:),losts(2,:) + yOffset,markerSize,0.5*[1 1 1],'fill')
+        plotCircles([leaders(1,:); leaders(2,:) + yOffset],cellRadius,[251 101 4]/255,opacity);
+        plotCircles([followers(1,:); followers(2,:) + yOffset],cellRadius,[113 18 160]/255,opacity);
+        plotCircles([losts(1,:); losts(2,:) + yOffset],cellRadius,0*[1 1 1],opacity);
+
         actualLeaderFraction(followFracCtr,repCtr) = size(leaders,2)/numberOfCells;
         distanceMigrated{followFracCtr} = [distanceMigrated{followFracCtr}, cells(1,:)];
     end
@@ -85,7 +91,7 @@ exportOptions = struct('Format','eps2',...
 
 pos = get(gcf,'Position');
 %     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-set(gcf,'PaperUnits','centimeters','Position',pos);
+set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 filename = ['manuscripts/subpopulations/figures/resultsFig1B'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);

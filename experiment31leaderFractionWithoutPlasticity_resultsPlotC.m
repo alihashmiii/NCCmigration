@@ -68,6 +68,7 @@ xlabel('x/\mum'), ylabel('# cells / 50\mu m'),
 legend(h,num2str(mean(actualLeaderFraction,2),precision))
 ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
+box on
 
 %% export figure
 exportOptions = struct('Format','eps2',...
