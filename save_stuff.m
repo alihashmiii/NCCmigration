@@ -69,10 +69,10 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
 elseif ~exist('saveInfo','var')
     if conversionType~=0
         saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     else
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
-        '_numleadfil_',mat2str(numFilopodia(1)),'_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
 %% save the results %%
@@ -98,7 +98,7 @@ if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experimen
     out.growingDomain = growingDomain;
     out.followerFraction = followerFraction;
     out.tstep = tstep;
-    out.cellsFollow = cellsFollow_save;
+    out.cellsFollow_save = cellsFollow_save;
     out.cellRadius = cellRadius;
     out.domainHeight = domainHeight;
     out.filolength = filolength;
@@ -108,7 +108,6 @@ if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experimen
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
     out.moved = moved;
     out.happiness = happiness;
-    out.caCmap = 
     
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;

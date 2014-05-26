@@ -17,6 +17,8 @@ handle = fill(radius*cos(th(:,ones(size(positions(1,:))))) + positions(ones(size
 
 if opacity<1
     set(handle,'EdgeColor','none','FaceAlpha',opacity)
+else
+    set(handle,'EdgeColor','none')
 end
 
 end

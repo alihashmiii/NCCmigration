@@ -15,9 +15,9 @@ if any(~indicesSensible(:))
     sensAccRegion = pcolor(xlat,ylat,zeros(length(ylat),length(xlat)));
     set(sensAccRegion,'EdgeColor','none','FaceColor',[0.75 0.75 0.75],...
         'AlphaData',0.5*double(~indicesSensible),'FaceAlpha','interp','AlphaDataMapping','none');
-    % plot markers on the lattice points in the non-sensible region
-    [yIndcsSnsbl, xIndcsSnsbl] = find(~indicesSensible);
-    scatter(xlat(xIndcsSnsbl),ylat(yIndcsSnsbl),20,[0.75 0.75 0.75],'x');
+%     % plot markers on the lattice points in the non-sensible region
+%     [yIndcsSnsbl, xIndcsSnsbl] = find(~indicesSensible);
+%     scatter(xlat(xIndcsSnsbl),ylat(yIndcsSnsbl),20,[0.75 0.75 0.75],'x');
     % draw a contour around the non-sensible region
     sensAccContour = contour(xlat,ylat,indicesSensible,1,'EdgeColor',[0.75 0.75 0.75], 'LineWidth', 2);
 else
@@ -42,17 +42,17 @@ for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
         filoNum = numFilopodia(2);
         if attach(cellidx)==0
-            cellColor = [0.5 0.5 0.5];
+            cellColor = [0.5 0.5 0.5]; % dettached followers -- LJS
         else
-            cellColor = 'w';
+            cellColor = [113 18 160]/255; % followers -- LJS
         end
     else
         filoNum = numFilopodia(1);
-        cellColor = 'y';
+        cellColor = [251 101 4]/255; % leaders
     end
     
     % draw the cell
-    fill(cellRadius*cos(t)+cells(1,cellidx),cellRadius*sin(t)+cells(2,cellidx),cellColor);
+    fill(cellRadius*cos(t)+cells(1,cellidx),cellRadius*sin(t)+cells(2,cellidx),cellColor,'EdgeColor','none');
     
     if ~quickMode
         % draw the filopodia
