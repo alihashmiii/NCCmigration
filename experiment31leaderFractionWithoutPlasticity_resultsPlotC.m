@@ -1,5 +1,5 @@
-% load
-% L.J. Schumacher 28.10.13
+% load & plot distributions of cells as overlapping bar-charts
+% L.J. Schumacher 21.05.14
 
 close all
 clear

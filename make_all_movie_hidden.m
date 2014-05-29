@@ -1,8 +1,4 @@
-% Louise Dyson D.Phil project CA program describing the migration of cranial neural crest cells, 22/10/09
-% Edited on 06/01/10
-%
-% creates a movie of the cells moving with yellow followers and blue leaders
-% on a background of chemoattractant
+% saves images and compiles movie externally - LJS
 % saves to /avi_mat
 
 % close all
@@ -21,16 +17,16 @@ for timeCtr=1:skip:numTsteps
     disp(['step ',mat2str(timeCtr),' of ',mat2str(numTsteps)])
     make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,1,caCmap,0);
     
-%     xlim([minx,1100]) %this can cause unpleasant jittering in movies
-%     ylim([-50,120+50])
-    T_t = get(gca,'TightInset');
-    T = get(gca,'Position');
-    set(gca,'position',[T_t(1)+0.05 T_t(2) 1-T_t(1)-T_t(3)-0.17 1-T_t(2)-T_t(4)]);
+    xlim([min(xlat_save{timeCtr}), 1000])
     
     %% Insert title here
     title(['Cell migration at time = ' num2str(t_save(timeCtr),'%2.2f') ' hours with '  ...
         num2str(size(cells_save{timeCtr},2)) ' cells and ' num2str(min([size(cells_save{timeCtr},2) ...
         nnz(cellsFollow_save{timeCtr}==0)])) ' leaders.'],'FontSize',23)
+    % resize figure to tighter margins
+    T_t = get(gca,'TightInset');
+    T = get(gca,'Position');
+    set(gca,'position',[T_t(1)+0.04 T_t(2) 1-T_t(1)-T_t(3)-0.1 1-T_t(2)-T_t(4)]);
     
 %     axis image
     print(movieFig,'-dtiff',[filePath,int2str(frameCtr),'.tiff'])

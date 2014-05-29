@@ -70,7 +70,7 @@ for followFracCtr = 1:length(followFracValues)
         'colors',[1 1 1] - totalCellNumbers(followFracCtr)/maxCellNumber,'symbol','x','positions',yTicks(followFracCtr))
 end   
 xlabel('x/\mum')
-ylabel('f_L')
+ylabel('mean leader fraction <f_L>')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
