@@ -63,20 +63,24 @@ end
 
 %% plot the median distances migrated over all repeats
 symbols = {'>'; 'v'; '^'; 'd'; 's'};
+hsymbols = NaN(size(symbols)); % handle vector for symbols to show in legend
 maxCellNumber = max(max(totalCellNumbers));
 for followFracCtr = 1:length(followFracValues)
     for repCtr = 1:numRepeats
     plotColor = [1 1 1] - totalCellNumbers(followFracCtr,repCtr)/maxCellNumber;
-    plot(median(distanceMigrated{followFracCtr,repCtr}),log2(actualLeaderFraction(followFracCtr,repCtr)),...
-        symbols{followFracCtr},'MarkerEdgeColor',plotColor,'MarkerFaceColor',plotColor,'MarkerSize',5)
+    hsymbols(followFracCtr) = plot(median(distanceMigrated{followFracCtr,repCtr}),log2(actualLeaderFraction(followFracCtr,repCtr)),...
+        symbols{followFracCtr},'MarkerEdgeColor',plotColor,'MarkerFaceColor',plotColor,'MarkerSize',5);
     end
 end
 xlabel('x/\mum')
-ylabel('f_L')
-xlim([0, 800])
+ylabel('leader fraction f_L')
+xlim([0, 950])
 reverseOrderfL = 2.^-(5:-1:0)';
 ylim(log2([min(reverseOrderfL), 1]))
 set(gca,'YDir','reverse','YTick',log2(reverseOrderfL),'YTickLabel', num2str(reverseOrderfL,precision))
+
+hlegend = legend(flipud(hsymbols),num2str(18*(1 - fliplr(followFracValues)'),precision),'Location','SouthEast');
+set(get(hlegend,'title'),'string','t_{LF}/h')
 
 % add a colorbar for relative stream density
 ch = colorbar;

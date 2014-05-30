@@ -7,10 +7,7 @@ if experiment==0
 else
     frames2show = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
 end
-lengths = cellfun(@length,cells_save);
-lengths_change = find(lengths(2:end)-lengths(1:end-1)>2);
-lengths(lengths_change);
-lengths(lengths_change+1);
+
 for j=1:length(frames2show)
     k = frames2show(j);
     subplot(length(frames2show),1,j)    
