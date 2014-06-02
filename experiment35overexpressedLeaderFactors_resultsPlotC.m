@@ -60,7 +60,7 @@ for expCtr = length(experiments):-1:1
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
     stairs(xBins,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),'Color',plotColor)
     h(expCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),1,...
-        'FaceColor', plotColor, 'EdgeColor', 'none');
+        'FaceColor', plotColor, 'EdgeColor', plotColor);
     %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
     %         'FaceColor', plotColor, 'EdgeColor', plotColor);
 %     alpha(get(h(expCtr),'children'),0.5)
