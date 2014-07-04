@@ -59,7 +59,7 @@ followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
 domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 10*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-maxFilolength = 45; % maximum length of filopodium before folloer dettaches from leader. default = filolength (non-extensible)
+maxFilolength = 45; % maximum length of filopodium before follower dettaches from leader. default = filolength (non-extensible)
 
 dist = [leadSpeed; followSpeed]*tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
@@ -190,6 +190,9 @@ if isstruct(in)
     end
     if ismember('makeFrames',fields(in))
         makeFrames = in.makeFrames;
+    end
+    if ismember('numCellsInitial',fields(in))
+        numCellsInitial = in.numCellsInitial;
     end
 end
 

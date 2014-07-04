@@ -64,8 +64,10 @@ end
 
 hold off
 axis equal
-if showColorbar, colorbar, end
+if showColorbar, hcb = colorbar; end
 set(gca,'clim',[0 1]) % if set to [0 max(max(ca))], can cause jittering of colorbar labels in movies
+set(hcb,'ytick',[0 1])
+set(get(hcb,'title'),'string','CA')
 
 ylim([0,120])
 set(gca,'YTick',[0,120])
