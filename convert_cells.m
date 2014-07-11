@@ -112,7 +112,6 @@ elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we
     end
 elseif conversionType == 4
      %% integrate-and-switch, or time-frustration with hysteresis -- LJS
-    numSteps = param(15); % number of steps between happy and unhappy (threshold to switch) -- LJS
     lead2follow = cellsFollow'==0&happiness(timeCtr,:)<=0; % indices of leaders to switch to followers
     follow2lead = cellsFollow'==1&happiness(timeCtr,:)>=1; % indices of followers to switch to leaders
     if any(lead2follow)

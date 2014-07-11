@@ -10,7 +10,7 @@ input.numCellsInitial = 1;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 
-input.followerFraction = 0;
+input.followerFraction = 1;
 
 for needNeighbours = [0, 1, 2]
     input.needNeighbours = needNeighbours;

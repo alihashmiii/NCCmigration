@@ -2,7 +2,7 @@
 framesFig = figure;
 
 showColorbar = 1;
-if experiment==0
+if experiment==0||experiment>=10
     frames2show = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
 else
     frames2show = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]

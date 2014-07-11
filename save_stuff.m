@@ -47,7 +47,7 @@ if (experiment==1)||(experiment==2)
         
         out.cells_save = cells_save{end}(:,extracted_cell_ind);
         out.filopodia_save = filopodia_save{end}(extracted_cell_ind,:);
-        out.cellsFollow = cellsFollow_save{end}(extracted_cell_ind);
+        out.cellsFollow_save = cellsFollow_save{end}(extracted_cell_ind);
         out.attach = attach(extracted_cell_ind) -(length(cells_save{end}(1,:)) - length(out.cells_save(1,:)));
 
         %% save the interpolated xlat, ylat and chemoattractant
@@ -68,15 +68,20 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 elseif ~exist('saveInfo','var')
     if conversionType~=0
+        if conversionType==4
+                    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps(1)),'_',num2str(numSteps(2)),...
+        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        else
         saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
         '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        end
     else
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
         '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
 %% save the results %%
-if (experiment==0||experiment==3||experiment==35)||(((experiment==1)||(experiment==2))&&(in.it~=1))
+if (experiment==0||experiment==3||experiment>=10)||(((experiment==1)||(experiment==2))&&(in.it~=1))
     % convert floats to single precision for saving, to reduces disk space
     % used
     out.t_save = t_save;

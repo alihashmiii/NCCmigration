@@ -1,6 +1,11 @@
 % load data for gene expression, to analyse time scales of change
 load integrateAndSwitchGeneExpression.mat
 
+%% normalise data relative to baseline?
+
+%% split data into T and V branches
+
+%% ignore genes with missing data?
 % meanExpression is in times by genes, each values average of 2-3
 % replicates
 % remove all columns with NaN values
@@ -9,11 +14,16 @@ cleanedExpression = meanExpression(:,~any(isnan(meanExpression)));
 % % remove only columns with all NaN values
 % cleanedExpression = meanExpression(:,~all(isnan(meanExpression)));
 
-% principle component analysis
+%% method 1: principle component analysis
 % algorithms eig or svd (or als), Centered false or true
 [coeff, score, ~, ~, explained] = pca(cleanedExpression,...
     'Algorithm','eig','Centered',true');
 
+%% method 2: cluster genes based on expression, dynamic or static?
+
+%% smooth data with cubic splines
+
+%% plot curves 
 figure
 subplot(2,1,1)
 plot(score(:,1))

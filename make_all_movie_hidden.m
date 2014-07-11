@@ -32,7 +32,8 @@ for timeCtr=1:skip:numTsteps
     print(movieFig,'-dtiff',[filePath,int2str(frameCtr),'.tiff'])
     frameCtr = frameCtr + 1;
 end
-% using external video compiling as recommended by Jochen Kursawe (JK)
+close(movieFig)
+%% using external video compiling as recommended by Jochen Kursawe (JK)
 % compiling the movie with external shell command... -- JK
 disp('compiling the movie now');
 
@@ -40,7 +41,7 @@ disp('compiling the movie now');
 %the latter is the new version of the first):
 %http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide -- JK
 
-system(['avconv -r ', int2str(frameRate), ' -i ', filePath, '%d.tiff -c:v libx264 -crf 23 -loglevel quiet -y ',filePath,saveInfo,'.mp4']);
+system(['avconv -r ', int2str(frameRate), ' -i ', filePath, '%d.tiff -y ',filePath,saveInfo,'.mp4']);
 %Choose a CRF value
 %The range of the quantizer scale is 0-51: where 0 is lossless, 23 is default, and 51 is worst possible. A lower value is a higher quality and a subjectively sane range is 18-28. Consider 18 to be visually lossless or nearly so: it should look the same or nearly the same as the input but it isn't technically lossless.
 %The range is exponential, so increasing the CRF value +6 is roughly half the bitrate while -6 is roughly twice the bitrate. General usage is to choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try a higher value and if it looks bad then choose a lower value.
@@ -49,4 +50,3 @@ system(['avconv -r ', int2str(frameRate), ' -i ', filePath, '%d.tiff -c:v libx26
 % delete the individual frames
 % system(['rm -f ' filePath '*.tiff']);
 disp(['saved to ',filePath])
-close(movieFig)
