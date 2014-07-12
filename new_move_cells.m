@@ -1,6 +1,6 @@
 function out = new_move_cells(cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,...
-    cellRadius, filolength, maxFilolength, eatWidth, domainHeight, dist, domainLength, experiment, numFilopodia,...
+    cellRadius, filolength, maxFilolength, eatWidth, domainHeight, dist, domainLength, numFilopodia,...
     volumeExclusion, standStill, sensingAccuracy, needNeighbours)
 global cells
 %% iterate through the cell movement in a random order %%%
@@ -57,7 +57,7 @@ for i =1:length(cell_order)
             %% if it's an unchained follower (this uncludes previously chained, now dettached followers from the previous if-statement -- LJS)
             % look for other cells
             [foundCellidx,filopodia] = cell_movement5_follow((rand(1,numFilopodia(2))*2 - 1)*pi,cellidx,cells(1,:),cells(2,:),cellRadius,...
-                filolength,filopodia,experiment);
+                filolength,filopodia);
             if isempty(foundCellidx)~=1
                 %% if another cell was found then find the head of that chain
                 head = foundCellidx;

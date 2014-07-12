@@ -7,11 +7,11 @@ function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 
 global param % using global variables is much faster than saving & loading from disk -- LJS
 % load avi_mat/param
-initialDomainLength = param(6);
-domainHeight = param(9);
-zero_bc = param(10);
-insert = param(11);
-growingDomain= param(5);
+initialDomainLength = param.initialDomainLength;
+domainHeight = param.domainHeight;
+zeroBC = param.zeroBC;
+insert = param.insert;
+growingDomain= param.growingDomain;
 if insert==1 %% will have to check these when doing tissue transplantations -- LJS
     disp('inserting')
     load avi_mat/ca_new
@@ -41,13 +41,13 @@ if insert==1 %% will have to check these when doing tissue transplantations -- L
     % size(ylat_new)
     % size(x)
     % size(y)
-%     L_inf = param(1);
+%     Linf = param(1);
 %     a = param(2);
 %     initialDomainLength = param(6);
 %     t_start = param(13);
 %     tstep = param(12);
 %     
-%     [~, L, ~] = domain_growth([],t-tstep,tstep,L_inf,a,initialDomainLength,t_start);
+%     [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
 %     for i=1:length(x)
 %         u(i) = interp2(xlat_new*initialDomainLength/L,ylat_new,ca_new',x(i),y(i));
 %     end
@@ -57,7 +57,7 @@ if insert==1 %% will have to check these when doing tissue transplantations -- L
     %     y
     %     u = ca_new;
 else
-    if zero_bc == 1
+    if zeroBC == 1
         if growingDomain==1
             steepy = 0.1; % the higher steep is the steeper the gradient at the edge
             steepx = 0.15;

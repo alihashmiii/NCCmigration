@@ -6,16 +6,15 @@
 
 function [res] = chemotaxis_bndary(npts, npde, t, x, y, u, ut, ux, uy, nbpts, lbnd, res)
 global param % using global variables is much faster than saving & loading from disk -- LJS
-% load avi_mat/param
-% load avi_mat/current_domainLength
-domainHeight = param(9);
-zero_bc = param(10);
+
+domainHeight = param.domainHeight;
+zeroBC = param.zeroBC;
 
 if isunix==1
     nbpts = int32(nbpts); % the documentation calls for this parameter to be int32, but commenting this out doesn't seem to make a difference -- LJS
 end
 
-if zero_bc==1
+if zeroBC==1
     res(lbnd,1) = u(lbnd,1);
 else
     % No Flux Boundary conditions

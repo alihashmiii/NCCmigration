@@ -16,11 +16,11 @@ for k=1:numTsteps
     surf(xlat_save{k},ylat_save{k},ca_save{k}')
     zlim([0,1])
     xlim([0,max(domainLengths)])
-    ylim([0,domainHeight])
+    ylim([0,param.domainHeight])
     
     %% insert title here
-    if experiment>0
-        title(['Cell invasion simulating experiment ',mat2str(experiment)])
+    if param.experiment>0
+        title(['Cell invasion simulating experiment ',mat2str(param.experiment)])
     elseif followerFraction==0
         title('Cell invasion without followers')
     else

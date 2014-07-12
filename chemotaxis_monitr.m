@@ -18,17 +18,17 @@ if tlast
     else
         ipsol=lsol(level);
     end
-    %load avi_mat/param
-    growingDomain = param(5);
-    tstep = param(12);
+    
+    growingDomain = param.growingDomain;
+    tstep = param.tstep;
     
     if growingDomain==1
-        L_inf = param(1);
-        a = param(2);
-        initialDomainLength = param(6);
-        t_start = param(13);
+        Linf = param.Linf;
+        a = param.a;
+        initialDomainLength = param.initialDomainLength;
+        t_start = param.t_start;
         
-        [~, L, ~] = domain_growth([],t-tstep,tstep,L_inf,a,initialDomainLength,t_start);
+        [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
 
         k = sum(ngpts(1:level-1));
         xpts = xpts(k+1:k+npts);

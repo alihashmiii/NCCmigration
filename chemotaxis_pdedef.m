@@ -10,23 +10,23 @@ global param cells % using global variables is much faster than saving & loading
 xcell = cells(1,:);
 ycell = cells(2,:);
 
-Linf = param(1);
-a = param(2);
-diffus = param(3);
-eatWidth = param(4);
-growingDomain = param(5);
-initialDomainLength = param(6);
-makeChemoattractant = param(7);
-chi = param(8);
-domainHeight = param(9);
-tstep = param(12);
-t_start = param(13);
-eatRate = param(14);
+Linf = param.Linf;
+a = param.a;
+diffus = param.diffus;
+eatWidth = param.eatWidth;
+growingDomain = param.growingDomain;
+initialDomainLength = param.initialDomainLength;
+makeChemoattractant = param.makeChemoattractant;
+chi = param.chi;
+domainHeight = param.domainHeight;
+tstep = param.tstep;
+t_start = param.t_start;
+eatRate = param.eatRate;
 
-experiment = param(17);
-transplantTime = param(18);
-transplantXLocation = param(19);
-secondaryChi = param(20);
+experiment = param.experiment;
+transplantTime = param.transplantTime;
+transplantXLocation = param.transplantXLocation;
+secondaryChi = param.secondaryChi;
 
 if (growingDomain==1)
     [~, L, Ldiff] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);

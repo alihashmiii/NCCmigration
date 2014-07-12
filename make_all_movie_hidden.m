@@ -8,7 +8,7 @@ movieFig = figure('units','points','outerposition',[0 0 1600 430],'position',[1 
 filePath = ['avi_mat/allmovie/',saveInfo,'/'];
 mkdir(filePath)
 frameRate = 30;    % frames per second - fewer frames will make the movie slower
-skip = round(5/60/tstep); % skip more time steps for faster saving
+skip = round(5/60/param.tstep); % skip more time steps for faster saving
 frameCtr = 1;
 % % set(gcf,'Renderer','zbuffer')
 

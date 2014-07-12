@@ -3,7 +3,7 @@
 % requires pdedef.m, bndary.m, deiv.m, monitr.m
 
 function out = chemotaxis_solve(ts,tout,ind,iwk,rwk,cells,initialDomainLength,domainHeight,x_length,y_length,insert)
-global plotsol xsave ysave % using global variables is much faster than saving & loading from disk -- LJS
+global plotsol xsave ysave param % using global variables is much faster than saving & loading from disk -- LJS
 dt = [0; 0; 0]; % initial, min and max time step used ([0;0;0] for defaults)
     
 % size of rectangular domain (for numerical solution the problem is scaled
@@ -29,7 +29,13 @@ tols = 0.5; % grid tolerance
 tolt = 0.1;    % time tolerance
 
 opti = zeros(4,1,'int64'); % default integrator options
-opti(1) = int64(3); % max num grid levels
+if param.experiment >= 10
+    opti(1) = int64(3); % max num grid levels. 
+else
+    % Default is 3 but when having sharp boundaries in the CA profile this is
+    % sometimes exceeded, which gives a warning.
+    opti(1) = int64(4);
+end
 opti(2) = int64(20); % max Jacobian evaluations
 opti(3) = int64(10);    % max newton iterations
 opti(4) = int64(100);   % max linear equation iterations

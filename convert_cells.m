@@ -5,7 +5,7 @@ global param cells % using global variables is much faster than saving & loading
 
 if conversionType==1
     %% using amount of time not found a gradient / another cell
-    numSteps = param(15); % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
+    numSteps = param.numSteps; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
 
     for cellCtr=1:length(cells(1,:))
         [~,numCellsInTime] = cellfun(@size,cells_save);

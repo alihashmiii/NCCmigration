@@ -1,12 +1,12 @@
 
-%% save stuff for tissue transplant experiments %%
-if (experiment==1)||(experiment==2)
+%% save stuff for tissue transplant param.experiments %%
+if (param.experiment==1)||(param.experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
         make_plot(cells, cellsFollow, xlat_save{k-1},ylat_save{k-1},ca_save{k-1},filopodia,attach_save{k-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0)
         sort(cells(1,:))
         
-        if experiment==1
+        if param.experiment==1
             temp = find(cellsFollow==1)';
             sort(cells(1,temp(temp<length(cells(1,:)))))
             x_start = input('where should the extracted region start (x_start) [front region], (x_end=x_start+100)?:  ');
@@ -25,7 +25,7 @@ if (experiment==1)||(experiment==2)
         %% interpolate the chemoattractant to give a good description of
         %% the region
         xlat_new_fine = (0:5:max(xlat_save{end}));
-        if (experiment==1)||((y_start==0)&&(y_end==domainHeight))
+        if (param.experiment==1)||((y_start==0)&&(y_end==param.domainHeight))
             ca_new = interp2(xlat_save{end},ylat_save{end},ca_save{end}',xlat_new_fine,ylat_save{end});
             ca_new = ca_new';
             extracted_xlat = find((xlat_new_fine>=x_start)&(xlat_new_fine<=x_end));
@@ -33,7 +33,7 @@ if (experiment==1)||(experiment==2)
             extracted_x = xlat_new_fine(extracted_xlat);
             extracted_y = ylat_save{end};
         else
-            ylat_new_fine = (0:5:domainHeight);
+            ylat_new_fine = (0:5:param.domainHeight);
             ca_new = interp2(xlat_save{end},ylat_save{end},ca_save{end}',xlat_new_fine,ylat_new_fine');
             extracted_xlat = find((xlat_new_fine>=x_start)&(xlat_new_fine<=x_end));
             extracted_ylat = find((ylat_new_fine>=y_start)&(ylat_new_fine<=y_end));
@@ -81,7 +81,7 @@ elseif ~exist('saveInfo','var')
     end
 end
 %% save the results %%
-if (experiment==0||experiment==3||experiment>=10)||(((experiment==1)||(experiment==2))&&(in.it~=1))
+if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.experiment==1)||(param.experiment==2))&&(in.it~=1))
     % convert floats to single precision for saving, to reduces disk space
     % used
     out.t_save = t_save;
@@ -100,17 +100,17 @@ if (experiment==0||experiment==3||experiment>=10)||(((experiment==1)||(experimen
     out.domainLengths = domainLengths;
     out.saveInfo = saveInfo;
     out.numTsteps = numTsteps;
-    out.growingDomain = growingDomain;
+    out.growingDomain = param.growingDomain;
     out.followerFraction = followerFraction;
-    out.tstep = tstep;
+    out.tstep = param.tstep;
     out.cellsFollow_save = cellsFollow_save;
     out.cellRadius = cellRadius;
-    out.domainHeight = domainHeight;
+    out.param.domainHeight = param.domainHeight;
     out.filolength = filolength;
     out.attach_save = attach_save;
     out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,makeChemoattractant';
-    out.param_names2 = 'chi,domainHeight,zero_bc,insert,tstep,t_start,d,eatRate';
-    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
+    out.param_names2 = 'chi,param.domainHeight,zeroBC,insert,tstep,t_start,d,eatRate';
+    out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, param.domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
     out.moved = moved;
     out.happiness = happiness;
     
@@ -120,10 +120,9 @@ if (experiment==0||experiment==3||experiment>=10)||(((experiment==1)||(experimen
     out.numFilopodia = numFilopodia;
     out.sensingAccuracy = sensingAccuracy;
     
-    out.growingDomain = growingDomain;
     out.followerFraction = followerFraction;
     out.divide_cells = divide_cells;
-    out.experiment = experiment;
+    out.param.experiment = param.experiment;
     
     save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
     system(['rm -f /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])

@@ -2,7 +2,7 @@
 framesFig = figure;
 
 showColorbar = 1;
-if experiment==0||experiment>=10
+if param.experiment==0||param.experiment>=10
     frames2show = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')] 
 else
     frames2show = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
@@ -13,7 +13,7 @@ for frameCtr=1:length(frames2show)
     subplot(length(frames2show),1,frameCtr)    
     make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},...
         numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,0)
-    if growingDomain==0
+    if param.growingDomain==0
         xlim([0,300])
     end
     title(['time t = ',mat2str(t_save(timeCtr)),' hours with ' num2str(size(cells_save{timeCtr},2))...
