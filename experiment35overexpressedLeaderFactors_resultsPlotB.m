@@ -38,7 +38,7 @@ for expCtr = 1:length(experiments)
         try % sometimes we get corrupt files, which crashes the script
             load(['results/' loadInfo '.mat'])
         catch
-            break
+            error(['Could not load results/' loadInfo '.mat'])
         end
         % make a scatter plot of all repeats on top of each other
         cells = out.cells_save{end}; % all cells

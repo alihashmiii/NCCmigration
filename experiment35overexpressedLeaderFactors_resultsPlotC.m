@@ -33,9 +33,7 @@ for expCtr = length(experiments):-1:1
         try % sometimes we get corrupt files, which crashes the script
             load(['results/' loadInfo '.mat'])
         catch
-            delete(['results/' loadInfo '.mat']) % delete the corrupt file
-            experiment31leaderFractionWithoutPlasticity; % recreate the missing results file
-            load(['results/' loadInfo '.mat']) % load again
+            error(['Could not load results/' loadInfo '.mat'])
         end
         
         % load cell positions into variables
