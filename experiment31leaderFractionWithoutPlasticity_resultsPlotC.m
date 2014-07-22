@@ -57,7 +57,8 @@ for followFracCtr = length(followFracValues):-1:1
     % plot migration profile
     f_L = mean(actualLeaderFraction(followFracCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
-    stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),'Color',plotColor)
+    stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
+        'Color',plotColor)
     h(followFracCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),1,...
         'FaceColor', plotColor, 'EdgeColor', 'none');
     %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
@@ -66,7 +67,9 @@ for followFracCtr = length(followFracValues):-1:1
 end
 xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
-legend(h,num2str(mean(actualLeaderFraction,2),precision))
+hlegend = legend(h,num2str(mean(actualLeaderFraction,2),precision),'Location',...
+    'East');
+set(get(hlegend,'title'),'string','<f_L>')
 ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
 box on

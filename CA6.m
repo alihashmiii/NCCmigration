@@ -58,7 +58,7 @@ cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
 followSpeed = 49.9;                 % speed of the follower cells in mu/h
 
-param.domainHeight = 120;                   % maximum y value
+param.domainHeight = 180;                   % maximum y value
 filolength = cellRadius + 10*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 maxFilolength = 45; % maximum length of filopodium before follower dettaches from leader. default = filolength (non-extensible)
 
@@ -114,7 +114,7 @@ if insertCells==1
 else
     numCellsInitial = 1;
 end
-initYFrac = (param.domainHeight-2*cellRadius)/param.domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
+initYFrac = 0.5833;%(param.domainHeight-2*cellRadius)/param.domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
 initXFrac = 0;                 % initial fraction of x with cells
 
 %% adjust parameters if they have been provided in input %%

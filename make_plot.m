@@ -72,6 +72,6 @@ end
 set(gca,'clim',[0 1]) % if set to [0 max(max(ca))], can cause jittering of colorbar labels in movies
 
 
-ylim([0,120])
-set(gca,'YTick',[0,120])
+ylim([0,max(ylat)])
+set(gca,'YTick',[0,max(ylat)])
 % xlim([min(xlat),1000])
