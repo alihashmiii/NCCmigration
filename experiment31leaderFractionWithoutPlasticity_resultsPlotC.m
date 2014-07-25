@@ -3,9 +3,9 @@
 
 close all
 clear
-
+%%
 time = 18;
-numRepeats = 20;
+numRepeats = 10;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
@@ -54,17 +54,21 @@ for followFracCtr = length(followFracValues):-1:1
         cellDistributions(followFracCtr,repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
         cellDistributions(followFracCtr,repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
     end
-    % plot migration profile
+    %% plot migration profile
     f_L = mean(actualLeaderFraction(followFracCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
-    stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
-        'Color',plotColor)
-    h(followFracCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),1,...
-        'FaceColor', plotColor, 'EdgeColor', 'none');
-    %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
-    %         'FaceColor', plotColor, 'EdgeColor', plotColor);
+    [xs, ys] = stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)));
+    %   plot as area-graph instead of bar as matlab will sometimes get the alpha wrong for barplots (on mac) 
+    h(followFracCtr) = area(xs,ys,...
+            'FaceColor', plotColor, 'EdgeColor', plotColor);
+%     % alternatively plot regions of sem
+%     h(followFracCtr) = area([xBins+25, fliplr(xBins+25)],...
+%     [squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2))+std(squeeze(sum(cellDistributions(followFracCtr,:,:,:),3)))'/sqrt(numRepeats);...
+%             flipud(squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2))-std(squeeze(sum(cellDistributions(followFracCtr,:,:,:),3)))'/sqrt(numRepeats))],...
+%     'FaceColor', plotColor, 'EdgeColor', plotColor);
     alpha(get(h(followFracCtr),'children'),0.5)
 end
+    
 xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
 hlegend = legend(h,num2str(mean(actualLeaderFraction,2),precision),'Location',...
@@ -73,6 +77,9 @@ set(get(hlegend,'title'),'string','<f_L>')
 ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
 box on
+%% save figure as .fig file
+filename = 'manuscripts/subpopulations/figures/resultsFig1C';
+saveas(gcf,[filename '.fig'])
 
 %% export figure
 exportOptions = struct('Format','eps2',...
@@ -86,6 +93,5 @@ exportOptions = struct('Format','eps2',...
 pos = get(gcf,'Position');
 pos(4) = 1/2*pos(3); % adjust height to fraction of width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
-filename = ['manuscripts/subpopulations/figures/resultsFig1C'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
