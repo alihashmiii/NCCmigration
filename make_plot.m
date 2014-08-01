@@ -69,7 +69,7 @@ if showColorbar,
     set(hcb,'ytick',[0 1])
     set(get(hcb,'title'),'string','CA')
 end
-set(gca,'clim',[0 1]) % if set to [0 max(max(ca))], can cause jittering of colorbar labels in movies
+set(gca,'clim',[0 max(max(ca))]) % if set to [0 max(max(ca))], can cause jittering of colorbar labels in movies
 
 
 ylim([0,max(ylat)])

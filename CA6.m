@@ -284,7 +284,7 @@ for timeCtr=1:numTsteps
         elseif timeCtr>1
             temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),length(ylat_save{timeCtr-1}),param.insert);
         else
-            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),50,param.insert);
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),32,param.insert);
         end
 
         % take output 

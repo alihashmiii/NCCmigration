@@ -77,7 +77,7 @@ ylabel('leader fraction f_L')
 xlim([0, 950])
 reverseOrderfL = 2.^-(5:-1:0)';
 ylim(log2([min(reverseOrderfL), 1]))
-set(gca,'YDir','reverse','YTick',log2(reverseOrderfL),'YTickLabel', num2str(reverseOrderfL,precision))
+set(gca,'YDir','reverse','YTick',log2(reverseOrderfL),'YTickLabel', num2str(reverseOrderfL,'%0.2f'))
 
 hlegend = legend(flipud(hsymbols),num2str(18*(1 - fliplr(followFracValues)'),precision),'Location','SouthEast');
 set(get(hlegend,'title'),'string','t_{LF}/h')

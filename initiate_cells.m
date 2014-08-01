@@ -10,8 +10,10 @@ cells = [cells_in NaN(2,numCells2Insert)];
 cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
 if j==0 % if we're inserting the first set of cells, position them uniformly, to have repeatable initial conditions
-    deltaY = domainHeight/(numCells2Insert + 1); % spacing between uniformly spread cells
-    cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert)); deltaY:deltaY:(domainHeight - cellRadius)];
+    deltaY = domainHeight*initYFrac/(numCells2Insert + 1); % spacing between uniformly spread cells
+    cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert));...
+        max(cellRadius,(1 - initYFrac)/2*domainHeight + deltaY):deltaY:...
+        min(domainHeight - cellRadius,domainHeight*(1 + initYFrac)/2 - deltaY)];
 end
 %% If there are follower cells, initialise them here %%%
 % I'm fairly sure this part is only relevant if we want to seed more than
