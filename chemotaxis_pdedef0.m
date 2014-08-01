@@ -54,10 +54,12 @@ eatTerm = sum(bigEat,2);
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
     - eatTerm...
     + chi.*u);   % res = ut-f(u) means ut=f(u)
-% some region of degradation
+% % some region of degradation
 xRange = 20; % in mu
-indcs = (x<=xRange/L);
-res(indcs) = res(indcs) + degRate.*u(indcs);
+% indcs = (x<=xRange/L);
+% res = res + degRate.*u.*heaviside(xRange/L - x);
+% res = res + degRate.*u.*exp(-x/(xRange/L));
+res = res + degRate.*u.*(1 - 1./(1 + exp((xRange/L - x)/0.01)));
 
 if (experiment==11||experiment==12||experiment==13)&&t>=transplantTime
     if (experiment==12||experiment==13)
