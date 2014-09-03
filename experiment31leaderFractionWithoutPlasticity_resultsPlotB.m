@@ -72,17 +72,19 @@ end
 xlabel('x/\mum')
 ylabel('mean leader fraction <f_L>')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
+set(gca,'XTick',0:200:800)
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
 
 % add a colorbar for relative stream density
-ch = colorbar;
-title(ch,'\rho^{stream}_{relative}')
+ch = colorbar('Location','SouthOutside');
+% title(ch,'relative stream density')
 colormap(linspace(1,0)'*[1 1 1])
+set(ch,'YTick',0:0.2:1)
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
+    'Width','12.0',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...

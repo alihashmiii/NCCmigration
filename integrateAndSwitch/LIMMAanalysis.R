@@ -4,16 +4,21 @@ ISdata = read.csv("All relative to Baseline group log10 results 071414 renamed.c
 ISmatrix <- data.matrix(ISdata[,2:97])
 rownames(ISmatrix) <- ISdata[,1]
 samples <- rownames(ISmatrix)
+# specify replicate numbers, timepoints and conditions for every datum
 nReplicates <- c(3,3,3,3,3,3,2,3, 2,3,2,3,2,2,3,3)
 replicates <- rep(c(1:16), nReplicates)
 timePoints <- rep(rep(c(16,2,30,45,4,60,8,90),2), nReplicates)
 cond <- factor(rep(rep(0:1, each=8), nReplicates))
+# make design matrix for linear model fitting, with an intercept for cond and slope based on time (different slope for each condition)
 design <- model.matrix(~cond+timePoints:cond)
+# select only the relevant data (ignoring baseline t = 0)
 data <- t(ISmatrix[13:55,])
+# fit linear model and test for intercept being sign. different btw. conditions
 dupfit <- duplicateCorrelation(data,design,block=replicates)
 fit <- lmFit(data,design,block=replicates,correlation=dupfit$consensus)
 fit <- eBayes(fit)
 topTable(fit,coef="cond1")
+# now test if slope is different between conditions
 cont.VEGF <- c(0,0,-1,1) # or: makeContrasts(contrasts="cond0.timePoints-cond1.timePoints", levels=make.names(colnames(design)))
 fit2 <- contrasts.fit(fit, cont.VEGF)
 fit2 <- eBayes(fit2)

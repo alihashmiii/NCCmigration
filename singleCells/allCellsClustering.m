@@ -7,6 +7,8 @@ distribution = NaN(nBins,96,6);
 
 loadExpressionData;
 
+% pool data from all cells in each group into a histogram to create
+% distribution of expression (for each gene and group)
 distribution(:,:,1) = hist(trailblazers16h',bins)/size(trailblazers16h,2);
 distribution(:,:,2) = hist(trailblazers24h',bins)/size(trailblazers24h,2);
 distribution(:,:,3) = hist(quartile1',bins)/size(quartile1,2);
@@ -14,13 +16,17 @@ distribution(:,:,4) = hist(quartile2',bins)/size(quartile2,2);
 distribution(:,:,5) = hist(quartile3',bins)/size(quartile3,2);
 distribution(:,:,6) = hist(quartile4',bins)/size(quartile4,2);
 
+% concatenate data to cluster all cells together
 allCells = [trailblazers16h, trailblazers24h, quartile1, quartile2, ...
     quartile3, quartile4];
+% keep track of original cell groupings for later comparison
 cellIDs = [ones(1,size(trailblazers16h,2)), 2*ones(1,size(trailblazers24h,2)),...
     3*ones(1,size(quartile1,2)),4*ones(1,size(quartile2,2)),...
     5*ones(1,size(quartile3,2)),6*ones(1,size(quartile4,2))];
 
 %% calculate MI matrix between each of the cells
+% - doesn't make so much sense to pool expression from all genes into a
+% distribution of (any) expression for each cell, so might not be useful
 % nCells = size(allCells,2);
 % MI = NaN(nCells);
 % for ii = 1:nCells
@@ -33,14 +39,14 @@ cellIDs = [ones(1,size(trailblazers16h,2)), 2*ones(1,size(trailblazers24h,2)),..
 % end
 % save('MI','MI')
 %% calculate pearson correlation matrix btw each of the cells
+% i.e. correlation of each cell's profile over all genes
 R = corr(allCells);
 % force symmetry (otherwise accuracy to 1e-15 might not be good
 % enough for Iclust
 R = (R + R')/2;        
-%% make precision trade-off curve
+%% make precision trade-off curve - set number of clusters and inverse temperature for which to do clusterings
 numClusts = 2:6;
 inverseTs = [10, 15, 20, 25, 30, 35, 40];
-numGroups = size(distribution,3);
 %% run Iclust for various numbers of clusters and temperatures
 % for numClustCtr = length(numClusts):-1:1
 %     for invTempCtr = length(inverseTs):-1:1
@@ -55,7 +61,7 @@ for numClustCtr = length(numClusts):-1:1
     end
 end
 save('Cr','Cr')
-%% plot precision trade-off curve
+%% plot precision trade-off curve to show that information is saturating
 figure
 hold all
 symbols = {'+:';'o:';'^:';'s:';'x:'};
@@ -87,6 +93,8 @@ end
 %% plot clusters and their proportional content of original groupings
 pieLabels = {'t13','t15','Q1','Q2','Q3','Q4'};
 pieColors = [[1 0 0]; [0 1 0]; [0 0 1]; [0.7 0.7 0]; [0.5 0 0.5]; [1 0 1]];
+
+numGroups = size(distribution,3);
 
 for numClustCtr = 1:length(numClusts)
     numClusters = numClusts(numClustCtr);

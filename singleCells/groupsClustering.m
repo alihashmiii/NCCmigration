@@ -7,6 +7,8 @@ distribution = NaN(nBins,96,6);
 
 loadExpressionData;
 
+% pool data from all cells in each group into a histogram to create
+% distribution of expression (for each gene and group)
 distribution(:,:,1) = hist(trailblazers16h',bins)/size(trailblazers16h,2);
 distribution(:,:,2) = hist(trailblazers24h',bins)/size(trailblazers24h,2);
 distribution(:,:,3) = hist(quartile1',bins)/size(quartile1,2);
@@ -14,12 +16,12 @@ distribution(:,:,4) = hist(quartile2',bins)/size(quartile2,2);
 distribution(:,:,5) = hist(quartile3',bins)/size(quartile3,2);
 distribution(:,:,6) = hist(quartile4',bins)/size(quartile4,2);
 
-%% make precision trade-off curve
+%% make precision trade-off curve - set number of clusters and inverse temperature for which to do clusterings
 numClusts = 2:5;
 inverseTs = [0.5, 1, 30, 100];
 numGroups = size(distribution,3);
 
-%% calculate symmetric KL between each of the groups
+%% calculate symmetric KL between each of the groups' distributions
 sKL = NaN(numGroups);
 
 pseudocount =  eps; % for regularisation of 0 probabilities
@@ -40,7 +42,7 @@ end
 
 clear sKLtemp
 
-%% calculate Jensen-Shannon divergence between each of the groups
+%% calculate Jensen-Shannon divergence between each of the groups' distributions
 JS = NaN(numGroups);
 
 pseudocount =  eps; % for regularisation of 0 probabilities
@@ -69,7 +71,7 @@ imagesc(sKL), colorbar, title('symmetrised Kulback-Leibler divergence')
 subplot(1,2,2)
 imagesc(JS), colorbar, title('Jensen-Shannon divergence')
 
-%% I guess we're now minimizing s while maximizing I
+%% I guess we're now minimizing s while maximizing I, since we're using a dissimilarity score (?)
 for numClustCtr = length(numClusts):-1:1
     for invTempCtr = length(inverseTs):-1:1
         Ckl(numClustCtr,invTempCtr) = IclustDist(sKL,1/inverseTs(invTempCtr),numClusts(numClustCtr),[]);
@@ -83,7 +85,7 @@ for numClustCtr = length(numClusts):-1:1
     end
 end
 save('Cjs','Cjs')
-%% plot precision trade-off curve
+%% plot precision trade-off curve (notice it approaches a lower bound / upper bound for -s now)
 figure
 hold all
 symbols = {'+:';'o:';'^:';'s:';'x:'};
@@ -93,7 +95,6 @@ end
 xlabel('I(C;i) (bits)')
 ylabel('<s> (bits)')
 legend(num2str(numClusts'),'Location','SouthEast')
-%% explore hierarchy
 %% explore hierarchy
 bestParents = NaN(min(numClusts)+1,max(numClusts));
 inclusion = NaN(min(numClusts)+1,max(numClusts));

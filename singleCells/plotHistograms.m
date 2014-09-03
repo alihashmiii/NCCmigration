@@ -5,6 +5,8 @@ nBins = 16;
 bins = linspace(0,15,nBins);
 distribution = NaN(nBins,96,6);
 
+loadExpressionData;
+
 distribution(:,:,1) = hist(trailblazers16h',bins)/size(trailblazers16h,2);
 distribution(:,:,2) = hist(trailblazers24h',bins)/size(trailblazers24h,2);
 distribution(:,:,3) = hist(quartile1',bins)/size(quartile1,2);

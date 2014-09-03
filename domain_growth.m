@@ -8,9 +8,11 @@ function [cellsX, r_next, Ldiff] = domain_growth(cellsX,t,tstep,Linf,a,initialDo
 Linf = Linf/initialDomainLength;
 ts = -t_start;
 
-r = (Linf*exp(Linf*a*(t-ts))./(Linf-1+exp(Linf*a*(t-ts))) + 1-Linf*exp(Linf*a*(-ts))/(Linf-1+exp(Linf*a*(-ts))))*initialDomainLength;
+r = (Linf*exp(Linf*a*(t-ts))./(Linf-1+exp(Linf*a*(t-ts))) ...
+    + 1-Linf*exp(Linf*a*(-ts))/(Linf-1+exp(Linf*a*(-ts))))*initialDomainLength;
 t = t + tstep;
-r_next = (Linf*exp(Linf*a*(t-ts))./(Linf-1+exp(Linf*a*(t-ts))) + 1-Linf*exp(Linf*a*(-ts))/(Linf-1+exp(Linf*a*(-ts))))*initialDomainLength;
+r_next = (Linf*exp(Linf*a*(t-ts))./(Linf-1+exp(Linf*a*(t-ts))) ...
+    + 1-Linf*exp(Linf*a*(-ts))/(Linf-1+exp(Linf*a*(-ts))))*initialDomainLength;
 Ldiff = Linf^2*a*exp(Linf*a*(t-ts))*initialDomainLength*(Linf-1)/(Linf-1+exp(Linf*a*(t-ts))).^2;
 
 if ~isempty(cellsX)

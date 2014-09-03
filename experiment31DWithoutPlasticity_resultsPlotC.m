@@ -10,8 +10,8 @@ numRepeats = 10;
 precision = 2; % significant figures for filenames and plot labels etc.
 paramCtr = 1;
 
-followFracValues = [0, 3/4, 7/8, 15/16, 1];
-sensingAccuracy = 0.0001;
+followFracValues = [0, 1];
+sensingAccuracy = 0.1;
 
 % to calculate the density profile of cells along the x-direction
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
@@ -26,13 +26,13 @@ hold all
 for followFracCtr = length(followFracValues):-1:1
     followerFraction = followFracValues(followFracCtr);
     for repCtr = 1:numRepeats
-        loadInfo = ['experiment31D/exp31_followFrac_' num2str(followerFraction,precision) ...
+        loadInfo = ['experiment31Chi/exp31_followFrac_' num2str(followerFraction,precision) ...
             '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
         try % sometimes we get corrupt files, which crashes the script
             load(['results/' loadInfo '.mat'])
         catch
             delete(['results/' loadInfo '.mat']) % delete the corrupt file
-            experiment31DWithoutPlasticity; % recreate the missing results file
+            experiment31ChiWithoutPlasticity; % recreate the missing results file
             load(['results/' loadInfo '.mat']) % load again
         end
         
@@ -78,7 +78,7 @@ ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
 box on
 %% save figure as .fig file
-filename = 'manuscripts/subpopulations/figures/resultsFigSDC';
+filename = 'manuscripts/subpopulations/figures/resultsFigSChiC';
 saveas(gcf,[filename '.fig'])
 
 %% export figure

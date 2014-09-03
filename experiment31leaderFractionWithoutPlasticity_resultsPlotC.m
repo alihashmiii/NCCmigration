@@ -73,7 +73,7 @@ xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
 hlegend = legend(h,num2str(mean(actualLeaderFraction,2),precision),'Location',...
     'East');
-set(get(hlegend,'title'),'string','<f_L>')
+set(get(hlegend,'xlabel'),'string','<f_L>')
 ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid on, set(gca,'Layer','top')
 box on
@@ -83,7 +83,7 @@ saveas(gcf,[filename '.fig'])
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','14.4',...
+    'Width','10',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
@@ -91,7 +91,7 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 
 pos = get(gcf,'Position');
-pos(4) = 1/2*pos(3); % adjust height to fraction of width
+pos(4) = 0.72*pos(3); % adjust height to fraction of width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
