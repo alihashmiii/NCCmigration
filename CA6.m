@@ -344,15 +344,16 @@ for timeCtr=1:numTsteps
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
         if conversionType==4
         if timeCtr ==1
-            happiness(timeCtr,1:length(cells(1,:))) = 0.5; % cells start at half maximum happiness-- LJS
+            happiness(timeCtr,1:length(cells(1,:))) = ~cellsFollow(1:length(cells(1,:))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
         else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = 0.5; % cells start at half maximum happiness, rounded up -- LJS
+            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = ...
+                ~cellsFollow(isnan(happiness(timeCtr - 1,1:length(cells(1,:))))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
             happiness(timeCtr,temp.sensed) = min(1,... % the maximum happiness is 1 -- LJS
                 min(happiness(timeCtr,temp.sensed),happiness(timeCtr-1,temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness -- LJS
-                + param.tstep/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
+                + param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
             happiness(timeCtr,~temp.sensed) = max(0,... % minimum happiness is 0 -- LJS
                 max(happiness(timeCtr,~temp.sensed),happiness(timeCtr-1,~temp.sensed))... % for new cells the previous happiness is NaN, hence take max of previous and current happiness -- LJS
-                - param.tstep/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+                - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
         end
         end
         attach_save{timeCtr} = attach;

@@ -9,7 +9,7 @@ function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initia
 cells = [cells_in NaN(2,numCells2Insert)];
 cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
-if j==0 % if we're inserting the first set of cells, position them uniformly, to have repeatable initial conditions
+if j==0 % if we're inserting the first set of cells, position them uniformly, to have repeatable initial conditions -- LJS
     cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert));...
         linspace(max(cellRadius,(1 - initYFrac)/2*domainHeight + cellRadius),...
         min(domainHeight - cellRadius,domainHeight*(1 + initYFrac)/2 - cellRadius),...
@@ -67,9 +67,9 @@ if isnan(cells(1,end,1))
             cellx = (rand().*initXFrac.*(1 - followerFraction) + initXFrac*followerFraction).*initialDomainLength;
         end
         %% If there is no overlap, take that coordinate
-        if (sqrt(min((cellx - x_cells).^2+(celly-y_cells).^2))>2*cellRadius)...
+        if ~volumeExclusion||((sqrt(min((cellx - x_cells).^2+(celly-y_cells).^2))>2*cellRadius)...
                 &&(cellx>=cellRadius)&&(cellx<initialDomainLength-cellRadius)...
-                &&(celly>cellRadius)&&(celly<domainHeight-cellRadius)
+                &&(celly>cellRadius)&&(celly<domainHeight-cellRadius))
             % if it fits, insert cell
             cells(:,j+1,1) = [cellx; celly];
             j = j+1;
@@ -78,7 +78,7 @@ if isnan(cells(1,end,1))
             if ~isnan(cells(1,end))
                 break
             end
-            % update coordinates of cells that might be in the way
+            % update coordinates of cells to include newest cell
             x_cells = cells(1,1:j,1);
             y_cells = cells(2,1:j,1);
         end

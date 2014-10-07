@@ -5,14 +5,17 @@ load integrateAndSwitchGeneExpression.mat
 %% normalise data relative to baseline (t -120)
 normExpression = meanExpression...
     ./repmat(meanExpression(1,:),size(meanExpression,1),1);
+normError = errorInMean...
+        ./repmat(meanExpression(1,:),size(meanExpression,1),1);
 
 %% ignore genes with missing data
 % meanExpression is in times by genes, each values average of 2-3
 % replicates
 % remove all columns with NaN values
-nanIdcs = ~any(isnan(normExpression));
-cleanExpression = normExpression(:,nanIdcs);
-cleanGenes = genes(nanIdcs);
+notNanIdcs = ~any(isnan(normExpression));
+cleanExpression = normExpression(:,notNanIdcs);
+cleanGenes = genes(notNanIdcs);
+cleanError = normError(:,notNanIdcs);
 
 % % remove only columns with all NaN values
 % cleanExpression = meanExpression(:,~all(isnan(meanExpression)));
@@ -42,6 +45,7 @@ for geneCtr = 1:length(geneProfile)
 end
 offProfileGenes = offExpression(:,geneIdcs);
 onProfileGenes = onExpression(:,geneIdcs);
+profileError = cleanError(:,geneIdcs);
 
 % compare with plot of all genes?
 
@@ -61,13 +65,13 @@ mSmooth = 'akima';
 %% raw genes
 rawFig = figure;
 subplot(2,1,1)
-plot(timeData(2:10),offExpression)
+errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,cleanError(2:10,:))
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
 
 subplot(2,1,2)
-plot(timeData(10:end),onExpression)
+errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,cleanError(10:end,:))
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes +VEGF condition')
@@ -77,7 +81,7 @@ smoothFig = figure;
 subplot(2,1,1)
 plot(offSmoothTime,offSmooth)
 hold on
-plot(timeData(2:10),offExpression,'+')
+errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,cleanError(2:10,:),'+')
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
@@ -85,7 +89,7 @@ title('all genes -VEGF condition')
 subplot(2,1,2)
 plot(onSmoothTime,onSmooth)
 hold on
-plot(timeData(10:end),onExpression,'+')
+errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,cleanError(10:end,:),'+')
 xlabel('time (min)')
 ylabel('relative expression')
 title('smoothed genes +VEGF condition')
@@ -100,8 +104,8 @@ hLines = NaN(nPlots,1);
 hold on
 for plotCtr = nPlots:-1:1
     plot(offSmoothTime,offSmoothPGs(plotCtr,:),'Color',plotColor(plotCtr,:));
-    hLines(plotCtr) = plot(timeData(2:10),offProfileGenes(:,plotCtr),...
-        symbols{plotCtr},'Color',plotColor(plotCtr,:));
+    hLines(plotCtr) = errorbar(timeData(2:10),offProfileGenes(:,plotCtr),...
+        profileError(2:10,plotCtr),symbols{plotCtr},'Color',plotColor(plotCtr,:));
 end
 xlim([offSmoothTime(1) offSmoothTime(end)])
 xlabel('time (min)')
@@ -117,8 +121,8 @@ hLines = NaN(nPlots,1);
 hold on
 for plotCtr = nPlots:-1:1
     plot(onSmoothTime,onSmoothPGs(plotCtr,:),'Color',plotColor(plotCtr,:));
-    hLines(plotCtr) = plot(timeData(10:end),onProfileGenes(:,plotCtr),...
-        symbols{plotCtr},'Color',plotColor(plotCtr,:));
+    hLines(plotCtr) = errorbar(timeData(10:end),onProfileGenes(:,plotCtr),...
+        profileError(10:end,plotCtr),symbols{plotCtr},'Color',plotColor(plotCtr,:));
 end
 xlim([onSmoothTime(1) onSmoothTime(end)])
 xlabel('time (min)')

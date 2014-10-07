@@ -8,7 +8,6 @@ time = 18;
 numRepeats = 10;
 
 precision = 2; % significant figures for filenames and plot labels etc.
-paramCtr = 1;
 
 followFracValues = [0, 3/4, 7/8, 15/16, 1];
 sensingAccuracy = 0.1;

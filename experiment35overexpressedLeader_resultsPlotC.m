@@ -48,7 +48,6 @@ for expCtr = length(experiments):-1:1
         actualLeaderFraction(expCtr,repCtr) = size(leaders,2)/numberOfCells;
 
         % calculate migration profile
-        numberOfCells = size(out.cells_save{end},2);
         cellDistributions(expCtr,repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
         cellDistributions(expCtr,repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
         cellDistributions(expCtr,repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
