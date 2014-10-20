@@ -12,8 +12,8 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 for sensingAccuracy = [0.1, 0.01]
     input.sensingAccuracy = sensingAccuracy;
-        for lead2follow = [2 4 8 16]
-            for follow2lead = [2 4 8 16]
+        for lead2follow = [2 4 8 16 32]
+            for follow2lead = [2 4 8 16 32]
                 input.numSteps = [lead2follow, follow2lead];
                 for repCtr = 1:numReps
                     input.saveInfo = ['experiment31conversion4/exp31' ...
@@ -26,10 +26,10 @@ for sensingAccuracy = [0.1, 0.01]
                         % check if anyone else is logged into the
                         % current machine. If so, quit. If not,
                         % keep looping and run next job.
-%                         [~, logins_check] = system('/mi/libexec/check-logins | grep -v schumacher');
-%                         if size(logins_check,1)>0
-%                             quit
-%                         end
+                        [~, logins_check] = system('/mi/libexec/check-logins | grep -v schumacher');
+                        if size(logins_check,1)>0
+                            quit
+                        end
                     end
                 end
             end

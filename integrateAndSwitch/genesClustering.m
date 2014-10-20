@@ -3,8 +3,8 @@ clear
 load integrateAndSwitchGeneExpression.mat
 
 %% normalise data relative to baseline (t -120)
-normExpression = meanExpression...
-    ./repmat(meanExpression(1,:),size(meanExpression,1),1);
+normExpression = meanExpression;...
+%     ./repmat(meanExpression(1,:),size(meanExpression,1),1);
 
 %% ignore genes with missing data
 % meanExpression is in times by genes, each values average of 2-3
@@ -86,8 +86,8 @@ for clustCtr = 1:numClusters
         (clustCtr - 1),'Color',colors(clustCtr,:));
 end
 CIcounts = hist(clustIDs,1:numClusters);
-lh = legend(flipud(cellfun(@min,handles)),flipud(num2str(CIcounts')));
-set(get(lh,'title'),'string','# genes')
+% lh = legend(flipud(cellfun(@min,handles)),flipud(num2str(CIcounts')));
+% set(get(lh,'title'),'string','# genes')
 xlabel('t (min)')
 xlim(timeData([2, 10])')
 ylim([0 11])
@@ -100,8 +100,8 @@ for clustCtr = 1:numClusters
         (clustCtr - 1),'Color',colors(numClusters + clustCtr,:));
 end
 CIcounts = hist(clustIDs,1:numClusters);
-lh = legend(flipud(cellfun(@min,handles)),flipud(num2str(CIcounts')));
-set(get(lh,'title'),'string','# genes')
+% lh = legend(flipud(cellfun(@min,handles)),flipud(num2str(CIcounts')));
+% set(get(lh,'title'),'string','# genes')
 xlabel('t (min)')
 xlim(timeData([10, end])')
 ylim([0 11])

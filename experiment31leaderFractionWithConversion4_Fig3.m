@@ -11,25 +11,19 @@ numRepeats = 20;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-lead2followValues = [2 4 8 16];
-follow2leadValues = [2 4 8 16];
-numParamCombinations = length(lead2followValues)*length(follow2leadValues); 
+lead2followValues = [2 4 8 16 32];
+follow2leadValues = [2 4 8 16 32];
+numParamCombinations = 2*length(lead2followValues)*length(follow2leadValues); 
 
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
 referenceCellDistribution = NaN(numRepeats,3,length(xBins));
 
 % preallocate variables for saving collated results
-actualLeaderFraction = NaN(numParamCombinations,numRepeats);
-referenceLeaderFraction = NaN(numRepeats);
-
-exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
-    'Color','rgb',...
-    'Resolution',300,...
-    'FontMode','fixed',...
-    'FontSize',10,...
-    'LineWidth',2);
+actualLeaderFraction = NaN(length(lead2followValues),length(follow2leadValues),numRepeats);
+numCells = NaN(length(lead2followValues),length(follow2leadValues),numRepeats);
+referenceLeaderFraction = NaN(numRepeats,1);
+referenceNumCells = NaN(numRepeats,1);
 
 paramCtr = 1;
 
@@ -57,7 +51,8 @@ for sensingAccuracy = [0.1, 0.01]
         losts = cells(:,followIdcs==1&attachIdcs==0);
         
         referenceLeaderFraction(repCtr) = size(leaders,2)/numberOfCells;
-
+        referenceNumCells(repCtr) = numberOfCells;
+        
         % calculate migration profile
         referenceCellDistribution(repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
         referenceCellDistribution(repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
@@ -91,22 +86,17 @@ for sensingAccuracy = [0.1, 0.01]
                 followers = cells(:,followIdcs==1&attachIdcs~=0);
                 losts = cells(:,followIdcs==1&attachIdcs==0);
                 
-                actualLeaderFraction(paramCtr,repCtr) = size(leaders,2)/numberOfCells;
-                
+                actualLeaderFraction(lead2followCtr,follow2leadCtr,repCtr) = size(leaders,2)/numberOfCells;
+                numCells(lead2followCtr,follow2leadCtr,repCtr) = numberOfCells;
+                            
                 % calculate migration profile
-                numberOfCells = size(out.cells_save{end},2);
-                cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow_save{end}(1:numberOfCells)==0),xBins); % leaders
-                cellDistributions(paramCtr,repCtr,2,:) = histc(out.cells_save{end}(1,(out.cellsFollow_save{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)~=0)),xBins); % followers, attached
-                cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow_save{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, dettached
-                
-                % calculate migration profile
-                numberOfCells = size(out.cells_save{end},2);
                 cellDistributions(paramCtr,repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
                 cellDistributions(paramCtr,repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
                 cellDistributions(paramCtr,repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
             end
             %% plot migration profile
-            f_L = mean(actualLeaderFraction(paramCtr,:));
+            f_L = mean(actualLeaderFraction(lead2followCtr,follow2leadCtr,:));
+            n_C = mean(numCells(lead2followCtr,follow2leadCtr,:));
             plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
             % plot diagonal 'gridline' to aid the eye
             plot(max(xBins)*(lead2followCtr - [1 0]), 16*(follow2leadCtr - [0 1]),'--','Color',[0.5 0.5 0.5])
@@ -120,6 +110,7 @@ for sensingAccuracy = [0.1, 0.01]
                 'color',plotColor,'LineWidth',2);
             % add label with mean leader fraction
             text(max(xBins)*(lead2followCtr - 2/3), 16*(follow2leadCtr - 1/4),['<f_L> = ' num2str(f_L,precision)])
+            text(max(xBins)*(lead2followCtr - 1/2), 16*(follow2leadCtr - 1/3),['<n> = ' num2str(n_C,precision)])
             paramCtr = paramCtr + 1;
         end
     end
@@ -130,3 +121,22 @@ for sensingAccuracy = [0.1, 0.01]
     xlabel('lead to follow (min)')
     ylabel('follow to lead (min)')
 end
+
+%% export figure
+exportOptions = struct('Format','eps2',...
+    'Width','18.0',...
+    'Color','rgb',...
+    'Resolution',300,...
+    'FontMode','fixed',...
+    'FontSize',10,...
+    'LineWidth',2);
+
+filename = 'manuscripts/VEGF/figures/Fig3';
+pos = get(gcf,'Position');
+pos(4) = 1/2*pos(3); % adjust height to fraction of width
+set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
+exportfig(gcf,[filename '.eps'],exportOptions);
+system(['epstopdf ' filename '.eps']);
+
+%% save data from workspace
+save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','actualLeaderFraction','lead2followValues','follow2leadValues','numCells','referenceCellDistribution','referenceLeaderFraction','referenceNumCells')
