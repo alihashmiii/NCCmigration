@@ -5,16 +5,18 @@ close all
 clear
 %%
 time = 18;
-numRepeats = 10;
+numRepeats = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 
 followFracValues = [0, 3/4, 7/8, 15/16, 1];
+plotMarkers = {'-x','-.','-s','-+','-o'};
 sensingAccuracy = 0.1;
 needNeighbours = 0;
 
 % to calculate the density profile of cells along the x-direction
-xBins = 0:50:800; % bins for counting cell num vs. x profiles
+dx = 50;
+xBins = 0:dx:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(length(followFracValues),numRepeats,3,length(xBins));
 
 % preallocate variables for saving collated results
@@ -56,33 +58,35 @@ for followFracCtr = length(followFracValues):-1:1
     %% plot migration profile
     f_L = mean(actualLeaderFraction(followFracCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
-    [xs, ys] = stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)));
-    %   plot as area-graph instead of bar as matlab will sometimes get the alpha wrong for barplots (on mac) 
-    h(followFracCtr) = area(xs,ys,...
-            'FaceColor', plotColor, 'EdgeColor', plotColor);
+    % plot lines for migration profile (simplest, if less accurate)
+    plot(xBins + dx/2,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),plotMarkers{followFracCtr},'color',plotColor);
+%     %   plot as area-graph instead of bar as matlab will sometimes get the alpha wrong for barplots (on mac) 
+%     [xs, ys] = stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)));
+%     h(followFracCtr) = area(xs,ys,...
+%             'FaceColor', plotColor, 'EdgeColor', plotColor);
 %     % alternatively plot regions of sem
-%     h(followFracCtr) = area([xBins+25, fliplr(xBins+25)],...
+%     h(followFracCtr) = area([xBins+dx/2, fliplr(xBins+dx/2)],...
 %     [squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2))+std(squeeze(sum(cellDistributions(followFracCtr,:,:,:),3)))'/sqrt(numRepeats);...
 %             flipud(squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2))-std(squeeze(sum(cellDistributions(followFracCtr,:,:,:),3)))'/sqrt(numRepeats))],...
 %     'FaceColor', plotColor, 'EdgeColor', plotColor);
-    alpha(get(h(followFracCtr),'children'),0.5)
+%     alpha(get(h(followFracCtr),'children'),0.5)
 end
     
 xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
-hlegend = legend(h,num2str(mean(actualLeaderFraction,2),precision),'Location',...
-    'East');
+hlegend = legend(num2str(flipud(mean(actualLeaderFraction,2)),precision),'Location',...
+    'NorthEast'); 
 set(get(hlegend,'xlabel'),'string','<f_L>')
-ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
-grid on, set(gca,'Layer','top')
-box on
+ylim([0 17]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
+grid off, set(gca,'Layer','top')
+box off
 %% save figure as .fig file
 filename = 'manuscripts/subpopulations/figures/resultsFig1C';
 saveas(gcf,[filename '.fig'])
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','10',...
+    'Width','14.5',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
@@ -90,7 +94,8 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 
 pos = get(gcf,'Position');
-pos(4) = 0.72*pos(3); % adjust height to fraction of width
+pos(4) = 1/2*pos(3); % adjust height to fraction of width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
+system(['pdfcrop ' filename '.pdf']);

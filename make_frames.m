@@ -8,6 +8,9 @@ else
     frames2show = [find(t_save<=12,1,'last'), find(t_save<=24,1,'last')]
 end
 
+caCmap = load('cmap_blue2cyan.txt');
+
+
 for frameCtr=1:length(frames2show)
     timeCtr = frames2show(frameCtr);
     subplot(length(frames2show),1,frameCtr)    
@@ -21,5 +24,5 @@ for frameCtr=1:length(frames2show)
     xlabel('x/\mum'), ylabel('y/\mum') % -- LJS
 end
 
-saveas(framesFig,['avi_mat/frames/frames3',saveInfo,'.fig'])
+saveas(framesFig,['avi_mat/frames/frames3/',saveInfo,'.fig'])
 close(framesFig)

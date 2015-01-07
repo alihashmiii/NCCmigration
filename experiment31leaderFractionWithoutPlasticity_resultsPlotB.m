@@ -69,22 +69,24 @@ for followFracCtr = 1:length(followFracValues)
     boxplot(distanceMigrated{followFracCtr},'plotstyle','compact','medianstyle','target','orientation','horizontal',...
         'colors',[1 1 1] - totalCellNumbers(followFracCtr)/maxCellNumber,'symbol','x','positions',yTicks(followFracCtr))
 end   
-xlabel('x/\mum')
 ylabel('mean leader fraction <f_L>')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
-set(gca,'XTick',0:200:800)
+xlabel('x/\mum')
+set(gca,'XTick',0:200:800,'Xaxislocation','top')
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
 
 % add a colorbar for relative stream density
-ch = colorbar('Location','SouthOutside');
-% title(ch,'relative stream density')
+ch = colorbar('Location','EastOutside');
+title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
 set(ch,'YTick',0:0.2:1)
 
+box off
+
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','12.0',...
+    'Width','18.0',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...

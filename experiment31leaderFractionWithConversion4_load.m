@@ -1,57 +1,78 @@
-% load
-% L.J. Schumacher 28.10.13
+% plot small multiples of migration profiles for switching time lead2follow
+% vs follow2lead
+% L.J. Schumacher 05.09.14
 
 close all
 clear all
 
 time = 18;
 numRepeats = 20;
-maxRuns2plot = 20;
-numParamCombinations = 36;
-% to calculate the density profile of cells and chemoattractant along the x-direction
-cellRadius = 7.5;
-filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-xBins = 0:(cellRadius + filolength):24*(cellRadius + filolength); % bins for counting cell num vs. x profiles
-cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-caDistribution = NaN(numParamCombinations,numRepeats,64);
-xlat_save = NaN(64,1);
-% preallocate variables for saving collated results
-actualLeaderFraction = NaN(numParamCombinations,1);
-sensingAccuracies = NaN(numParamCombinations,1);
-neighboursNeeds = NaN(numParamCombinations,1);
 
-exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
-    'Color','rgb',...
-    'Resolution',300,...
-    'FontMode','fixed',...
-    'FontSize',10,...
-    'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
-paramCtr = 1;
-conversionType = 4;
-lead2followValues = [4 8];
-follow2leadValues = [8 16 30];
-follow2leadColors = jet(length(follow2leadValues));
-caCmap = load('cmap_blue2cyan.txt');
 
-for sensingAccuracy = [0.1, 0.01]
-    for needNeighbours = [0, 1 ,2]
-        profilesFig = figure('Visible','off');
-        profiles2getherFig = figure('Visible','off');
-        neighbourRelationsFig = figure('Visible','off');
-            %% load and plot data for every run of this parameter combination
-            for lead2followCtr = 1:length(lead2followValues)
-                lead2follow = lead2followValues(lead2followCtr);
+conversionType = 4;
+defaultFollowValues = [0 1 2];
+lead2followValues = [1 2 4 8 12 16 24 32 40 48 56];
+follow2leadValues = [1 2 4 8 12 16 24 32 40 48 56];
+sensingAccuracyValues = [0.1, 0.01];
+numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)*length(lead2followValues)*length(follow2leadValues);
+
+xBins = 0:50:800; % bins for counting cell num vs. x profiles
+cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
+referenceCellDistribution = NaN(numRepeats,3,length(xBins));
+
+% preallocate variables for saving collated results
+actualLeaderFraction = NaN(length(defaultFollowValues),length(sensingAccuracyValues),length(lead2followValues),length(follow2leadValues),numRepeats);
+numCells = NaN(length(defaultFollowValues),length(sensingAccuracyValues),length(lead2followValues),length(follow2leadValues),numRepeats);
+referenceLeaderFraction = NaN(numRepeats,1);
+referenceNumCells = NaN(numRepeats,1);
+
+paramCtr = 1;
+
+for sensAccCtr = 1:length(sensingAccuracyValues)
+    sensingAccuracy = sensingAccuracyValues(sensAccCtr);
+    %% load non-switching reference experiments
+    for repCtr = 1:numRepeats
+        loadInfo = ['experiment31/exp31_followFrac_1_sensingAcc_' num2str(sensingAccuracy)...
+            '_needNeighbours_0_Run_' num2str(repCtr)];
+        
+        try % sometimes we get corrupt files, which crashes the script
+            load(['results/' loadInfo '.mat'])
+        catch
+            error(['Could not load results/' loadInfo '.mat'])
+        end
+        
+        % load cell positions into variables
+        cells = out.cells_save{end}; % all cells
+        numberOfCells = size(cells,2);
+        followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        attachIdcs = out.attach_save{end}(1:numberOfCells);
+        leaders = cells(:,followIdcs==0);
+        followers = cells(:,followIdcs==1&attachIdcs~=0);
+        losts = cells(:,followIdcs==1&attachIdcs==0);
+        
+        referenceLeaderFraction(repCtr) = size(leaders,2)/numberOfCells;
+        referenceNumCells(repCtr) = numberOfCells;
+        
+        % calculate migration profile
+        referenceCellDistribution(repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
+        referenceCellDistribution(repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
+        referenceCellDistribution(repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
+    end
+    for defaultFollow = defaultFollowValues
+        figure
+        hold on
+        %% load data
+        for lead2followCtr = 1:length(lead2followValues)
+            lead2follow = lead2followValues(lead2followCtr);
             for follow2leadCtr = 1:length(follow2leadValues)
                 follow2lead = follow2leadValues(follow2leadCtr);
                 numSteps = [lead2follow, follow2lead];
-                runsFig = figure('Visible','off');
                 for repCtr = 1:numRepeats
                     loadInfo = ['experiment31conversion4/exp31'...
-                        '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
-                        '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours)...
-                        '_Run_' num2str(repCtr)];
+                        '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
+                        '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
+                        '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                     try % sometime we get corrupt files, which crashes the script
                         load(['results/' loadInfo '.mat'])
                     catch
@@ -59,140 +80,69 @@ for sensingAccuracy = [0.1, 0.01]
                         experiment31leaderFractionWithConversion4; % recreate the missing results file
                         load(['results/' loadInfo '.mat']) % load again
                     end
-                    % make a plot of all repeats
-                    if repCtr <= maxRuns2plot
-                        subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,repCtr+2)
-                        make_plot(out.cells_save{end},out.cellsFollow_save{end},out.xlat_save{end},out.ylat_save{end}, ...
-                            out.ca_save{end},out.filopodia_save{end},out.numFilopodia,out.attach_save{end},out.cellRadius,filolength,sensingAccuracy,0,caCmap,1)
-                        title([num2str(size(out.cells_save{end},2)) ' cells, ' num2str(min([size(out.cells_save{end},2) nnz(out.cellsFollow_save{end}==0)])) ' leaders.'])
-                    end
+                    
+                    % load cell positions into variables
+                    cells = out.cells_save{end}; % all cells
+                    numberOfCells = size(cells,2);
+                    followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+                    attachIdcs = out.attach_save{end}(1:numberOfCells);
+                    leaders = cells(:,followIdcs==0);
+                    followers = cells(:,followIdcs==1&attachIdcs~=0);
+                    losts = cells(:,followIdcs==1&attachIdcs==0);
+                    
+                    actualLeaderFraction(defaultFollow + 1,sensAccCtr,lead2followCtr,follow2leadCtr,repCtr) = size(leaders,2)/numberOfCells;
+                    numCells(defaultFollow + 1,sensAccCtr,lead2followCtr,follow2leadCtr,repCtr) = numberOfCells;
+                    
                     % calculate migration profile
-                    numberOfCells = size(out.cells_save{end},2);
-                    cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow_save{end}(1:numberOfCells)==0),xBins); % leaders
-                    cellDistributions(paramCtr,repCtr,2,:) = histc(out.cells_save{end}(1,(out.cellsFollow_save{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)~=0)),xBins); % followers, attached
-                    cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow_save{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, dettached
-                    caDistribution(paramCtr,repCtr,:) = mean(out.ca_save{end},2);
-                    if paramCtr==1, xlat_save = out.xlat_save{end}; end % load the x-coordinated of the CA profile, only once as they're always the same
-                    % calculate neighbour relationships
-                    if paramCtr==1&&repCtr==1
-                        neighbours = neighbourRelationships(out.cells_save{end});
-                    elseif repCtr==1
-                        neighbours(paramCtr) = neighbourRelationships(out.cells_save{end});
-                    else
-                        tempNeighbours = neighbourRelationships(out.cells_save{end});
-                        neighbours(paramCtr).numbers = neighbours(paramCtr).numbers + tempNeighbours.numbers;
-                        neighbours(paramCtr).distances = neighbours(paramCtr).distances + tempNeighbours.distances;
-                        neighbours(paramCtr).areas = neighbours(paramCtr).areas + tempNeighbours.areas;
-                    end
+                    cellDistributions(paramCtr,repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
+                    cellDistributions(paramCtr,repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
+                    cellDistributions(paramCtr,repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
                 end
-                % plot migration profile
-                subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,[1 2])
-                plot_migration_profile
-                xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
-                %legend([H3(3);H3(2);H3(1)],'lead','follow','lost');
-                
-                % title has parameter values and actual leader fraction
-                actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
-                actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-                title(['Exp3.1: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow) ', follow2lead=' num2str(follow2lead) ])
-                
-                % save plot
-                filename = ['results/experiment31conversion4/figures/exp31conv4' ...
-                    '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) ...
-                    '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
-                    '_allRuns'];
-                pos = get(runsFig,'Position');
-                pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-                set(runsFig,'PaperUnits','centimeters','Position',pos);
-                exportfig(runsFig,[filename '.eps'],exportOptions);
-                system(['epstopdf ' filename '.eps']);
-                system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
-                close(runsFig);
-                
-                %% plot summary migration profiles
-                set(0,'CurrentFigure',profilesFig);
-                subplot(length(follow2leadValues),length(lead2followValues),length(lead2followValues)*(follow2leadCtr - 1) + lead2followCtr)
-                plot_migration_profile
-                % xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
-                % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
-                
-                % title has parameter values and actual leader fraction
-                if follow2leadCtr==1&&lead2followCtr==1
-                    title(['Exp3.1: lead2follow=' num2str(lead2follow) ', sensAcc=' num2str(sensingAccuracy) ' needNbrs=' num2str(needNeighbours) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
-                elseif follow2leadCtr==1&&lead2followCtr==2
-                    title(['lead2follow=' num2str(lead2follow) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ])
-                else
-                    title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', follow2lead=' num2str(follow2lead)])
-                end
-                
-                set(0,'CurrentFigure',profiles2getherFig);
-                subplot(length(lead2followValues),1,lead2followCtr)
-                if follow2leadCtr==1, hold on, end
-                plot(xBins,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)),'Color',follow2leadColors(follow2leadCtr,:));
-                if follow2leadCtr==length(follow2leadValues)
-                    title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow)])
-                    xlabel('x/\mum'), ylabel('N(cells)'), legend(num2str(follow2leadValues'))
-                    ylim([0 10]), xlim([0 800]), set(gca,'YTick',[0 2 4 6 8 10]), grid on
-                end
-                
-                %% plot neighbour relations
-                set(0,'CurrentFigure',neighbourRelationsFig);
-                subplot(length(lead2followValues),3,1 + (lead2followCtr - 1)*3)
-                if follow2leadCtr ==1, hold on, end
-                plot(1:length(neighbours(paramCtr).numbers),neighbours(paramCtr).numbers./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
-                if follow2leadCtr==length(follow2leadValues)
-                    xlabel('#neighbours'), ylabel('N(cells)'), grid on
-                end
-                
-                subplot(length(lead2followValues),3,2 + (lead2followCtr - 1)*3)
-                if follow2leadCtr ==1, hold on, end
-                plot(neighbours(paramCtr).distancesBinEdges, neighbours(paramCtr).distances./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
-                if follow2leadCtr==length(follow2leadValues)
-                    title(['Exp3.1: sensAcc=' num2str(sensingAccuracy) ', needNbrs=' num2str(needNeighbours) ', lead2follow=' num2str(lead2follow)])
-                    xlabel('distance/\mum'), ylabel('N(cells)')
-                    xlim([0 max(neighbours(paramCtr).distancesBinEdges)]), grid on
-                end
-                
-                subplot(length(lead2followValues),3,3 + (lead2followCtr - 1)*3)
-                if follow2leadCtr ==1, hold on, end
-                plot(neighbours(paramCtr).areasBinEdges, neighbours(paramCtr).areas./numRepeats,'Color',follow2leadColors(follow2leadCtr,:))
-                if follow2leadCtr==length(follow2leadValues)
-                    xlabel('area/\mum^2'), ylabel('N(cells)'), legend(num2str(follow2leadValues'))
-                    xlim([0 max(neighbours(paramCtr).areasBinEdges)/2]), grid on
-                end
-                
-                %% save summary of results
-                sensingAccuracies(paramCtr) = sensingAccuracy;
-                neighboursNeeds(paramCtr) = needNeighbours;
+                %% plot migration profile
+                f_L = mean(actualLeaderFraction(defaultFollow + 1,sensAccCtr,lead2followCtr,follow2leadCtr,:));
+                n_C = mean(numCells(defaultFollow + 1,sensAccCtr,lead2followCtr,follow2leadCtr,:));
+                plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
+%                 % plot diagonal 'gridline' to aid the eye
+%                 plot(max(xBins)*(lead2followCtr - [1 0]), 16*(follow2leadCtr - [0 1]),'--','Color',[0.5 0.5 0.5])
+                % plot reference migration profile
+                stairs(xBins + max(xBins)*(lead2followCtr - 1) ... % add x-offset
+                    ,squeeze(mean(sum(referenceCellDistribution,2),1)) + 16*(follow2leadCtr - 1),... % add y-offset
+                    'color',[0.5 0.5 0.5],'LineWidth',1);
+                % plot offset migration profile
+                stairs(xBins + max(xBins)*(lead2followCtr - 1) ... % add x-offset
+                    ,squeeze(mean(sum(cellDistributions(paramCtr,:,:,:),3),2)) + 16*(follow2leadCtr - 1),... % add y-offset
+                    'color',plotColor,'LineWidth',2);
+                % add label with mean leader fraction and number of cells
+                text(max(xBins)*(lead2followCtr - 9.5/12), 16*(follow2leadCtr - 2/12),...
+                    ['$\bar{f_L}$ = ' num2str(f_L,precision)],'FontSize',4,'Interpreter','Latex')
+                text(max(xBins)*(lead2followCtr - 7/12), 16*(follow2leadCtr - 4/12),...
+                    ['$\bar{n}$ = ' num2str(n_C,precision)],'FontSize',4,'Interpreter','Latex')
                 paramCtr = paramCtr + 1;
             end
-            end
-        % make a plot with migration profiles for all parameter combinations
-        pos = get(profilesFig,'Position');
-        pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-        set(profilesFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_migrationProfiles'];
-        exportfig(profilesFig,[filename '.eps'],exportOptions);
-        system(['epstopdf ' filename '.eps']);
-        system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
-        close(profilesFig);
+        end
+        grid on
+        set(gca,'xtick',max(xBins)*(1:length(lead2followValues)),'xticklabel',num2str(lead2followValues'))
+        set(gca,'ytick',16*(1:length(follow2leadValues)),'yticklabel',num2str(follow2leadValues'))
+        set(gca,'GridLineStyle','-')
+        xlabel('lead to follow (min)')
+        ylabel('follow to lead (min)')
+        %% export figure
+        exportOptions = struct('Format','eps2',...
+            'Width','26.0',...
+            'Color','rgb',...
+            'Resolution',300,...
+            'LineWidth',2);
+        %             'FontMode','fixed',...
+%             'FontSize',8,...
         
-        pos = get(profiles2getherFig,'Position');
-%         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-        set(profiles2getherFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_migrationProfiles2gether'];
-        exportfig(profiles2getherFig,[filename '.eps'],exportOptions);
+        filename = ['manuscripts/VEGF/figures/FigS3_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        pos = get(gcf,'Position');
+        % pos(4) = 1/2*pos(3); % adjust height to fraction of width
+        set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
+        exportfig(gcf,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);
-        system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
-        
-        pos = get(neighbourRelationsFig,'Position');
-%         pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-        set(neighbourRelationsFig,'PaperUnits','centimeters','Position',pos);
-        filename = ['results/experiment31conversion4/figures/exp31conv4_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_' num2str(needNeighbours) '_neighbourRelations'];
-        exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
-        system(['epstopdf ' filename '.eps']);
-        system(['cp ' filename '.pdf results/PDFs/' filename '.pdf']); % copying finished plots to a place where Dropbox will sync them
-        close(neighbourRelationsFig);
     end
 end
-save('results/experiment31conversion4/figures/experiment31conv4collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','sensingAccuracies','neighboursNeeds')
+
+%% save data from workspace
+save('manuscripts/VEGF/figures/experiment31conv4collatedResults','xBins','cellDistributions','actualLeaderFraction','lead2followValues','follow2leadValues','sensingAccuracyValues','numCells','referenceCellDistribution','referenceLeaderFraction','referenceNumCells')

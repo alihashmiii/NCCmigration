@@ -10,16 +10,18 @@ numReps = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 
-for sensingAccuracy = [0.1, 0.01]
-    input.sensingAccuracy = sensingAccuracy;
-        for lead2follow = [2 4 8 16 32]
-            for follow2lead = [2 4 8 16 32]
+for defaultFollow = [0 1 2]
+    input.followerFraction = defaultFollow;
+    for sensingAccuracy = [0.1, 0.01]
+        input.sensingAccuracy = sensingAccuracy;
+        for lead2follow = [1 2 4 8 12 16 24 32 40 48 56]
+            for follow2lead = [1 2 4 8 12 16 24 32 40 48 56]
                 input.numSteps = [lead2follow, follow2lead];
                 for repCtr = 1:numReps
                     input.saveInfo = ['experiment31conversion4/exp31' ...
-                        '_conversion_' num2str(input.conversionType) '_numSteps_' num2str(input.numSteps(1)) '_' num2str(input.numSteps(2)) ...
-                        '_sensingAcc_' num2str(sensingAccuracy) '_needNeighbours_0'...
-                        '_Run_' num2str(repCtr)];
+                        '_conversion_' num2str(input.conversionType) '_defaultFollow_' num2str(input.followerFraction) ...
+                        '_numSteps_' num2str(input.numSteps(1)) '_' num2str(input.numSteps(2)) ...
+                        '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                     if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                         rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                         CA6(input,0);
@@ -34,4 +36,5 @@ for sensingAccuracy = [0.1, 0.01]
                 end
             end
         end
+    end
 end

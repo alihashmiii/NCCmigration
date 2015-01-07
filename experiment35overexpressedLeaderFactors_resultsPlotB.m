@@ -43,7 +43,11 @@ for expCtr = 1:length(experiments)
         % make a scatter plot of all repeats on top of each other
         cells = out.cells_save{end}; % all cells
         numberOfCells = size(cells,2);
-        followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        if isfield(out,'cellsFollow')
+            followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        else
+            followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+        end
         attachIdcs = out.attach_save{end}(1:numberOfCells);
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
@@ -69,14 +73,15 @@ for expCtr = 1:length(experiments)
         'colors',[1 1 1] - totalCellNumbers(expCtr)/maxCellNumber,'symbol','x','positions',yTicks(expCtr))
 end   
 xlabel('x/\mum')
-set(gca,'YTick',yTicks,'YTickLabel', {'lead+'; 'WT'})
+set(gca,'YTick',yTicks,'YTickLabel', {'lead+'; 'WT'},'xaxislocation','top')
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
 
 % add a colorbar for relative stream density
 ch = colorbar;
-title(ch,'\rho^{stream}_{relative}')
+title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
+box off
 
 %% export figure
 exportOptions = struct('Format','eps2',...

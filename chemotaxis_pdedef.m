@@ -52,11 +52,13 @@ eatTerm = sum(bigEat,2);
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
     - eatTerm...
     + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
-if (experiment==11||experiment==12||experiment==13)&&t>=transplantTime
+if (experiment==11||experiment==12||experiment==13||experiment==14)&&t>=transplantTime
     if (experiment==12||experiment==13)
         indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/2);
     elseif experiment==11
         indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/20);
+    elseif experiment==14 % increased chemoattractant at far end of domain, full width
+        indcs =  (x>=transplantXLocation/L)&(x<=1);
     end
     res(indcs) = res(indcs) - secondaryChi.*u(indcs).*(1 - u(indcs)); % increased CA production
 end

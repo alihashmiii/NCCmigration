@@ -15,9 +15,10 @@ sensingAccuracy = 0.1;
 needNeighbours = 0;
 
 experiments = {['experiment35/exp35_']; ['experiment31/exp31_']};
-
+plotMarkers = {'-+','-o'};
 % to calculate the density profile of cells along the x-direction
-xBins = 0:50:800; % bins for counting cell num vs. x profiles
+dx = 50;
+xBins = 0:dx:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(length(experiments),numRepeats,3,length(xBins));
 
 % preallocate variables for saving collated results
@@ -39,7 +40,11 @@ for expCtr = length(experiments):-1:1
         % load cell positions into variables
         cells = out.cells_save{end}; % all cells
         numberOfCells = size(cells,2);
-        followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        if isfield(out,'cellsFollow')
+            followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        else
+            followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+        end
         attachIdcs = out.attach_save{end}(1:numberOfCells);
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
@@ -55,19 +60,19 @@ for expCtr = length(experiments):-1:1
     % plot migration profile
     f_L = mean(actualLeaderFraction(expCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
-    stairs(xBins,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),'Color',plotColor)
-    h(expCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),1,...
-        'FaceColor', plotColor, 'EdgeColor', plotColor);
+    plot(xBins + dx/2,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),plotMarkers{expCtr},'Color',plotColor)
+%     h(expCtr) = bar(xBins + 25,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),1,...
+%         'FaceColor', plotColor, 'EdgeColor', plotColor);
     %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
     %         'FaceColor', plotColor, 'EdgeColor', plotColor);
 %     alpha(get(h(expCtr),'children'),0.5)
 end
 xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
-legend(h, {'lead+'; 'WT'})
-ylim([0 16]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
-grid on, set(gca,'Layer','top')
-box on
+legend({'WT'; 'lead+'})
+ylim([0 17]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
+grid off, set(gca,'Layer','top')
+box off
 
 %% export figure
 exportOptions = struct('Format','eps2',...

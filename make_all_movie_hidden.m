@@ -8,9 +8,11 @@ movieFig = figure('units','points','outerposition',[0 0 1600 430],'position',[1 
 filePath = ['avi_mat/allmovie/',saveInfo,'/'];
 mkdir(filePath)
 frameRate = 30;    % frames per second - fewer frames will make the movie slower
-skip = round(5/60/param.tstep); % skip more time steps for faster saving
+skip = round(5/60/tstep); % skip more time steps for faster saving
 frameCtr = 1;
 % % set(gcf,'Renderer','zbuffer')
+
+caCmap = load('cmap_blue2cyan.txt');
 
 minx = min([min(xlat_save{end}) 0]);
 for timeCtr=1:skip:numTsteps
@@ -29,7 +31,7 @@ for timeCtr=1:skip:numTsteps
     set(gca,'position',[T_t(1)+0.04 T_t(2) 1-T_t(1)-T_t(3)-0.1 1-T_t(2)-T_t(4)]);
     
 %     axis image
-    print(movieFig,'-dtiff',[filePath,int2str(frameCtr),'.tiff'])
+    print(movieFig,'-r0','-dtiff',[filePath,int2str(frameCtr),'.tiff'])
     frameCtr = frameCtr + 1;
 end
 close(movieFig)
@@ -41,7 +43,7 @@ disp('compiling the movie now');
 %the latter is the new version of the first):
 %http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide -- JK
 
-system(['avconv -r ', int2str(frameRate), ' -i ', filePath, '%d.tiff -y ',filePath,saveInfo,'.mp4']);
+system(['avconv -r ', int2str(frameRate), ' -preset veryslow -crf 28 -i ', filePath, '%d.tiff -y ',filePath,saveInfo,'.mp4']);
 %Choose a CRF value
 %The range of the quantizer scale is 0-51: where 0 is lossless, 23 is default, and 51 is worst possible. A lower value is a higher quality and a subjectively sane range is 18-28. Consider 18 to be visually lossless or nearly so: it should look the same or nearly the same as the input but it isn't technically lossless.
 %The range is exponential, so increasing the CRF value +6 is roughly half the bitrate while -6 is roughly twice the bitrate. General usage is to choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try a higher value and if it looks bad then choose a lower value.

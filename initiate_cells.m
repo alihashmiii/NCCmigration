@@ -7,7 +7,6 @@
 function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
 cells = [cells_in NaN(2,numCells2Insert)];
-cellsFollow = false(length(cells(1,:,1)),1);
 [~,j] = size(cells_in);
 if j==0 % if we're inserting the first set of cells, position them uniformly, to have repeatable initial conditions -- LJS
     cells(:,1:numCells2Insert,1) = [cellRadius(ones(1,numCells2Insert));...
@@ -44,7 +43,6 @@ if followerFraction~=0
             j = j+1;
         end
     end
-    cellsFollow(1:floor(end*followerFraction))=ones(floor(length(cells(1,:,1))*followerFraction),1);
 end
 
 %% Initialise all other cells here
@@ -93,7 +91,6 @@ end
 cells(:,any(cells,1)==0)=[];
 
 out.cells = cells;
-out.cellsFollow = cellsFollow;
 if isempty(cells_in)==1
     disp('cells initiated')
 end

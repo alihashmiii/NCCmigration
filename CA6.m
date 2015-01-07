@@ -69,20 +69,24 @@ needNeighbours = 0; % cells only move (directed) if there are at least this many
 %% experimental parameters %%
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 % do this with case instead
-if param.experiment==12
+if param.experiment==12 %VEGF transplant back half
    param.transplantTime = 12; % time at which CA-production will be locally increased
    param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
    param.secondaryChi = 2.5; % strength of increased CA production
-elseif param.experiment==13
+elseif param.experiment==13 %VEGF transplant middle half
    param.transplantTime = 12; % time at which CA-production will be locally increased
    param.transplantXLocation = 70; % left edge of square region in which CA-production will be increased
    param.secondaryChi = 2.5; % strength of increased CA production 
-elseif param.experiment==11
+elseif param.experiment==11 %VEGF transplant back edge
    param.transplantTime = 12; % time at which CA-production will be locally increased
    param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
    param.secondaryChi = 2.5; % strength of increased CA production    
+elseif param.experiment==14
+   param.transplantTime = 12; % time at which CA-production will be locally increased
+   param.transplantXLocation = 425; % left edge of square region in which CA-production will be increased
+   param.secondaryChi = 2.5; % strength of increased CA production  
 else
-    param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
+   param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
 end
 %% caSolve parameters %%
 param.diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
@@ -216,7 +220,11 @@ presave_stuff % create results file with parameters to signal that this simulati
 temp = initiate_cells(numCellsInitial,cellRadius,0,param.initialDomainLength,param.domainHeight,initXFrac,initYFrac,[],1);
 cells = temp.cells;
 finalNumCells = (numCellsInitial + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
-cellsFollow = false(finalNumCells,1); % cells are leaders by default. For fixed fractions of followers, all
+if followerFraction > 1
+    cellsFollow = true(finalNumCells,1); % cells are followeres by default
+else
+    cellsFollow = false(finalNumCells,1); % cells are leaders by default. For fixed fractions of followers, all
+end
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
 % on expected total cell numbers, which are too high when many cells cannot
@@ -343,18 +351,22 @@ for timeCtr=1:numTsteps
         theta = temp.theta;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
         if conversionType==4
-        if timeCtr ==1
-            happiness(timeCtr,1:length(cells(1,:))) = ~cellsFollow(1:length(cells(1,:))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
-        else
-            happiness(timeCtr,isnan(happiness(timeCtr - 1,1:length(cells(1,:))))) = ...
-                ~cellsFollow(isnan(happiness(timeCtr - 1,1:length(cells(1,:))))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
-            happiness(timeCtr,temp.sensed) = min(1,... % the maximum happiness is 1 -- LJS
-                min(happiness(timeCtr,temp.sensed),happiness(timeCtr-1,temp.sensed))... % for new cells the previous happiness is NaN, hence take min of previous and current happiness -- LJS
-                + param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
-            happiness(timeCtr,~temp.sensed) = max(0,... % minimum happiness is 0 -- LJS
-                max(happiness(timeCtr,~temp.sensed),happiness(timeCtr-1,~temp.sensed))... % for new cells the previous happiness is NaN, hence take max of previous and current happiness -- LJS
-                - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
-        end
+            if timeCtr ==1
+                happiness(timeCtr,1:length(cells(1,:))) = ~cellsFollow(1:length(cells(1,:))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
+            else
+                newCellIdcs = isnan(happiness(timeCtr - 1,1:length(cells(1,:)))); % newly existing cells have previous happiness nan -- LJS
+                happiness(timeCtr,newCellIdcs) = ~cellsFollow(newCellIdcs); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
+                happiness(timeCtr,temp.sensed&~newCellIdcs) = min(1,... % the maximum happiness is 1 -- LJS
+                    happiness(timeCtr-1,temp.sensed&~newCellIdcs) + param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
+                happiness(timeCtr,~temp.sensed&~newCellIdcs) = max(0,... % minimum happiness is 0 -- LJS
+                    happiness(timeCtr-1,~temp.sensed&~newCellIdcs) - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+                % new cells change from current happiness, as previous is
+                % nan
+                happiness(timeCtr,temp.sensed&newCellIdcs) = min(1,... % the maximum happiness is 1 -- LJS
+                    happiness(timeCtr,temp.sensed&newCellIdcs)+ param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
+                happiness(timeCtr,~temp.sensed&newCellIdcs) = max(0,... % minimum happiness is 0 -- LJS
+                    happiness(timeCtr,~temp.sensed&newCellIdcs) - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
+            end
         end
         attach_save{timeCtr} = attach;
         cellsFollow_save{timeCtr} = cellsFollow;
