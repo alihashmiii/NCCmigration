@@ -10,9 +10,9 @@ numReps = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
 
-for experiment = 14 %[11 12 13]
+for experiment = [11 12 13 14]
     input.experiment = experiment;
-    for defaultFollow = [0 1]
+    for defaultFollow = [0 1 2]
         input.followerFraction = defaultFollow;
         for sensingAccuracy = [0.1, 0.01]
             input.sensingAccuracy = sensingAccuracy;

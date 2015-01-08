@@ -1,5 +1,4 @@
-% plot small multiples of migration profiles for switching time lead2follow
-% vs follow2lead
+% plot migration profiles for simulated VEGF transplants.
 % L.J. Schumacher 05.09.14
 
 close all
@@ -11,11 +10,11 @@ numRepeats = 20;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-defaultFollowValues = [0 1];
+defaultFollowValues = [0 1 2];
 lead2follow = [4];
 follow2lead = [4];
 sensingAccuracyValues = [0.1, 0.01];
-experiments = [12 11 13];
+experiments = [12 11 13 14];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);
 
@@ -90,7 +89,7 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/Fig7_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['manuscripts/VEGF/figures/FigS4_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         pos = get(gcf,'Position');
         % pos(4) = 1/2*pos(3); % adjust height to fraction of width
         set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
