@@ -19,12 +19,18 @@ numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)
     *length(experiments);
 
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
+neighbourCutoff = 160;
+cellRadius = 7.5;
 
 for defaultFollow = defaultFollowValues
     for sensAccCtr = 1:length(sensingAccuracyValues)
         sensingAccuracy = sensingAccuracyValues(sensAccCtr);
-        figure
-        hold all
+        migrationProfilesFig = figure;
+        hold on
+        neighbourRelationsFig = figure;
+        for ctr = 1:2
+        subplot(1,2,ctr), hold on
+        end
         for expCtr = 1:length(experiments)
             experiment = experiments(expCtr);
             % preallocate variables for saving collated results
@@ -34,7 +40,12 @@ for defaultFollow = defaultFollowValues
                 numRepeats);
             numCells = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                 numRepeats);
-            
+%             neighbourNumbers = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
+%                 numRepeats,10);
+            neighbourAreas = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
+                numRepeats,21);
+            neighbourDistances = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
+                numRepeats,length(2*cellRadius:cellRadius:neighbourCutoff));
             
             %% load data
                     numSteps = [lead2follow, follow2lead];
@@ -81,19 +92,50 @@ for defaultFollow = defaultFollowValues
                         cellDistributions(defaultFollow + 1,sensAccCtr,repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
                         cellDistributions(defaultFollow + 1,sensAccCtr,repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
                         cellDistributions(defaultFollow + 1,sensAccCtr,repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
+
+                        % calculate neighbour relationships
+                        neighbours = neighbourRelationships(out.cells_save{end},neighbourCutoff);
+%                         neighbourNumbers(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.numbers./sum(neighbours.numbers);
+                        neighbourDistances(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.distances./sum(neighbours.distances);
+                        neighbourAreas(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.areas./sum(neighbours.areas);
                     end
                     %% plot migration profile
                     f_L = mean(actualLeaderFraction(defaultFollow + 1,sensAccCtr,:));
                     n_C = mean(numCells(defaultFollow + 1,sensAccCtr,:));
                     % plot migration profile
+                    set(0,'CurrentFigure',migrationProfilesFig);
                     plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,:,:),4),3)),...
                         'LineWidth',2);
+                    %% plot neighbour relations
+                    set(0,'CurrentFigure',neighbourRelationsFig);
+%                     subplot(1,3,1)
+%                     plot(1:length(neighbours.numbers), squeeze(mean(neighbourNumbers(defaultFollow + 1,sensAccCtr,:,:),3)))
+                    
+                    subplot(1,2,1)
+                    plot(neighbours.distancesBinEdges, squeeze(mean(neighbourDistances(defaultFollow + 1,sensAccCtr,:,:),3)))
+                    
+                    subplot(1,2,2)
+                    plot(neighbours.areasBinEdges, squeeze(mean(neighbourAreas(defaultFollow + 1,sensAccCtr,:,:),3)))
         end
+        set(0,'CurrentFigure',migrationProfilesFig);
         grid on
         set(gca,'GridLineStyle','-')
         legend('control', 'within','adjacent')
         xlabel('distance along stream (\mum)')
         ylabel('number of cell (per 50\mum)')
+              
+        set(0,'CurrentFigure',neighbourRelationsFig);
+%         subplot(1,3,1)
+%         xlabel('#neighbours'), ylabel('P')
+%         legend('control', 'within','adjacent')
+        subplot(1,2,1)
+        xlabel('distance/\mum'), ylabel('P')
+        xlim([2*cellRadius,neighbourCutoff])
+        legend('control', 'within','adjacent')
+        subplot(1,2,2)
+        xlabel('area/\mum^2'), ylabel('P')
+        xlim([3*sqrt(3)/2*cellRadius.^2,1e4])
+        legend('control', 'within','adjacent')
         %% export figure
         exportOptions = struct('Format','eps2',...
             'Width','18.0',...
@@ -103,11 +145,14 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
+        filename = ['manuscripts/VEGF/figures/Fig4Emodel_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        set(migrationProfilesFig,'PaperUnits','centimeters');
+        exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
+        system(['epstopdf ' filename '.eps']);
+        
         filename = ['manuscripts/VEGF/figures/Fig4K_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
-        pos = get(gcf,'Position');
-        % pos(4) = 1/2*pos(3); % adjust height to fraction of width
-        set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
-        exportfig(gcf,[filename '.eps'],exportOptions);
+        set(neighbourRelationsFig,'PaperUnits','centimeters');
+        exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);
         
     end

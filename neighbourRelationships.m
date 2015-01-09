@@ -1,4 +1,4 @@
-function neighbours = neighbourRelationships(cells)
+function neighbours = neighbourRelationships(cells,neighbourCutoff)
 % neighbour relationships 
 % input cells should be of shape [x1, y1; x2, y2; ...; xN, yN] where N is
 % number of cells
@@ -8,7 +8,9 @@ else
     cells = double(cells);
 end
 numCells = size(cells,1);
-neighbourCutoff = 84.34; % in mu, if cells are further apart don't count them as neighbours
+if nargin<2
+    neighbourCutoff = 84.34; % in mu, if cells are further apart don't count them as neighbours
+end
 areaCutoff = pi*(neighbourCutoff/2).^2; % important to cut out voronoi areas e.g. at the edges
 
 DT = delaunayTriangulation(cells);
@@ -19,7 +21,7 @@ neighbourIndcs = edgeLengths<=neighbourCutoff;
 neighbourEdges = cellEdges(neighbourIndcs,:);
 
 cellRadius = 7.5;
-neighbours.distancesBinEdges = 0:cellRadius:neighbourCutoff;
+neighbours.distancesBinEdges = 2*cellRadius:cellRadius:neighbourCutoff;
 neighbours.distances = histc(edgeLengths(neighbourIndcs),neighbours.distancesBinEdges);
 neighbours.numbers = hist(hist(neighbourEdges(:),numCells),1:10);
 
@@ -48,7 +50,7 @@ end
 excludedCellIndcs = unique([unique(cellEdges(~neighbourIndcs,:)); ...
     convexHull(DT); find(excludedCells)]);
 % also exclude any voronoi polygons with too big an area
-neighbours.areasBinEdges = linspace(0,areaCutoff,21);
+neighbours.areasBinEdges = linspace(3*sqrt(3)/2*cellRadius.^2,areaCutoff,21);
 neighbours.areas = histc(...
     voronoiAreas(voronoiAreas<=areaCutoff&...
     ~ismember(1:numCells,excludedCellIndcs)')...
