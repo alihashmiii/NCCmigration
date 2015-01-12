@@ -95,14 +95,24 @@ param.eatRate = 1000;                      % chemoattractant consumption rate
 param.eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
 %% convert parameters
-if conversionType == 1
+if isstruct(in)
+    if ismember('conversionType',fields(in))
+        conversionType = in.conversionType;
+    end
+    if ismember('numSteps',fields(in))
+        param.numSteps = in.numSteps;
+    end
+    if ismember('numDirections',fields(in))
+        param.numDirections = in.numDirections;
+    end
+elseif conversionType == 1
     param.numSteps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     param.numDirections=NaN;
 elseif conversionType == 2
     param.numSteps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
     param.numDirections = 1/param.numSteps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
 elseif conversionType == 4
-    param.numSteps = [8, 16]; % timescale in minutes for switching [lead2follow, follow2lead]
+    param.numSteps = [4, 4]; % timescale in minutes for switching [lead2follow, follow2lead]
     param.numDirections = NaN;
 else
     param.numSteps=10;
@@ -165,15 +175,6 @@ if isstruct(in)
     end
     if ismember('standStill',fields(in))
         standStill = in.standStill;
-    end
-    if ismember('conversionType',fields(in))
-        conversionType = in.conversionType;
-    end
-    if ismember('numSteps',fields(in))
-        param.numSteps = in.numSteps;
-    end
-    if ismember('numDirections',fields(in))
-        param.numDirections = in.numDirections;
     end
     if ismember('insertEverySteps',fields(in))
         insertEverySteps = in.insertEverySteps;
@@ -375,7 +376,7 @@ for timeCtr=1:numTsteps
     cells_save{timeCtr}=cells;
     
     %% cells can convert from leaders <-> followers
-    if (conversionType~=0)&&((param.experiment==0)||param.experiment==3||param.experiment==11||param.experiment==12||param.experiment==13||(in.it==1)||(t_save(timeCtr)==in.changeTime))
+    if (conversionType~=0)&&((param.experiment==0)||param.experiment==3||param.experiment==11||param.experiment==12||param.experiment==13||param.experiment==14||(in.it==1)||(t_save(timeCtr)==in.changeTime))
         out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             param.eatWidth,conversionType,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
         cellsFollow = out.cellsFollow;

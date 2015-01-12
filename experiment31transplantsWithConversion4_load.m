@@ -24,7 +24,7 @@ for defaultFollow = defaultFollowValues
     for sensAccCtr = 1:length(sensingAccuracyValues)
         sensingAccuracy = sensingAccuracyValues(sensAccCtr);
         figure
-        hold all
+        hold on
         for expCtr = 1:length(experiments)
             experiment = experiments(expCtr);
             % preallocate variables for saving collated results
@@ -77,7 +77,7 @@ for defaultFollow = defaultFollowValues
         end
         grid on
         set(gca,'GridLineStyle','-')
-        legend('within (back)','adjacent (back)','within (middle)')
+        legend('within (back)','adjacent (back)','within (middle)','front')
         xlabel('distance along stream (\mum)')
         ylabel('number of cell (per 50\mum)')
         %% export figure

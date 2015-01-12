@@ -11,7 +11,6 @@ numReps = 20;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 for experiment = [11 12 13 14]
-    input.experiment = experiment;
     for defaultFollow = [0 1 2]
         input.followerFraction = defaultFollow;
         for sensingAccuracy = [0.1, 0.01]
@@ -26,7 +25,7 @@ for experiment = [11 12 13 14]
                             '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                         if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                             rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
-                            CA6(input,0);
+                            CA6(input,experiment);
                             % check if anyone else is logged into the
                             % current machine. If so, quit. If not,
                             % keep looping and run next job.

@@ -104,8 +104,12 @@ for defaultFollow = defaultFollowValues
                     n_C = mean(numCells(defaultFollow + 1,sensAccCtr,:));
                     % plot migration profile
                     set(0,'CurrentFigure',migrationProfilesFig);
-                    plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,:,:),4),3)),...
-                        'LineWidth',2);
+                    % plot leaders
+                    plotHandle = plot(xBins,squeeze(mean(cellDistributions(defaultFollow + 1,sensAccCtr,:,1,:),3)),...
+                        'LineWidth',2,'LineStyle','-');
+                    % plot followers
+                    plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,2:3,:),4),3)),...
+                        'LineWidth',2,'LineStyle','--','Color',get(plotHandle,'Color'));
                     %% plot neighbour relations
                     set(0,'CurrentFigure',neighbourRelationsFig);
 %                     subplot(1,3,1)
@@ -118,9 +122,9 @@ for defaultFollow = defaultFollowValues
                     plot(neighbours.areasBinEdges, squeeze(mean(neighbourAreas(defaultFollow + 1,sensAccCtr,:,:),3)))
         end
         set(0,'CurrentFigure',migrationProfilesFig);
-        grid on
+        grid off
         set(gca,'GridLineStyle','-')
-        legend('control', 'within','adjacent')
+        legend('control (leaders)','control (followers)','within (leaders)','within (followers)','adjacent (leaders)','adjacent (followers)')
         xlabel('distance along stream (\mum)')
         ylabel('number of cell (per 50\mum)')
               
@@ -138,7 +142,7 @@ for defaultFollow = defaultFollowValues
         legend('control', 'within','adjacent')
         %% export figure
         exportOptions = struct('Format','eps2',...
-            'Width','18.0',...
+            'Width','9.0',...
             'Color','rgb',...
             'Resolution',300,...
             'FontMode','fixed',...
