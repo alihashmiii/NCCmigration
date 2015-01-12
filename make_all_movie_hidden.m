@@ -50,5 +50,5 @@ system(['avconv -r ', int2str(frameRate), ' -preset veryslow -crf 28 -i ', fileP
 %Note: The CRF quantizer scale mentioned on this page only applies to 8-bit x264 (10-bit x264 quantizer scale is 0-63). You can see what you are using with x264 --help listed under Output bit depth. 8-bit is more common among distributors.
 
 % delete the individual frames
-% system(['rm -f ' filePath '*.tiff']);
+system(['rm -f ' filePath '*.tiff']);
 disp(['saved to ',filePath])
