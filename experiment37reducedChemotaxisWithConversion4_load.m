@@ -1,4 +1,4 @@
-% plot migration profiles for simulated VEGF transplants.
+% plot migration profiles for simulated NRP1 knockdown.
 % L.J. Schumacher 05.09.14
 
 close all
@@ -10,16 +10,15 @@ numRepeats = 20;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-defaultFollowValues = [0 1 2];
+defaultFollowValues = [2];
 lead2follow = [4];
 follow2lead = [4];
 sensingAccuracyValues = [0.1, 0.01];
-experiments = [0 12 11];
-numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
-    *length(experiments);
+numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues);
 
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
-neighbourCutoff = 160;
+% parameters for neighbourhood analysis
+neighbourCutoff = 84.34;
 cellRadius = 7.5;
 
 for defaultFollow = defaultFollowValues
@@ -31,8 +30,7 @@ for defaultFollow = defaultFollowValues
         for ctr = 1:2
         subplot(1,2,ctr), hold on
         end
-        for expCtr = 1:length(experiments)
-            experiment = experiments(expCtr);
+        for perturbation = 0:1
             % preallocate variables for saving collated results
             cellDistributions = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                 numRepeats,3,length(xBins));
@@ -40,8 +38,6 @@ for defaultFollow = defaultFollowValues
                 numRepeats);
             numCells = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                 numRepeats);
-%             neighbourNumbers = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
-%                 numRepeats,10);
             neighbourAreas = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                 numRepeats,21);
             neighbourDistances = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
@@ -50,7 +46,7 @@ for defaultFollow = defaultFollowValues
             %% load data
                     numSteps = [lead2follow, follow2lead];
                     for repCtr = 1:numRepeats
-                        if experiment==0 % load control simulation
+                        if perturbation==0 % load control simulation
                             loadInfo = ['experiment31conversion4/exp31'...
                                 '_conversion_4_defaultFollow_' num2str(defaultFollow) ...
                                 '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
@@ -63,7 +59,7 @@ for defaultFollow = defaultFollowValues
                                 load(['results/' loadInfo '.mat']) % load again
                             end
                         else % load transplant simulations
-                            loadInfo = ['experiment31transplants/exp' num2str(experiment) ...
+                            loadInfo = ['experiment37reducedChemotaxis/exp37' ...
                                 '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
                                 '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
                                 '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
@@ -71,7 +67,7 @@ for defaultFollow = defaultFollowValues
                                 load(['results/' loadInfo '.mat'])
                             catch
                                 delete(['results/' loadInfo '.mat']) % delete the corrupt file
-                                experiment31transplantsWithConversion4; % recreate the missing results file
+                                experiment37reducedChemotaxisWithConversion4; % recreate the missing results file
                                 load(['results/' loadInfo '.mat']) % load again
                             end
                         end
@@ -95,7 +91,6 @@ for defaultFollow = defaultFollowValues
 
                         % calculate neighbour relationships
                         neighbours = neighbourRelationships(out.cells_save{end},neighbourCutoff);
-%                         neighbourNumbers(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.numbers./sum(neighbours.numbers);
                         neighbourDistances(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.distances./sum(neighbours.distances);
                         neighbourAreas(defaultFollow + 1,sensAccCtr,repCtr,:) = neighbours.areas./sum(neighbours.areas);
                     end
@@ -112,9 +107,7 @@ for defaultFollow = defaultFollowValues
                         'LineWidth',2,'LineStyle','--','Color',get(plotHandle,'Color'));
                     %% plot neighbour relations
                     set(0,'CurrentFigure',neighbourRelationsFig);
-%                     subplot(1,3,1)
-%                     plot(1:length(neighbours.numbers), squeeze(mean(neighbourNumbers(defaultFollow + 1,sensAccCtr,:,:),3)))
-                    
+  
                     subplot(1,2,1)
                     plot(neighbours.distancesBinEdges, squeeze(mean(neighbourDistances(defaultFollow + 1,sensAccCtr,:,:),3)))
                     
@@ -124,35 +117,34 @@ for defaultFollow = defaultFollowValues
         set(0,'CurrentFigure',migrationProfilesFig);
         grid off
         set(gca,'GridLineStyle','-')
-        legend('control (leaders)','control (followers)','within (leaders)','within (followers)','adjacent (leaders)','adjacent (followers)')
+        legend('control (leaders)','control (followers)',...
+            'reduced chemotaxis (leaders)','reduced chemotaxis (followers)')
         xlabel('distance along stream (\mum)')
         ylabel('number of cell (per 50\mum)')
+        ylim([0 16])
               
         set(0,'CurrentFigure',neighbourRelationsFig);
-%         subplot(1,3,1)
-%         xlabel('#neighbours'), ylabel('P')
-%         legend('control', 'within','adjacent')
         subplot(1,2,1)
         xlabel('distance/\mum'), ylabel('P')
         xlim([2*cellRadius,neighbourCutoff])
-        legend('control', 'within','adjacent')
         ylim([0 0.5])
+        legend('control', 'reduced chemotaxis')
         subplot(1,2,2)
         xlabel('area/\mum^2'), ylabel('P')
         xlim([3*sqrt(3)/2*cellRadius.^2,1e4])
-        xlim([0 6e3])
-        ylim([0 0.7])
-        legend('control', 'within','adjacent')
+        ylim([0 0.5])
+        xlim([0 5e3])
+        legend('control', 'reduced chemotaxis')
         %% export figure
         exportOptions = struct('Format','eps2',...
-            'Width','9.0',...
+            'Width','15.0',...
             'Color','rgb',...
             'Resolution',300,...
             'FontMode','fixed',...
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/Fig4Emodel_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['results/experiment37reducedChemotaxis/figures/migrationProfiles_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         set(migrationProfilesFig,'PaperUnits','centimeters');
         exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);
@@ -166,7 +158,7 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/Fig4K_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['results/experiment37reducedChemotaxis/figures/neighbourRelations_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         set(neighbourRelationsFig,'PaperUnits','centimeters');
         exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);

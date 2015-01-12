@@ -13,10 +13,10 @@ time = 18;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-defaultFollowValues = [2];
+defaultFollowValues = [0 1 2];
 lead2follow = [4];
 follow2lead = [4];
-sensingAccuracyValues = [0.1];
+sensingAccuracyValues = [0.01];
 experiments = [12 11 13 14];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);
@@ -32,7 +32,7 @@ for defaultFollow = defaultFollowValues
             
             %% load data
             numSteps = [lead2follow, follow2lead];
-            for repCtr = 1
+            for repCtr = 1:2
                 loadInfo = ['experiment31transplants/exp' num2str(experiment) ...
                     '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
                     '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...

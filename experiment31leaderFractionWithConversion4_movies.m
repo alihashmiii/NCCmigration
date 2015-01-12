@@ -17,7 +17,7 @@ conversionType = 4;
 defaultFollowValues = [0 1 2];
 lead2followValues = [4];
 follow2leadValues = [4];
-sensingAccuracyValues = [0.1];
+sensingAccuracyValues = [0.01];
 
 for sensAccCtr = 1:length(sensingAccuracyValues)
     sensingAccuracy = sensingAccuracyValues(sensAccCtr);
@@ -28,7 +28,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
             for follow2leadCtr = 1:length(follow2leadValues)
                 follow2lead = follow2leadValues(follow2leadCtr);
                 numSteps = [lead2follow, follow2lead];
-                for repCtr = 1
+                for repCtr = 1:2
                     loadInfo = ['experiment31conversion4/exp31'...
                         '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
                         '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
