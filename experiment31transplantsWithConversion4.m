@@ -15,9 +15,8 @@ for experiment = [11 12 13 14]
         input.followerFraction = defaultFollow;
         for sensingAccuracy = [0.1, 0.01]
             input.sensingAccuracy = sensingAccuracy;
-            for lead2follow = [4]
-                for follow2lead = [4]
-                    input.numSteps = [lead2follow, follow2lead];
+            for switchingTime = [4 8]
+                    input.numSteps = [switchingTime, switchingTime];
                     for repCtr = 1:numReps
                         input.saveInfo = ['experiment31transplants/exp' num2str(experiment) ...
                             '_conversion_' num2str(input.conversionType) '_defaultFollow_' num2str(input.followerFraction) ...
@@ -35,7 +34,6 @@ for experiment = [11 12 13 14]
                             end
                         end
                     end
-                end
             end
         end
     end

@@ -14,9 +14,9 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
 defaultFollowValues = [0 1 2];
-lead2follow = [4];
-follow2lead = [4];
-sensingAccuracyValues = [0.01];
+lead2follow = [8];
+follow2lead = [8];
+sensingAccuracyValues = [0.1 0.01];
 experiments = [12 11 13 14];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);

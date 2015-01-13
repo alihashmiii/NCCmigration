@@ -15,9 +15,9 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
 defaultFollowValues = [0 1 2];
-lead2followValues = [4];
-follow2leadValues = [4];
-sensingAccuracyValues = [0.01];
+lead2followValues = [8];
+follow2leadValues = [8];
+sensingAccuracyValues = [0.1 0.01];
 
 for sensAccCtr = 1:length(sensingAccuracyValues)
     sensingAccuracy = sensingAccuracyValues(sensAccCtr);
