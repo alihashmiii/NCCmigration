@@ -32,7 +32,7 @@ for defaultFollow = [0 1 2]
             'EdgeColor','none')
         % pcolor(lead2followValues,follow2leadValues,leaderFraction)
         % shading interp
-        cb = colorbar; cb.Label.String = 'leader fraction';
+        cb = colorbar; cb.Label.String = 'number of leaders';
         caxis([0 40]), colormap(parula(nLevels))
         xlabel('lead -> follow (min)'), ylabel('follow -> lead (min)')
         set(gca,'xtick',axisticks,'ytick',axisticks)
@@ -73,7 +73,7 @@ end
         'FontSize',10,...
         'LineWidth',2);
     
-    filename = 'manuscripts/VEGF/figures/FigS3n';
+    filename = 'manuscripts/VEGF/figures/FigS3N';
     pos = get(gcf,'Position');
     pos(4) = 4/3*pos(3); % adjust height to fraction of width
     set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');

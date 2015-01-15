@@ -99,13 +99,8 @@ if isstruct(in)
     if ismember('conversionType',fields(in))
         conversionType = in.conversionType;
     end
-    if ismember('numSteps',fields(in))
-        param.numSteps = in.numSteps;
-    end
-    if ismember('numDirections',fields(in))
-        param.numDirections = in.numDirections;
-    end
-elseif conversionType == 1
+end
+if conversionType == 1
     param.numSteps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
     param.numDirections=NaN;
 elseif conversionType == 2
@@ -118,7 +113,14 @@ else
     param.numSteps=10;
     param.numDirections=NaN;
 end
-
+if isstruct(in)
+    if ismember('numSteps',fields(in))
+        param.numSteps = in.numSteps;
+    end
+    if ismember('numDirections',fields(in))
+        param.numDirections = in.numDirections;
+    end
+end
 %% insertCells parameters %%
 insertTimeStep = 0.1;         % the time in hours between each new cell insertion
 insertEverySteps = floor(insertTimeStep/param.tstep);    % how often are new cells inserted
@@ -199,6 +201,9 @@ if isstruct(in)
     end
     if ismember('numCellsInitial',fields(in))
         numCellsInitial = in.numCellsInitial;
+    end
+    if ismember('caSolve',fields(in))
+        caSolve = in.caSolve;
     end
 end
 
@@ -446,7 +451,7 @@ if makeMovies==1
     end
     
     if makeFrames==1
-        open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+        open(['avi_mat/frames/',saveInfo,'.fig'])
     end
 end
 

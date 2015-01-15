@@ -14,10 +14,10 @@ time = 18;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-defaultFollowValues = [0 1 2];
+defaultFollowValues = [2];
 lead2followValues = [8];
 follow2leadValues = [8];
-sensingAccuracyValues = [0.1 0.01];
+sensingAccuracyValues = [0.01];
 
 for sensAccCtr = 1:length(sensingAccuracyValues)
     sensingAccuracy = sensingAccuracyValues(sensAccCtr);
@@ -28,7 +28,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
             for follow2leadCtr = 1:length(follow2leadValues)
                 follow2lead = follow2leadValues(follow2leadCtr);
                 numSteps = [lead2follow, follow2lead];
-                for repCtr = 1:2
+                for repCtr = 2
                     loadInfo = ['experiment31conversion4/exp31'...
                         '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
                         '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
