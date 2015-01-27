@@ -69,6 +69,7 @@ for defaultFollow = defaultFollowValues
                     set(framesFig,'PaperUnits','centimeters');
                     exportfig(framesFig,[filename '.eps'],exportOptions);
                     system(['epstopdf ' filename '.eps']);
+                    system(['rm -f ' filename '.eps']);
                     close(framesFig)
                 end
                 %% make movies %%

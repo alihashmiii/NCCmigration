@@ -65,6 +65,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
                     set(framesFig,'PaperUnits','centimeters');
                     exportfig(framesFig,[filename '.eps'],exportOptions);
                     system(['epstopdf ' filename '.eps']);
+                    system(['rm -f ' filename '.eps']);
                     close(framesFig)
                 end
                 %% make movies %%
