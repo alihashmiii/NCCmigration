@@ -13,7 +13,8 @@ conversionType = 4;
 defaultFollowValues = [2];
 sensingAccuracyValues = [0.1, 0.01];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues);
-timePoints2plot = [12, 24];
+timePoints2plot = [16, 24];
+tstep = 1/60;                   % time step in hours
 
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
 % parameters for neighbourhood analysis
@@ -74,8 +75,9 @@ for defaultFollow = defaultFollowValues
                             end
                         end
                         for timeCtr = 1:length(timePoints2plot)
+                            timeIdx = find(out.t_save + 6 >= timePoints2plot(timeCtr),1,'first');
                             % load cell positions into variables
-                            cells = out.cells_save{end}; % all cells
+                            cells = out.cells_save{timeIdx}; % all cells
                             numberOfCells = size(cells,2);
                             followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
                             attachIdcs = out.attach_save{end}(1:numberOfCells);

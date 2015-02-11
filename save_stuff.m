@@ -91,6 +91,7 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
         ca_save{timeCtr} = single(ca_save{timeCtr});
         cells_save{timeCtr} = single(cells_save{timeCtr});
         filopodia_save{timeCtr} = single(filopodia_save{timeCtr});
+        happiness = single(happiness);
     end
     out.xlat_save = xlat_save;
     out.ylat_save = ylat_save;

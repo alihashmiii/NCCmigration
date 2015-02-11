@@ -238,10 +238,6 @@ attach_save = cell(1,numTsteps);
 xlat_new=[];
 moved = false(numTsteps,finalNumCells);
 happiness = NaN(numTsteps,finalNumCells); % for integrate-and-switch cell behaviour conversion
-num_better_foll_save = []; %% these may be obsolete -- LJS
-num_foll_save = 0; %% these may be obsolete -- LJS
-num_better_lead_save = []; %% these may be obsolete -- LJS
-num_lead_save = 0; %% these may be obsolete -- LJS
 %% begin timesteps %%
 for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
@@ -366,13 +362,9 @@ for timeCtr=1:numTsteps
     %% cells can convert from leaders <-> followers
     if (conversionType~=0)&&((param.experiment==0)||param.experiment==3||param.experiment==11||param.experiment==12||param.experiment==13||(in.it==1)||(t_save(timeCtr)==in.changeTime))
         out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            param.eatWidth,conversionType,num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia);
+            param.eatWidth,conversionType,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
-        num_better_foll_save = out.num_better_foll_save;
-        num_foll_save = out.num_foll_save;
-        num_better_lead_save = out.num_better_lead_save;
-        num_lead_save = out.num_lead_save;
         cellsFollow_save{timeCtr} = cellsFollow;
     end
     
@@ -398,15 +390,8 @@ for timeCtr=1:numTsteps
         end
     end
 end
-%%
-% hist(num_better_foll_save/num_foll_save)
-% hist(num_better_lead_save/num_lead_save)
-out.num_better_foll_save = num_better_foll_save;
-out.num_foll_save = num_foll_save;
-out.num_better_lead_save = num_better_lead_save;
-out.num_lead_save = num_lead_save;
+
 toc
-% whitebg('white')
 disp(['Number of cells: ' num2str(size(cells,2))])
 %% Save stuff
 save_stuff

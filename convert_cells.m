@@ -1,5 +1,5 @@
-function out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save,xlat,ylat,eatWidth,conversionType,...
-    num_better_foll_save,num_foll_save,num_better_lead_save,num_lead_save,numFilopodia)
+function out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,...
+    happiness,ca_save,xlat,ylat,eatWidth,conversionType,numFilopodia)
 
 global param cells % using global variables is much faster than saving & loading from disk -- LJS
 
@@ -50,13 +50,6 @@ elseif conversionType==2
             if cellsFollow(cellCtr)==0
                 disp('lead -> follow')
                 cellsFollow(cellCtr)=1;
-            end
-            if cellsFollow(cellCtr)==1
-                num_better_foll_save = [num_better_foll_save, num_better/numSteps];
-                num_foll_save = num_foll_save +1;
-            else
-                num_better_lead_save = [num_better_lead_save, num_better/numSteps];
-                num_lead_save = num_lead_save +1;
             end
             %         elseif rand()<0.5
             %             cellsFollow(i) = 1-cellsFollow(i);
@@ -125,10 +118,6 @@ elseif conversionType == 4
         disp([num2str(nnz(follow2lead)) 'foll->lead']);
     end
 end
-out.num_better_foll_save = num_better_foll_save;
-out.num_foll_save = num_foll_save;
-out.num_better_lead_save = num_better_lead_save;
-out.num_lead_save = num_lead_save;
 out.cellsFollow = cellsFollow;
 out.moved = moved;
 
