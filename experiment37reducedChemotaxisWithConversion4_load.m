@@ -13,7 +13,7 @@ conversionType = 4;
 defaultFollowValues = [2];
 sensingAccuracyValues = [0.1, 0.01];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues);
-timePoints2plot = [16, 24];
+timePoints2plot = [16, 24, 36];
 tstep = 1/60;                   % time step in hours
 
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
@@ -33,7 +33,7 @@ for defaultFollow = defaultFollowValues
                 for ctr = 1:2
                     subplot(1,2,ctr), hold on
                 end
-                for perturbation = 0:1
+                for perturbation = 1
                     % preallocate variables for saving collated results
                     cellDistributions = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                         numRepeats,3,length(xBins),length(timePoints2plot));
@@ -96,13 +96,6 @@ for defaultFollow = defaultFollowValues
                                 histc(followers(1,:),xBins); % followers, attached
                             cellDistributions(defaultFollow + 1,sensAccCtr,repCtr,3,:,timeCtr) =...
                                 histc(losts(1,:),xBins); % followers, attached
-                            
-                            % calculate neighbour relationships
-                            neighbours = neighbourRelationships(out.cells_save{end},neighbourCutoff);
-                            neighbourDistances(defaultFollow + 1,sensAccCtr,repCtr,:,timeCtr) =...
-                                neighbours.distances./sum(neighbours.distances);
-                            neighbourAreas(defaultFollow + 1,sensAccCtr,repCtr,:,timeCtr) =...
-                                neighbours.areas./sum(neighbours.areas);
                         end
                     end
                     %% plot migration profile
@@ -112,11 +105,12 @@ for defaultFollow = defaultFollowValues
                         % plot migration profile
                         set(0,'CurrentFigure',migrationProfilesFig);
                         % plot leaders
-                        plotHandle = plot(xBins,squeeze(mean(cellDistributions(defaultFollow + 1,sensAccCtr,:,1,:,timeCtr),3)),...
+                        plotHandles(timeCtr,perturbation + 1) = ...
+                            plot(xBins,squeeze(mean(cellDistributions(defaultFollow + 1,sensAccCtr,:,1,:,timeCtr),3)),...
                             'LineWidth',2,'LineStyle','-');
                         % plot followers
                         plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,2:3,:,timeCtr),4),3)),...
-                            'LineWidth',2,'LineStyle','--','Color',get(plotHandle,'Color'));
+                            'LineWidth',2,'LineStyle','--','Color',get(plotHandles(timeCtr,perturbation + 1),'Color'));
                         %% plot neighbour relations
                         set(0,'CurrentFigure',neighbourRelationsFig);
                         
@@ -130,24 +124,13 @@ for defaultFollow = defaultFollowValues
                 set(0,'CurrentFigure',migrationProfilesFig);
                 grid off
                 set(gca,'GridLineStyle','-')
-                legend('control (leaders)','control (followers)',...
-                    'reduced chemotaxis (leaders)','reduced chemotaxis (followers)')
+                legend(plotHandles,[[num2str(timePoints2plot'),...
+                    repmat('h control',length(timePoints2plot),1)];...
+                    [num2str(timePoints2plot'),repmat('h perturb',length(timePoints2plot),1)]])
                 xlabel('distance along stream (\mum)')
                 ylabel('number of cell (per 50\mum)')
                 ylim([0 16])
-                
-                set(0,'CurrentFigure',neighbourRelationsFig);
-                subplot(1,2,1)
-                xlabel('distance/\mum'), ylabel('P')
-                xlim([2*cellRadius,neighbourCutoff])
-                ylim([0 0.5])
-                legend('control', 'reduced chemotaxis')
-                subplot(1,2,2)
-                xlabel('area/\mum^2'), ylabel('P')
-                xlim([3*sqrt(3)/2*cellRadius.^2,1e4])
-                ylim([0 0.5])
-                xlim([0 5e3])
-                legend('control', 'reduced chemotaxis')
+
                 %% export figure
                 exportOptions = struct('Format','eps2',...
                     'Width','15.0',...
@@ -160,20 +143,6 @@ for defaultFollow = defaultFollowValues
                 filename = ['results/experiment37reducedChemotaxis/figures/migrationProfiles_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
                 set(migrationProfilesFig,'PaperUnits','centimeters');
                 exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
-                system(['epstopdf ' filename '.eps']);
-                
-                exportOptions = struct('Format','eps2',...
-                    'Width','15.0',...
-                    'Height','10.0',...
-                    'Color','rgb',...
-                    'Resolution',300,...
-                    'FontMode','fixed',...
-                    'FontSize',10,...
-                    'LineWidth',2);
-                
-                filename = ['results/experiment37reducedChemotaxis/figures/neighbourRelations_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
-                set(neighbourRelationsFig,'PaperUnits','centimeters');
-                exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
                 system(['epstopdf ' filename '.eps']);
             end
         end

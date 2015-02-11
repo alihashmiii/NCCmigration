@@ -370,8 +370,8 @@ for timeCtr=1:numTsteps
                     happiness(timeCtr,~temp.sensed&newCellIdcs) - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
             end
         end
-        attach_save{timeCtr} = attach;
-        cellsFollow_save{timeCtr} = cellsFollow;
+        attach_save{timeCtr} = attach(1:size(cells,2));
+        cellsFollow_save{timeCtr} = cellsFollow(1:size(cells,2));
         filopodia_save{timeCtr} = filopodia;
     end
     cells_save{timeCtr}=cells;
@@ -382,34 +382,13 @@ for timeCtr=1:numTsteps
             param.eatWidth,conversionType,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;
-        cellsFollow_save{timeCtr} = cellsFollow;
-    end
-    
-
-    if (cells~=cells_save{timeCtr})
-        size(cells)
-        size(cells_save)
-        disp('cells error')
-        pause
-    end
-    if (timeCtr>=followStart)
-        if (attach~=attach_save{timeCtr})
-            disp('attach error')
-            pause
-        end
-        if (cellsFollow~=cellsFollow_save{timeCtr})
-            disp('follow error')
-            pause
-        end
-        if (filopodia~=filopodia_save{timeCtr})
-            disp('filopodia error')
-            pause
-        end
+        cellsFollow_save{timeCtr} = cellsFollow(1:size(cells,2));
     end
 end
 
 toc
-disp(['Number of cells: ' num2str(size(cells,2))])
+numCellsFinal = size(cells,2);
+disp(['Number of cells: ' num2str(numCellsFinal)])
 %% Save stuff
 save_stuff
 

@@ -1,4 +1,4 @@
-function experiment31leaderFractionWithConversion4
+b   b   function experiment31leaderFractionWithConversion4
 % run the next job in line of a bunch
 % called by scan-submit shell script
 % looks which job is the next one to do,runs this one job, then quits
@@ -33,16 +33,21 @@ for defaultFollow = [0 1 2]
 % %                             quit
 % %                         end
 % %                     end
-                    % delete some of the saved variables that aren't needed
-                    % here to save disk space
-                    try % sometime we get corrupt files, which crashes the script
-                        load(['results/',input.saveInfo,'.mat'])
-                        out.happiness = single(out.happiness);
-                        save(['results/',input.saveInfo,'.mat'],'out')
-                        clear out
-                    catch
-                        delete(['results/',input.saveInfo,'.mat']) % delete the corrupt file
-                    end
+                                % delete some of the saved variables that aren't needed
+            % here to save disk space
+            if ~isempty(dir(['results/' input.saveInfo '.mat']))
+                load(['results/',input.saveInfo,'.mat'])
+                out.moved = out.moved(:,1:length(out.cells_save{end}));
+                out.happiness = out.happiness(:,1:length(out.cells_save{end}));
+                for timeCtr = 1:length(cellsFollow_save)
+                    out.cellsFollow_save{timeCtr} = ...
+                        out.cellsFollow_save{timeCtr}(1:size(out.cells_save{timeCtr},2));
+                    out.attach_save{timeCtr} = ...
+                        out.attach_save{timeCtr}(1:size(out.cells_save{timeCtr},2));
+                end
+                save(['results/',input.saveInfo,'.mat'],'out')
+                clear out
+            end
                 end
             end
         end

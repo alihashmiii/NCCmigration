@@ -112,8 +112,8 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.param_names1 = 'Linf, a, diffus,e, growingDomain,initialDomainLength,makeChemoattractant';
     out.param_names2 = 'chi,param.domainHeight,zeroBC,insert,tstep,t_start,d,eatRate';
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, param.domainHeight, zeroBC, insert, tstep, t_start, eatRate, numSteps, numDirections];
-    out.moved = moved;
-    out.happiness = happiness;
+    out.moved = moved(:,1:numCellsFinal);
+    out.happiness = happiness(:,1:numCellsFinal);
     
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;
