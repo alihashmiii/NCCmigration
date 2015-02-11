@@ -4,7 +4,7 @@ function experiment31leaderFractionWithConversion4
 % looks which job is the next one to do,runs this one job, then quits
 % L.J. Schumacher 28.10.13
 
-input.time = 18;
+input.time = 30;
 input.conversionType = 4;
 numReps = 20;
 

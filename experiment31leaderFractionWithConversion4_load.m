@@ -5,7 +5,7 @@
 close all
 clear all
 
-time = 18;
+time = 30;
 numRepeats = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.

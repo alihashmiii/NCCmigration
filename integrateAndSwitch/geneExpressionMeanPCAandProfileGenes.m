@@ -16,10 +16,15 @@ notNanIdcs = ~any(isnan(normExpression));
 cleanExpression = normExpression(:,notNanIdcs);
 cleanGenes = genes(notNanIdcs);
 cleanError = normError(:,notNanIdcs);
-
 % % remove only columns with all NaN values
 % cleanExpression = meanExpression(:,~all(isnan(meanExpression)));
 
+%% impute the error for 1-replicate means
+% take the mean error for each gene and time, and average for each gt-combi
+meanCleanError = nanmean(cleanError')'*nanmean(cleanError)/2;
+nanIndcs = isnan(cleanError);
+imputedError = cleanError;
+imputedError(nanIndcs) = meanCleanError(nanIndcs);
 %% split data into T and V branches
 offExpression = cleanExpression(2:10,:);
 onExpression = cleanExpression(10:end,:);
@@ -34,7 +39,7 @@ onExpression = cleanExpression(10:end,:);
 % plot bar chart of coeffs with gene names?
 
 %% method 2: select only those genes that are part of the 16 gene profile
-geneProfile = {'aqp1 ';'bambi ';'cdh7 ';'cdh11 ';'cxcr4 ';'ephb3 ';'itgb5 ';'Nedd9 ';'Notch1 ';'Pkp2 ';'tfap2a '};
+geneProfile = {'Aqp1';'Bambi';'Cdh7';'Cdh11';'Cxcr4';'Ephb3';'Itgb5';'Nedd9';'Notch1';'Pkp2';'Tfap2a'};
 % this ignores ccr9,ctnnb1,cxcr1&7,snai2 which weren't looked at. tfap2a is
 % added in, but for hand2 there are too many missing data
 
@@ -45,7 +50,7 @@ for geneCtr = 1:length(geneProfile)
 end
 offProfileGenes = offExpression(:,geneIdcs);
 onProfileGenes = onExpression(:,geneIdcs);
-profileError = cleanError(:,geneIdcs);
+profileError = imputedError(:,geneIdcs);
 
 % compare with plot of all genes?
 
@@ -65,13 +70,13 @@ mSmooth = 'akima';
 %% raw genes
 rawFig = figure;
 subplot(2,1,1)
-errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,cleanError(2:10,:))
+errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,imputedError(2:10,:))
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
 
 subplot(2,1,2)
-errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,cleanError(10:end,:))
+errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,imputedError(10:end,:))
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes +VEGF condition')
@@ -81,7 +86,7 @@ smoothFig = figure;
 subplot(2,1,1)
 plot(offSmoothTime,offSmooth)
 hold on
-errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,cleanError(2:10,:),'+')
+errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,imputedError(2:10,:),'+')
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
@@ -89,7 +94,7 @@ title('all genes -VEGF condition')
 subplot(2,1,2)
 plot(onSmoothTime,onSmooth)
 hold on
-errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,cleanError(10:end,:),'+')
+errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,imputedError(10:end,:),'+')
 xlabel('time (min)')
 ylabel('relative expression')
 title('smoothed genes +VEGF condition')
@@ -112,7 +117,7 @@ xlabel('time (min)')
 ylabel('relative expression')
 title('Trailblazer genes -VEGF condition')
 hLegend = legend(hLines,cleanGenes(geneIdcs),'Location','EastOutside');
-set(get(hLegend,'title'),'string','gene IDs')
+% set(get(hLegend,'title'),'string','gene IDs')
 
 subplot(2,1,2)
 nPlots = size(onProfileGenes,2);
@@ -129,7 +134,7 @@ xlabel('time (min)')
 ylabel('relative expression')
 title('Trailblazer genes +VEGF condition')
 hLegend = legend(hLines,cleanGenes(geneIdcs),'Location','EastOutside');
-set(get(hLegend,'title'),'string','gene IDs')
+% set(get(hLegend,'title'),'string','gene IDs')
 
 %% PCs
 PCfig = figure;
@@ -149,7 +154,7 @@ xlabel('time (min)')
 ylabel('relative expression')
 title('PCA -VEGF condition')
 hLegend = legend(hLines,num2str(offVarExplained,2),'Location','EastOutside');
-set(get(hLegend,'title'),'string',' % \sigma explained')
+% set(get(hLegend,'title'),'string',' % \sigma explained')
 
 subplot(2,1,2)
 nPlots = size(onPCs,2);
@@ -167,7 +172,7 @@ xlabel('time (min)')
 ylabel('relative expression')
 title('PCA +VEGF condition')
 hLegend = legend(hLines,num2str(onVarExplained,2),'Location','EastOutside');
-set(get(hLegend,'title'),'string',' % \sigma explained')
+% set(get(hLegend,'title'),'string',' % \sigma explained')
 
 %% export figures as eps & convert to PDF
 
@@ -182,7 +187,6 @@ figs = [rawFig, smoothFig, PGfig, PCfig];
 filenames = {'allGenes','smoothedGenes','profileGenes','PCA'};
 for figCtr = 1:4
     pos = get(figs(figCtr),'Position');
-    % pos(4) = 3/2*pos(3);% adjust height to 3/2 width
     set(figs(figCtr),'PaperUnits','centimeters','Position',pos);
     exportfig(figs(figCtr),[filenames{figCtr} '.eps'],exportOptions);
     system(['epstopdf ' filenames{figCtr} '.eps']);

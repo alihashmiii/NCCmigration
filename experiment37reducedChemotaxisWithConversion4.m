@@ -2,7 +2,7 @@ function experiment37reducedChemotaxisWithConversion4
 % run the next job in line of a bunch
 % L.J. Schumacher 28.10.13
 
-input.time = 18;
+input.time = 30;
 input.conversionType = 4;
 input.numFilopodia = [1, 2];
 numReps = 20;
@@ -13,8 +13,8 @@ for defaultFollow = [2]
     input.followerFraction = defaultFollow;
     for sensingAccuracy = [0.1, 0.01]
         input.sensingAccuracy = sensingAccuracy;
-        for lead2follow = [4]
-            for follow2lead = [4]
+        for lead2follow = [4 8]
+            for follow2lead = [4 8]
                 input.numSteps = [lead2follow, follow2lead];
                 for repCtr = 1:numReps
                     input.saveInfo = ['experiment37reducedChemotaxis/exp37' ...
