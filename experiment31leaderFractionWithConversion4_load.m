@@ -16,7 +16,8 @@ lead2followValues = [1 2 4 8 12 16 24 32 40 48 56];
 follow2leadValues = [1 2 4 8 12 16 24 32 40 48 56];
 sensingAccuracyValues = [0.1, 0.01];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)*length(lead2followValues)*length(follow2leadValues);
-
+time2plot = [24];
+tstep = 1/60;                   % time step in hours
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
 referenceCellDistribution = NaN(numRepeats,3,length(xBins));
@@ -41,12 +42,12 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
         catch
             error(['Could not load results/' loadInfo '.mat'])
         end
-        
+        timeIdx = find(out.t_save >= time2plot,1,'first');
         % load cell positions into variables
-        cells = out.cells_save{end}; % all cells
+        cells = out.cells_save{timeIdx}; % all cells
         numberOfCells = size(cells,2);
-        followIdcs = out.cellsFollow{end}(1:numberOfCells);
-        attachIdcs = out.attach_save{end}(1:numberOfCells);
+        followIdcs = out.cellsFollow{timeIdx}(1:numberOfCells);
+        attachIdcs = out.attach_save{timeIdx}(1:numberOfCells);
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
         losts = cells(:,followIdcs==1&attachIdcs==0);
@@ -80,12 +81,12 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
                         experiment31leaderFractionWithConversion4; % recreate the missing results file
                         load(['results/' loadInfo '.mat']) % load again
                     end
-                    
+                    timeIdx = find(out.t_save + 6 >= time2plot,1,'first');
                     % load cell positions into variables
-                    cells = out.cells_save{end}; % all cells
+                    cells = out.cells_save{timeIdx}; % all cells
                     numberOfCells = size(cells,2);
-                    followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
-                    attachIdcs = out.attach_save{end}(1:numberOfCells);
+                    followIdcs = out.cellsFollow_save{timeIdx}(1:numberOfCells);
+                    attachIdcs = out.attach_save{timeIdx}(1:numberOfCells);
                     leaders = cells(:,followIdcs==0);
                     followers = cells(:,followIdcs==1&attachIdcs~=0);
                     losts = cells(:,followIdcs==1&attachIdcs==0);

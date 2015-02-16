@@ -17,7 +17,6 @@ load('manuscripts/VEGF/figures/experiment31conv4collatedResults.mat','xBins','ce
 %% plot the results
 % for contour plots, take to take the transpose if data is (x,y), to ensure that
 % columns are plotted at x-values and rows at y-values (after transpose)
-
 [L2F,F2L] = meshgrid(lead2followValues,follow2leadValues); % for plotting 'patterns' inside contours
 nLevels = 20;
 plotColors = linspace(0,1,nLevels)'*[251 101 4]/255 + (1 - linspace(0,1,nLevels)')*[113 18 160]/255;

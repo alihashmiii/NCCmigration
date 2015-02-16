@@ -15,8 +15,10 @@ sensingAccuracyValues = [0.1, 0.01];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues);
 timePoints2plot = [16, 24, 36];
 tstep = 1/60;                   % time step in hours
-
-xBins = 0:50:800; % bins for counting cell num vs. x profiles
+plotColors = [linspace(0.5,1,length(timePoints2plot))'*[0 0 1];
+               linspace(0.5,1,length(timePoints2plot))'*[1 0 0]];
+plotStyles = {':','--','-'};
+xBins = 0:50:1000; % bins for counting cell num vs. x profiles
 % parameters for neighbourhood analysis
 neighbourCutoff = 84.34;
 cellRadius = 7.5;
@@ -29,11 +31,7 @@ for defaultFollow = defaultFollowValues
                 numSteps = [lead2follow, follow2lead];
                 migrationProfilesFig = figure;
                 hold on
-                neighbourRelationsFig = figure;
-                for ctr = 1:2
-                    subplot(1,2,ctr), hold on
-                end
-                for perturbation = 1
+                for perturbation = 0:1
                     % preallocate variables for saving collated results
                     cellDistributions = NaN(length(defaultFollowValues),length(sensingAccuracyValues),...
                         numRepeats,3,length(xBins),length(timePoints2plot));
@@ -75,12 +73,12 @@ for defaultFollow = defaultFollowValues
                             end
                         end
                         for timeCtr = 1:length(timePoints2plot)
-                            timeIdx = find(out.t_save + 6 >= timePoints2plot(timeCtr),1,'first');
+                            timeIdx = find(out.t_save >= timePoints2plot(timeCtr),1,'first');
                             % load cell positions into variables
                             cells = out.cells_save{timeIdx}; % all cells
                             numberOfCells = size(cells,2);
-                            followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
-                            attachIdcs = out.attach_save{end}(1:numberOfCells);
+                            followIdcs = out.cellsFollow_save{timeIdx}(1:numberOfCells);
+                            attachIdcs = out.attach_save{timeIdx}(1:numberOfCells);
                             leaders = cells(:,followIdcs==0);
                             followers = cells(:,followIdcs==1&attachIdcs~=0);
                             losts = cells(:,followIdcs==1&attachIdcs==0);
@@ -104,33 +102,31 @@ for defaultFollow = defaultFollowValues
                         n_C = mean(numCells(defaultFollow + 1,sensAccCtr,:),timeCtr);
                         % plot migration profile
                         set(0,'CurrentFigure',migrationProfilesFig);
-                        % plot leaders
+                        % plot leaders + followers
                         plotHandles(timeCtr,perturbation + 1) = ...
-                            plot(xBins,squeeze(mean(cellDistributions(defaultFollow + 1,sensAccCtr,:,1,:,timeCtr),3)),...
-                            'LineWidth',2,'LineStyle','-');
-                        % plot followers
-                        plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,2:3,:,timeCtr),4),3)),...
-                            'LineWidth',2,'LineStyle','--','Color',get(plotHandles(timeCtr,perturbation + 1),'Color'));
-                        %% plot neighbour relations
-                        set(0,'CurrentFigure',neighbourRelationsFig);
-                        
-                        subplot(1,2,1)
-                        plot(neighbours.distancesBinEdges, squeeze(mean(neighbourDistances(defaultFollow + 1,sensAccCtr,:,:,timeCtr),3)))
-                        
-                        subplot(1,2,2)
-                        plot(neighbours.areasBinEdges, squeeze(mean(neighbourAreas(defaultFollow + 1,sensAccCtr,:,:,timeCtr),3)))
+                            plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,:,:,timeCtr),4),3)),...
+                            'LineWidth',2,'LineStyle',plotStyles{timeCtr},'color',...
+                            plotColors(timeCtr + perturbation*length(timePoints2plot),:));
+%                         % plot leaders
+%                         plotHandles(timeCtr,perturbation + 1) = ...
+%                             plot(xBins,squeeze(mean(cellDistributions(defaultFollow + 1,sensAccCtr,:,1,:,timeCtr),3)),...
+%                             'LineWidth',2,'LineStyle','-','color',...
+%                             plotColors(timeCtr + perturbation*length(timePoints2plot),:));
+%                         % plot followers
+%                         plot(xBins,squeeze(mean(sum(cellDistributions(defaultFollow + 1,sensAccCtr,:,2:3,:,timeCtr),4),3)),...
+%                             'LineWidth',2,'LineStyle','--','Color',get(plotHandles(timeCtr,perturbation+1),'Color'));
                     end
                 end
                 set(0,'CurrentFigure',migrationProfilesFig);
                 grid off
                 set(gca,'GridLineStyle','-')
-                legend(plotHandles,[[num2str(timePoints2plot'),...
+                legend(plotHandles(:),[[num2str(timePoints2plot'),...
                     repmat('h control',length(timePoints2plot),1)];...
-                    [num2str(timePoints2plot'),repmat('h perturb',length(timePoints2plot),1)]])
+                    [num2str(timePoints2plot'),repmat('h perturb',length(timePoints2plot),1)]]);
                 xlabel('distance along stream (\mum)')
                 ylabel('number of cell (per 50\mum)')
                 ylim([0 16])
-
+                
                 %% export figure
                 exportOptions = struct('Format','eps2',...
                     'Width','15.0',...
@@ -140,10 +136,14 @@ for defaultFollow = defaultFollowValues
                     'FontSize',10,...
                     'LineWidth',2);
                 
-                filename = ['results/experiment37reducedChemotaxis/figures/migrationProfiles_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+                filename = ['results/experiment37reducedChemotaxis/figures/'...
+                    'migrationProfiles_defaultFollow_' num2str(defaultFollow)...
+                    'numSteps' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
+                    '_sensAcc_' num2str(sensingAccuracy)];
                 set(migrationProfilesFig,'PaperUnits','centimeters');
                 exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
                 system(['epstopdf ' filename '.eps']);
+                close(migrationProfilesFig)
             end
         end
     end
