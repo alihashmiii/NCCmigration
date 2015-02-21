@@ -55,7 +55,7 @@ res = ut -(diffus.*(1./L^2.*uxx + uyy)...
 if (experiment==11||experiment==12||experiment==13||experiment==14)&&t>=transplantTime
     if (experiment==12||experiment==13)
         indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/2);
-    elseif experiment==11
+    elseif experiment==11 % increased chemoattractant at edge of domain, close to entrance
         indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/20);
     elseif experiment==14 % increased chemoattractant at far end of domain, full width
         indcs =  (x>=transplantXLocation/L)&(x<=1);

@@ -81,7 +81,7 @@ elseif param.experiment==11 %VEGF transplant back edge
    param.transplantTime = 12; % time at which CA-production will be locally increased
    param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
    param.secondaryChi = 2.5; % strength of increased CA production    
-elseif param.experiment==14
+elseif param.experiment==14 %increased VEGF at far (right-most) edge
    param.transplantTime = 12; % time at which CA-production will be locally increased
    param.transplantXLocation = 425; % left edge of square region in which CA-production will be increased
    param.secondaryChi = 2.5; % strength of increased CA production  
@@ -205,6 +205,9 @@ if isstruct(in)
     if ismember('caSolve',fields(in))
         caSolve = in.caSolve;
     end
+    if ismember('divide_cells',fields(in))
+        divide_cells = in.divide_cells;
+    end
 end
 
 followStart = floor(18/param.tstep) - floor(18*followerFraction/param.tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
@@ -296,7 +299,9 @@ for timeCtr=1:numTsteps
         else
             temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),32,param.insert);
         end
-
+        if temp.ifail~=0
+            save(['results/' saveInfo '_' num2str(timeCtr) '_solverWarningLog.mat'],'temp')
+        end
         % take output 
         xlat_save{timeCtr} = temp.xsave;
         ylat_save{timeCtr} = temp.ysave;
