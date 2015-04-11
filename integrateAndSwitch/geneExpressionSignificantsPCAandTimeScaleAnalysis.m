@@ -1,12 +1,19 @@
 % load data for gene expression, to analyse time scales of change
-clear
+clear, close all
 load integrateAndSwitchGeneExpression.mat
-
+plotError = 1;
 %% normalise data relative to baseline (t -120) for each gene
 normExpression = meanExpression;...
 %     ./repmat(meanExpression(1,:),size(meanExpression,1),1);
 normError = errorInMean;...
 %        ./repmat(meanExpression(1,:),size(meanExpression,1),1);
+
+%% impute the error for 1-replicate means
+% take the mean error for each gene and time, and average for each gt-combi
+meanErrorEstimate = nanmean(normError,2)*nanmean(normError)/2;
+nanIndcs = isnan(normError);
+imputedError = normError;
+imputedError(nanIndcs) = meanErrorEstimate(nanIndcs);
 
 %% select genes that show significant change, consitently
 % find the indices of the relevant genes in the list of all genes
@@ -28,12 +35,12 @@ allSigIdcs = onSigIdcs&offSigIdcs&preSigIdcs;
 %% method 1: principle component analysis
 % algorithms eig or svd (or als), Centered false or true
 [offCoeffs, offPCs, offEigC, ~, offVarExplained] = pca(normExpression(2:10,allSigIdcs),...
-    'Algorithm','eig','Centered',true);
+    'Algorithm','eig','Centered',true,'variableWeights',1./mean(imputedError(2:10,allSigIdcs).^2));
 %     'VariableWeights',1./nanmean(normError(2:10,allSigIdcs)./normExpression(2:10,allSigIdcs)),...
 %     'Weights',1./nanmean(normError(2:10,allSigIdcs)./normExpression(2:10,allSigIdcs),2));
     
 [onCoeffs, onPCs, onEigC, ~, onVarExplained] = pca(normExpression(10:end,allSigIdcs),...
-    'Algorithm','eig','Centered',true);
+    'Algorithm','eig','Centered',true,'variableWeights',1./mean(imputedError(10:end,allSigIdcs).^2));
 %     'VariableWeights',1./nanmean(normError(10:end,allSigIdcs)./normExpression(10:end,allSigIdcs)),...
 %     'Weights',1./nanmean(normError(10:end,allSigIdcs)./normExpression(10:end,allSigIdcs),2));
 
@@ -114,18 +121,39 @@ sigFig = figure;
 subplot(2,1,1)
 gh = plot(timeData(2:10),normExpression(2:10,allSigIdcs),'Color',[0.5 0.5 0.5]);
 hold on
-mh = plot(timeData(2:10),mean(normExpression(2:10,allSigIdcs),2),'m','LineWidth',3);
+[weightedMean,~,weightedMeanAverageError] = ...
+    weightedStats(normExpression(2:10,allSigIdcs)', sqrt(imputedError(2:10,allSigIdcs)'),'s');
+% when providing sigma, the function weights by 1/sigma^2, but if we
+% want single power weighting, provide srqt(sigma)
+if plotError
+    mh = errorbar(timeData(2:10),weightedMean,...
+        weightedMeanAverageError,'m','LineWidth',3);
+else
+    mh = plot(timeData(2:10),weightedMean,'m','LineWidth',3);
+end
+
 legend([gh(1),mh],'genes','mean')
 set(gca,'ytick',0:1:7,'xtick',0:30:90)
 ylim([0 3])
+xlim([0 90])
 xlabel('time (min)')
 ylabel('relative expression')
 subplot(2,1,2)
 gh = plot(timeData(10:end),normExpression(10:end,allSigIdcs),'Color',[0.5 0.5 0.5]);
 hold on
-mh = plot(timeData(10:end),mean(normExpression(10:end,allSigIdcs),2),'g','LineWidth',3);
+[weightedMean,~,weightedMeanAverageError] = ...
+    weightedStats(normExpression(10:end,allSigIdcs)', sqrt(imputedError(10:end,allSigIdcs)'),'s');
+% when providing sigma, the function weights by 1/sigma^2, but if we
+% want single power weighting, provide srqt(sigma)
+if plotError
+    mh = errorbar(timeData(10:end),weightedMean,...
+        weightedMeanAverageError,'g','LineWidth',3);
+else
+    mh = plot(timeData(10:end),weightedMean,'g','LineWidth',3);
+end
 legend([gh(1),mh],'genes','mean')
 set(gca,'ytick',0:1:7,'xtick',90:30:180)
+xlim([90 180])
 ylim([0 3])
 xlabel('time (min)')
 ylabel('relative expression')
@@ -165,7 +193,7 @@ for plotCtr = 1:nPlots
 end
 subplot(2,1,1)
 xlim([offSmoothTime(1) offSmoothTime(end)])
-ylim([-4 5]), ylim([-2 4]), box on
+% ylim([-4 5]), ylim([-2 4]), box on
 set(gca,'ytick',-4:1:5,'xtick',0:30:90)
 xlabel('time (min)')
 ylabel('relative expression')
@@ -174,7 +202,7 @@ hLegend = legend(hLines(:,1),num2str(offVarExplained(1:nPlots),2),'Location','No
 
 subplot(2,1,2)
 xlim([onSmoothTime(1) onSmoothTime(end)])
-ylim([-4 5]),  ylim([-2 4]), box on
+% ylim([-4 5]),  ylim([-2 4]), box on
 set(gca,'ytick',-4:1:5,'xtick',90:30:180)
 xlabel('time (min)')
 ylabel('relative expression')
@@ -200,17 +228,21 @@ xlabel('first response after VEGF removal (min)')
 ylabel('first response after VEGF readdition (min)')
 
 % add gene names (taken from spreadsheet 'I&S comparison 090814'
-text(1.55,7.35,'Adam10'), text(1.55,7.125,'Cdh11'), text(1.55,6.875,'Itga9,-b5'), text(1.55,6.65,'Pax3')
-text(1.55,4.3,'Bmpr1a'), text(1.55,4,'Tgfbr1')
+% highlighted ones are allSigIdcs
+highlight = struct('fontweight','bold');
+text(1.55,7.35,'Adam10',highlight), text(1.55,7.125,'Cdh11'),
+text(1.55,6.875,'Itga9',highlight),text(2.1,6.875,',b5'), text(1.55,6.65,'Pax3')
+text(1.55,4.3,'Bmpr1a'), text(1.55,4,'Tgfbr1',highlight)
 text(6.55,2.3,'Bmpr1b')
-text(5.55,2.3,'Cdh7')
-text(1.55,1.35,'Col2a1'), text(1.55,1.125,'Itgb1'), text(1.55,0.875,'Nrp2'), text(1.55,0.65,'Robo1')
+text(5.55,2.3,'Cdh7',highlight)
+text(1.55,1.35,'Col2a1',highlight), text(1.55,1.125,'Itgb1',highlight),
+text(1.55,0.875,'Nrp2',highlight), text(1.55,0.65,'Robo1',highlight)
 text(6.55,3.3,'Cxcl12')
-text(1.55,2.3,'Erbb2'), text(1.55,2,'Itga4')
-text(3.55,5.3,'Foxd3')
+text(1.55,2.3,'Erbb2',highlight), text(1.55,2,'Itga4',highlight)
+text(3.55,5.3,'Foxd3',highlight)
 text(1.55,6.3,'Itgav'), text(1.55,6,'Tfap2a')
-text(1.55,5.3,'Notch1'), text(1.55,5,'Slit1')
-text(4.55,7.3,'Pcdh1')
+text(1.55,5.3,'Notch1',highlight), text(1.55,5,'Slit1')
+text(4.55,7.3,'Pcdh1',highlight)
 text(6.55,4.3,'Robo2')
 text(6.55,1.3,'Sox10')
 text(3.55,6.3,'Slit2')

@@ -1,12 +1,12 @@
 % load data for gene expression, to analyse time scales of change
-    clear
+close all, clear
 load integrateAndSwitchGeneExpression.mat
 
 %% normalise data relative to baseline (t -120)
-normExpression = meanExpression...
-    ./repmat(meanExpression(1,:),size(meanExpression,1),1);
-normError = errorInMean...
-        ./repmat(meanExpression(1,:),size(meanExpression,1),1);
+normExpression = meanExpression;%...
+    %./repmat(meanExpression(1,:),size(meanExpression,1),1);
+normError = errorInMean;%...
+        %./repmat(meanExpression(1,:),size(meanExpression,1),1);
 
 %% ignore genes with missing data
 % meanExpression is in times by genes, each values average of 2-3
@@ -32,9 +32,9 @@ onExpression = cleanExpression(10:end,:);
 %% method 1: principle component analysis
 % algorithms eig or svd (or als), Centered false or true
 [offCoeffs, offPCs, ~, ~, offVarExplained] = pca(offExpression,...
-    'Algorithm','eig','Centered',true);
+    'Algorithm','eig','Centered',true,'VariableWeights',1./mean(imputedError(2:10,:).^2));
 [onCoeffs, onPCs, ~, ~, onVarExplained] = pca(onExpression,...
-    'Algorithm','eig','Centered',true);
+    'Algorithm','eig','Centered',true,'VariableWeights',1./mean(imputedError(10:end,:).^2));
 
 % plot bar chart of coeffs with gene names?
 
@@ -71,12 +71,14 @@ mSmooth = 'akima';
 rawFig = figure;
 subplot(2,1,1)
 errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,imputedError(2:10,:))
+xlim([0 90])
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
 
 subplot(2,1,2)
 errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,imputedError(10:end,:))
+xlim([90 180])
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes +VEGF condition')
@@ -87,6 +89,7 @@ subplot(2,1,1)
 plot(offSmoothTime,offSmooth)
 hold on
 errorbar(timeData(2:10,ones(size(cleanGenes))),offExpression,imputedError(2:10,:),'+')
+xlim([0 90])
 xlabel('time (min)')
 ylabel('relative expression')
 title('all genes -VEGF condition')
@@ -96,6 +99,7 @@ plot(onSmoothTime,onSmooth)
 hold on
 errorbar(timeData(10:end,ones(size(cleanGenes))),onExpression,imputedError(10:end,:),'+')
 xlabel('time (min)')
+xlim([90 180])
 ylabel('relative expression')
 title('smoothed genes +VEGF condition')
 
