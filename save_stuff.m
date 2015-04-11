@@ -125,9 +125,9 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.divide_cells = divide_cells;
     out.param.experiment = param.experiment;
     
-    save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
-    system(['rm -f /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
-    fprintf(['saved results to /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
+    save(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
+    system(['rm -f /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
+    fprintf(['saved results to /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
 
     
 end

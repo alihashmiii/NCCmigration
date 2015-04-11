@@ -16,7 +16,7 @@ else
     end
 end
 % don't overwrite existing file
-if isempty(dir(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'])) % check if this run hasn't been done, if previous sweeps have been aborted
+if isempty(dir(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'])) % check if this run hasn't been done, if previous sweeps have been aborted
     
     out.domainLengths = domainLengths;
     out.saveInfo = saveInfo;
@@ -42,8 +42,8 @@ if isempty(dir(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2
     out.divide_cells = divide_cells;
     out.experiment = param.experiment;
     
-    save(['/mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'],'out')
-    fprintf(['created results file at /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat \n'])
+    save(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'],'out')
+    fprintf(['created results file at /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat \n'])
 else
-    fprintf(['error in creating results file: /mi/share/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat already exists \n'])
+    fprintf(['error in creating results file: /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat already exists \n'])
 end
