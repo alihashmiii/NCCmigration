@@ -59,7 +59,7 @@ for sensingAccuracy = sensingAccuracyValues
                 end                        % make a plot of all repeats
                 if repCtr <= maxRuns2plot
                     subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,repCtr+2)
-                    make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},out.ylat_save{end}, ...
+                    make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},t_save(timeCtr-1),out.ylat_save{end}, ...
                         out.ca_save{end},out.filopodia_save{end},out.numFilopodia,out.attach_save{end},out.cellRadius,filolength,sensingAccuracy,0,caCmap,1)
                     title([num2str(size(out.cells_save{end},2)) ' cells, ' num2str(min([size(out.cells_save{end},2) nnz(out.cellsFollow{end}==0)])) ' leaders.'])
                 end

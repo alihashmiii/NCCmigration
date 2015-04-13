@@ -18,7 +18,7 @@ minx = min([min(xlat_save{end}) 0]);
 for timeCtr=1:skip:numTsteps
     disp(['step ',mat2str(timeCtr),' of ',mat2str(numTsteps)])
     make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},...
-        ylat_save{timeCtr},ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,1,caCmap,0);
+        ylat_save{timeCtr},t_save(timeCtr),ca_save{timeCtr},filopodia_save{timeCtr},numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,1,caCmap,0);
     
     xlim([min(xlat_save{timeCtr}), 1000])
     

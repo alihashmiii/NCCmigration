@@ -1,6 +1,11 @@
 %% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cellsFollow,xlat,ylat,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode)
+function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode)
+global param
+experiment = param.experiment;
+transplantTime = param.transplantTime;
+transplantXLocation = param.transplantXLocation;
+domainHeight = param.domainHeight;
 
 if ~quickMode, whitebg('white'), end
 %  plot the chemoattractant
@@ -22,6 +27,21 @@ if any(~indicesSensible(:))
     sensAccContour = contour(xlat,ylat,indicesSensible,1,'EdgeColor',[0.75 0.75 0.75], 'LineWidth', 2);
 end
 
+% if doing a VEGF transplant simulation, plot regions of increased CA production
+if (experiment==11||experiment==12||experiment==13||experiment==14)&&time>=transplantTime
+    if (experiment==12||experiment==13)
+        xindcs =  (xlat>=transplantXLocation)&(xlat<=(transplantXLocation + 1/8*max(xlat)));
+        yindcs = (ylat<=domainHeight/2);
+    elseif experiment==11 % increased chemoattractant at edge of domain, close to entrance
+        xindcs =  (xlat>=transplantXLocation)&(xlat<=(transplantXLocation + 1/8*max(xlat)));
+        yindcs = (ylat<=domainHeight/20);
+    elseif experiment==14 % increased chemoattractant at far end of domain, full width
+        xindcs =  (xlat>=transplantXLocation)&(xlat<=1);
+        yindcs = true(size(ylat));
+    end
+    contour(xlat,ylat,single(yindcs)*single(xindcs)',1,'EdgeColor',[1 0 0],'LineWidth',2)
+end
+
 colormap(caCmap)
 
 if cellRadius < 1
@@ -34,7 +54,7 @@ if (isempty(filopodia)==1)
 end
 
 % draw the cells with their filopodia -- LJS
-t = 0:0.1:2*pi; % for plotting the cell circles -- LJS
+phi = 0:0.1:2*pi; % for plotting the cell circles -- LJS
 
 for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
@@ -50,7 +70,7 @@ for cellidx = 1:length(cells(1,:))
     end
     
     % draw the cell
-    fill(cellRadius*cos(t)+cells(1,cellidx),cellRadius*sin(t)+cells(2,cellidx),cellColor,'EdgeColor','none');
+    fill(cellRadius*cos(phi)+cells(1,cellidx),cellRadius*sin(phi)+cells(2,cellidx),cellColor,'EdgeColor','none');
     
     if ~quickMode
         % draw the filopodia
