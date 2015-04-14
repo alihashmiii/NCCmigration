@@ -1,7 +1,6 @@
 %% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode)
-global param
+function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode,param)
 experiment = param.experiment;
 transplantTime = param.transplantTime;
 transplantXLocation = param.transplantXLocation;
@@ -36,7 +35,7 @@ if (experiment==11||experiment==12||experiment==13||experiment==14)&&time>=trans
         xindcs =  (xlat>=transplantXLocation)&(xlat<=(transplantXLocation + 1/8*max(xlat)));
         yindcs = (ylat<=domainHeight/20);
     elseif experiment==14 % increased chemoattractant at far end of domain, full width
-        xindcs =  (xlat>=transplantXLocation)&(xlat<=1);
+        xindcs =  (xlat>=transplantXLocation)&(xlat<=max(xlat));
         yindcs = true(size(ylat));
     end
     contour(xlat,ylat,single(yindcs)*single(xindcs)',1,'EdgeColor',[1 0 0],'LineWidth',2)

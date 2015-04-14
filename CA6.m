@@ -40,7 +40,7 @@ param.zeroBC = 0;                % = 1: make the boundary conditions for the c't
                             % else no flux boundary conditions
 caSolve = 1;           % solve for the chemoattractant concentration
 cellsMove = 1;             % the cells move
-insertCells = 1;           % new cells are inserted at x=0
+insertCells = 0;           % new cells are inserted at x=0
 
 volumeExclusion = 1;    % 1 = cells can't overlap, 0 = they can -- LJS
 standStill = 0; % 1 = cells don't move if they don't know where to go; 0 = cells move in a random direction if they don't know where to go
@@ -207,6 +207,9 @@ if isstruct(in)
     end
     if ismember('divide_cells',fields(in))
         divide_cells = in.divide_cells;
+    end
+    if ismember('insertCells',fields(in))
+        insertCells = in.insertCells;
     end
 end
 

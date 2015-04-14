@@ -34,7 +34,7 @@ if (param.experiment<10)||(param.experiment>=20)
 else
     % Default is 3 but when having sharp boundaries in the CA profile this is
     % sometimes exceeded, which gives a warning.
-    opti(1) = int64(5);
+    opti(1) = int64(4);
 end
 opti(2) = int64(20); % max Jacobian evaluations
 opti(3) = int64(10);    % max newton iterations
@@ -45,11 +45,11 @@ itrace = int64(0);     % level of trace information
 [ts, tout, rwk, iwk, ind, ifail] = d03ra(ts, tout, dt, xmin, xmax, ymin, ymax, nx, ny, tols,...
     tolt, 'chemotaxis_pdedef', 'chemotaxis_bndary', 'chemotaxis_pdeiv', 'chemotaxis_monitr', opti, optr,rwk, iwk, itrace,...
     ind);
-if ifail
-    [X,Y] = meshgrid(xsave*initialDomainLength,ysave);
-    surf(X,Y,plotsol');
-    pause
-end
+% if ifail
+%     [X,Y] = meshgrid(xsave*initialDomainLength,ysave);
+%     surf(X,Y,plotsol');
+%     pause
+% end
 out.chemotaxis = plotsol;
 out.xsave = xsave*initialDomainLength;
 out.ysave = ysave;

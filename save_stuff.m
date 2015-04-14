@@ -3,7 +3,7 @@
 if (param.experiment==1)||(param.experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0)
+        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param)
         sort(cells(1,:))
         
         if param.experiment==1
@@ -69,14 +69,14 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
 elseif ~exist('saveInfo','var')
     if conversionType~=0
         if conversionType==4
-                    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps(1)),'_',num2str(numSteps(2)),...
+                    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps(1)),'_',num2str(numSteps(2)),...
         '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
         else
-        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
         '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
         end
     else
-            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
+            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
         '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
