@@ -5,7 +5,7 @@ close all
 clear all
 
 makeFrames = 1;
-makeAllMovie = 1;
+makeAllMovie = 0;
 caCmap = load('cmap_blue2cyan.txt');
 
 time = 18;
@@ -14,10 +14,10 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
 defaultFollowValues = [0 1 2];
-lead2follow = [8];
-follow2lead = [8];
+lead2follow = [4];
+follow2lead = [4];
 sensingAccuracyValues = [0.1 0.01];
-experiments = [12 11 13 14];
+experiments = [12 11];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);
 

@@ -14,7 +14,7 @@ defaultFollowValues = [0 1 2];
 lead2follow = [4];
 follow2lead = [4];
 sensingAccuracyValues = [0.1, 0.01];
-experiments = [12 11 13 14];
+experiments = [12 11];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);
 

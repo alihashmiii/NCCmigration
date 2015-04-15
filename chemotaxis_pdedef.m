@@ -60,6 +60,9 @@ if (experiment==11||experiment==12||experiment==13||experiment==14)&&t>=transpla
     elseif experiment==14 % increased chemoattractant at far end of domain, full width
         indcs =  (x>=transplantXLocation/L)&(x<=1);
     end
+    if (t - transplantTime)<tstep % moment of transplant
+        res(indcs) = res(indcs) - ut(indcs) + 1; % reset concentration to 1 to include VEGF transplanted
+    end
     res(indcs) = res(indcs) - secondaryChi.*u(indcs).*(1 - u(indcs))*initialDomainLength/L; % add a dilution factor for the VEGF producing transplanted cells, whose number should be constant
 end
 res(x>0) = res(x>0) + Ldiff/L*u(x>0); % dilution through tissue growth -- LJS

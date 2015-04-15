@@ -1,9 +1,9 @@
 % test VEGF transplant simulations
 in.time = 18;
 % run solver with and without cells
-for insertCells = 0
+for insertCells = 0:1
     in.insertCells = insertCells;
-    for experiment = 13:14
+    for experiment = 11:14
         if ~insertCells
             in.numCellsInitial = 1;
         else

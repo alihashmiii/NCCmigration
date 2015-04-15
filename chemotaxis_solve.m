@@ -34,7 +34,7 @@ if (param.experiment<10)||(param.experiment>=20)
 else
     % Default is 3 but when having sharp boundaries in the CA profile this is
     % sometimes exceeded, which gives a warning.
-    opti(1) = int64(4);
+    opti(1) = int64(5);
 end
 opti(2) = int64(20); % max Jacobian evaluations
 opti(3) = int64(10);    % max newton iterations

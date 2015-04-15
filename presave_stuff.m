@@ -41,9 +41,10 @@ if isempty(dir(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/
     out.followerFraction = followerFraction;
     out.divide_cells = divide_cells;
     out.experiment = param.experiment;
-    
-    save(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'],'out')
-    fprintf(['created results file at /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat \n'])
+    [~, computerName] = system('hostname -s');
+    computerName = computerName(1:end-1); % remove newline character
+    save(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat'],'out')
+    fprintf(['created results file at /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat \n'])
 else
     fprintf(['error in creating results file: /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat already exists \n'])
 end

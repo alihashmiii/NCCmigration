@@ -124,9 +124,10 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.followerFraction = followerFraction;
     out.divide_cells = divide_cells;
     out.param.experiment = param.experiment;
-    
+    [~, computerName] = system('hostname -s');
+    computerName = computerName(1:end-1); % remove newline character
     save(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
-    system(['rm -f /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running.mat'])
+    system(['rm -f /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat'])
     fprintf(['saved results to /scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
 
     
