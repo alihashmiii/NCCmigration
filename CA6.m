@@ -54,6 +54,7 @@ makeFrames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cel
 %% General parameters %%
 param.tstep = 1/60;                   % time step in hours
 numTsteps = floor(time/param.tstep)+1;   % number of time steps
+t_0 = 6; % time in hrs at which simulation starts
 cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
 followSpeed = 49.9;                 % speed of the follower cells in mu/h
@@ -68,25 +69,25 @@ sensingAccuracy = 0.01; % relative accuracy with which concentration can be meas
 needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 %% experimental parameters %%
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
-% do this with case instead
-if param.experiment==12 %VEGF transplant back half
-   param.transplantTime = 12; % time at which CA-production will be locally increased
-   param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
-   param.secondaryChi = 2.5; % strength of increased CA production
-elseif param.experiment==13 %VEGF transplant middle half
-   param.transplantTime = 12; % time at which CA-production will be locally increased
-   param.transplantXLocation = 70; % left edge of square region in which CA-production will be increased
-   param.secondaryChi = 2.5; % strength of increased CA production 
-elseif param.experiment==11 %VEGF transplant back edge
-   param.transplantTime = 12; % time at which CA-production will be locally increased
-   param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
-   param.secondaryChi = 2.5; % strength of increased CA production    
-elseif param.experiment==14 %increased VEGF at far (right-most) edge
-   param.transplantTime = 12; % time at which CA-production will be locally increased
-   param.transplantXLocation = 425; % left edge of square region in which CA-production will be increased
-   param.secondaryChi = 2.5; % strength of increased CA production  
-else
-   param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
+switch param.experiment
+    case 12 %VEGF transplant back half
+        param.transplantTime = 12; % time at which CA-production will be locally increased
+        param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
+        param.secondaryChi = 2.5; % strength of increased CA production
+    case 13 %VEGF transplant middle half
+        param.transplantTime = 12; % time at which CA-production will be locally increased
+        param.transplantXLocation = 70; % left edge of square region in which CA-production will be increased
+        param.secondaryChi = 2.5; % strength of increased CA production
+    case 11 %VEGF transplant back edge
+        param.transplantTime = 12; % time at which CA-production will be locally increased
+        param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
+        param.secondaryChi = 2.5; % strength of increased CA production
+    case 14 %increased VEGF at far (right-most) edge
+        param.transplantTime = 12; % time at which CA-production will be locally increased
+        param.transplantXLocation = 425; % left edge of square region in which CA-production will be increased
+        param.secondaryChi = 2.5; % strength of increased CA production
+    otherwise
+        param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
 end
 %% caSolve parameters %%
 param.diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
@@ -211,6 +212,9 @@ if isstruct(in)
     if ismember('insertCells',fields(in))
         insertCells = in.insertCells;
     end
+    if ismember('t_0',fields(in))
+        t_0 = in.t_0;
+    end
 end
 
 followStart = floor(18/param.tstep) - floor(18*followerFraction/param.tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
@@ -227,15 +231,24 @@ param.t_start = -16; %parameter used in domain_growth
 %%
 presave_stuff % create results file with parameters to signal that this simulation is being worked on
 
-%% set up the initial cells so that they aren't too close to each other or
-%% the edge %%
-temp = initiate_cells(numCellsInitial,cellRadius,0,param.initialDomainLength,param.domainHeight,initXFrac,initYFrac,[],1);
-cells = temp.cells;
+%% initialise cells
+if isstruct(in)&&ismember('cells',fields(in))
+    cells = in.cells; % take cells passed in
+    numCellsInitial = size(cells,2);
+else % set up the initial cells so that they aren't too close to each other or the edge
+    temp = initiate_cells(numCellsInitial,cellRadius,0,param.initialDomainLength,param.domainHeight,initXFrac,initYFrac,[],1);
+    cells = temp.cells;
+end
+
 finalNumCells = (numCellsInitial + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
+
 if followerFraction > 1
-    cellsFollow = true(finalNumCells,1); % cells are followeres by default
-else
-    cellsFollow = false(finalNumCells,1); % cells are leaders by default. For fixed fractions of followers, all
+        cellsFollow = true(finalNumCells,1); % cells are followeres by default
+    else
+        cellsFollow = false(finalNumCells,1); % cells are leaders by default.
+end    
+if isstruct(in)&&ismember('cellsFollow',fields(in))
+        cellsFollow(1:numCellsInitial) = in.cellsFollow; % take cell states passed in
 end
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
@@ -243,7 +256,7 @@ end
 % be inserted due to jamming -- LJS
 
 %% initialise vectors and time %%
-t_save = 6+(0:param.tstep:param.tstep*numTsteps);
+t_save = t_0+(0:param.tstep:param.tstep*numTsteps);
 xlat_save = cell(1,numTsteps); % spatial lattices (lat)
 ylat_save = cell(1,numTsteps);
 ca_save = cell(1,numTsteps); % chemoattractant (ca)
@@ -251,9 +264,21 @@ cells_save = cell(numTsteps,1);
 filopodia_save = cell(numTsteps,1);
 cellsFollow_save = cell(numTsteps,1);
 attach = zeros(finalNumCells,1,'uint16'); % indices of which cell each cell is attached to
+if isstruct(in)&&ismember('attach',fields(in))
+    attach(1:numCellsInitial) = in.attach; % take cell attachments passed in
+end
 theta = NaN(finalNumCells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);
-xlat_new=[];
+if isstruct(in)&&ismember('ca_new',fields(in))
+    param.ca_new = in.ca_new; % take CA field passed in
+    param.insert = 1;
+end
+if isstruct(in)&&ismember('xlat_new',fields(in));
+    xlat_new = in.xlat_new; % take lattice passed in - not sire how important this is, as growth should be deterministic anyway
+    param.insert = 1;
+else
+    xlat_new=[];
+end
 moved = false(numTsteps,finalNumCells);
 happiness = NaN(numTsteps,finalNumCells); % for integrate-and-switch cell behaviour conversion
 %% begin timesteps %%
@@ -282,25 +307,24 @@ for timeCtr=1:numTsteps
     
     %% chemoattractant %%
     if caSolve==1
-        cells_in = cells;
         % give parameters for the solver (depending on whether this is the first run or not)
         if timeCtr==1
             ind = int64(0); % starts integration at t=0
             iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
             rwk = zeros(1880000,1); % it's unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
         elseif ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
-            %% experiments 1 and 2: inserting chemoattractant
+            %% experiments 1 and 2: inserting chemoattractant % backward compatibility not test -- LJS
             insert_tissue
         else
             ind = int64(1); % continuing integration from the previous solution
         end
         % run the solver
         if ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
-            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),length(ylat_new),param.insert);
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,length(ylat_new),param.insert);            
         elseif timeCtr>1
-            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),length(ylat_save{timeCtr-1}),param.insert);
-        else
-            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,cells_in,param.initialDomainLength,param.domainHeight,length(xlat_new),32,param.insert);
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,length(ylat_save{timeCtr-1}),param.insert);
+        else % initialise chemoattractant
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,32,param.insert);
         end
         if temp.ifail~=0
             save(['results/' saveInfo '_' num2str(timeCtr) '_solverWarningLog.mat'],'temp')
@@ -363,6 +387,9 @@ for timeCtr=1:numTsteps
         if conversionType==4
             if timeCtr ==1
                 happiness(timeCtr,1:length(cells(1,:))) = ~cellsFollow(1:length(cells(1,:))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
+                if isstruct(in)&&ismember('happiness',fields(in))
+                    happiness(1,1:numCellsInitial) = in.happiness; % take cell happiness passed in
+                end
             else
                 newCellIdcs = isnan(happiness(timeCtr - 1,1:length(cells(1,:)))); % newly existing cells have previous happiness nan -- LJS
                 happiness(timeCtr,newCellIdcs) = ~cellsFollow(newCellIdcs); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS

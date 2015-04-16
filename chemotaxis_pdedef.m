@@ -5,8 +5,7 @@
 
 function [res] = chemotaxis_pdedef(npts, npde, t, x, y, u, ut, ux, uy, uxx, uxy, uyy)
 global param cells % using global variables is much faster than saving & loading from disk -- LJS
-% load avi_mat/cells
-% load avi_mat/param
+
 xcell = cells(1,:);
 ycell = cells(2,:);
 
@@ -52,16 +51,16 @@ eatTerm = sum(bigEat,2);
 res = ut -(diffus.*(1./L^2.*uxx + uyy)...
     - eatTerm...
     + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
-if (experiment==11||experiment==12||experiment==13||experiment==14)&&t>=transplantTime
-    if (experiment==12||experiment==13)
-        indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/2);
-    elseif experiment==11 % increased chemoattractant at edge of domain, close to entrance
-        indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/20);
-    elseif experiment==14 % increased chemoattractant at far end of domain, full width
-        indcs =  (x>=transplantXLocation/L)&(x<=1);
-    end
-    if (t - transplantTime)<tstep % moment of transplant
-        res(indcs) = res(indcs) - ut(indcs) + 1; % reset concentration to 1 to include VEGF transplanted
+if t>=transplantTime
+    switch experiment
+        case {12, 13}
+            indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/2);
+        case 11 % increased chemoattractant at edge of domain, close to entrance
+            indcs =  (x>=transplantXLocation/L)&(x<=(transplantXLocation/L + 1/8))&(y<=domainHeight/20);
+        case 14 % increased chemoattractant at far end of domain, full width
+            indcs =  (x>=transplantXLocation/L)&(x<=1);
+        otherwise
+            indcs = [];
     end
     res(indcs) = res(indcs) - secondaryChi.*u(indcs).*(1 - u(indcs))*initialDomainLength/L; % add a dilution factor for the VEGF producing transplanted cells, whose number should be constant
 end

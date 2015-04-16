@@ -12,50 +12,18 @@ domainHeight = param.domainHeight;
 zeroBC = param.zeroBC;
 insert = param.insert;
 growingDomain= param.growingDomain;
-if insert==1 %% will have to check these when doing tissue transplantations -- LJS
-    disp('inserting')
-    load avi_mat/ca_new
-    load avi_mat/xlat_new
-    load avi_mat/ylat_new
-    %
-    %     load avi_mat/xlat_save
-    %     load avi_mat/ylat_save
-    %     load avi_mat/ca_save
-    %     load avi_mat/after_diffusion
-    %     xpt = find(x==x(1),2,'first');
-    %     new_x = x(1:xpt(2)-1)
-    %     new_y = y(1:length(new_x):end)
-    %     figure
-    %     surf(xlat_new,ylat_new,ca_new')
-    %     ca_new = interp2(xlat_new, ylat_new,ca_new',x,y);
-    %     ca_new = ca_new';
-    %     size(ca_new)
-    %     x
-    %     for i=1:length(x)
-    %         u(i) = interp2(after_diffusion.x,after_diffusion.y,after_diffusion.ca',x(i),y(i));
-    %         u(i) = interp2(xlat_new,ylat_new,ca_new',x(i),y(i));
-    % %         u(i) = interp2(xlat_save{120},ylat_save{120},ca_save{120}',x(i),y(i));
-    %     end
-    % size(ca_new)
-    % size(xlat_new)
-    % size(ylat_new)
-    % size(x)
-    % size(y)
-%     Linf = param(1);
-%     a = param(2);
-%     initialDomainLength = param(6);
-%     t_start = param(13);
-%     tstep = param(12);
-%     
-%     [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
-%     for i=1:length(x)
-%         u(i) = interp2(xlat_new*initialDomainLength/L,ylat_new,ca_new',x(i),y(i));
-%     end
-        u = reshape(ca_new,[1,length(x)]);
-%         x(1:length(xlat_new))
-%         xlat_new*initialDomainLength/L
-    %     y
-    %     u = ca_new;
+
+if insert==1&&~isempty(param.ca_new) %% will have to check these when doing tissue transplantations -- LJS
+    if length(x)~=length(param.ca_new(:))
+        disp('interpolating initial conditions for refined grid')
+        ylat = linspace(0,domainHeight,size(param.ca_new,2));
+        xlat = linspace(0,1,size(param.ca_new,1));
+        [Xlat,Ylat] = meshgrid(xlat,ylat);
+        u = interp2(Xlat,Ylat,param.ca_new',x,y)';
+    else
+        disp('inserting initial conditions for chemotaxis solver')
+        u = reshape(param.ca_new,1,length(x));
+    end
 else
     if zeroBC == 1
         if growingDomain==1

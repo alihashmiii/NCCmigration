@@ -2,7 +2,7 @@
 % using d03ra to solve a pde in a rectangular domain
 % requires pdedef.m, bndary.m, deiv.m, monitr.m
 
-function out = chemotaxis_solve(ts,tout,ind,iwk,rwk,cells,initialDomainLength,domainHeight,x_length,y_length,insert)
+function out = chemotaxis_solve(ts,tout,ind,iwk,rwk,initialDomainLength,domainHeight,xlat_new,y_length,insert)
 global plotsol xsave ysave param % using global variables is much faster than saving & loading from disk -- LJS
 dt = [0; 0; 0]; % initial, min and max time step used ([0;0;0] for defaults)
     
@@ -13,10 +13,8 @@ xmax = 1;
 ymin = 0;
 ymax = domainHeight;
 
-if insert==1
-    %         nx = int64(x_length);
+if insert==1&&~isempty(xlat_new)
     ny = int64(y_length);
-    load avi_mat/xlat_new
     nx = int64(length(xlat_new));
     xmin = min(xlat_new);
 else
