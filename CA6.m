@@ -73,19 +73,19 @@ switch param.experiment
     case 12 %VEGF transplant back half
         param.transplantTime = 12; % time at which CA-production will be locally increased
         param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
-        param.secondaryChi = 2.5; % strength of increased CA production
+        param.secondaryChi = 5; % strength of increased CA production
     case 13 %VEGF transplant middle half
         param.transplantTime = 12; % time at which CA-production will be locally increased
         param.transplantXLocation = 70; % left edge of square region in which CA-production will be increased
-        param.secondaryChi = 2.5; % strength of increased CA production
+        param.secondaryChi = 5; % strength of increased CA production
     case 11 %VEGF transplant back edge
         param.transplantTime = 12; % time at which CA-production will be locally increased
         param.transplantXLocation = 0; % left edge of square region in which CA-production will be increased
-        param.secondaryChi = 2.5; % strength of increased CA production
+        param.secondaryChi = 5; % strength of increased CA production
     case 14 %increased VEGF at far (right-most) edge
         param.transplantTime = 12; % time at which CA-production will be locally increased
         param.transplantXLocation = 425; % left edge of square region in which CA-production will be increased
-        param.secondaryChi = 2.5; % strength of increased CA production
+        param.secondaryChi = 5; % strength of increased CA production
     otherwise
         param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
 end
@@ -248,7 +248,7 @@ if followerFraction > 1
         cellsFollow = false(finalNumCells,1); % cells are leaders by default.
 end    
 if isstruct(in)&&ismember('cellsFollow',fields(in))
-        cellsFollow(1:numCellsInitial) = in.cellsFollow; % take cell states passed in
+        cellsFollow(1:numCellsInitial) = in.cellsFollow(1:numCellsInitial); % take cell states passed in
 end
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
@@ -265,7 +265,7 @@ filopodia_save = cell(numTsteps,1);
 cellsFollow_save = cell(numTsteps,1);
 attach = zeros(finalNumCells,1,'uint16'); % indices of which cell each cell is attached to
 if isstruct(in)&&ismember('attach',fields(in))
-    attach(1:numCellsInitial) = in.attach; % take cell attachments passed in
+    attach(1:numCellsInitial) = in.attach(1:numCellsInitial); % take cell attachments passed in
 end
 theta = NaN(finalNumCells,1); % cells' movement directions-- LJS
 attach_save = cell(1,numTsteps);

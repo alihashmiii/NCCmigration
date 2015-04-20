@@ -21,7 +21,7 @@ for experiment = [12 11]
                 for repCtr = 1:numReps
                     input.saveInfo = ['experiment31transplants/exp' num2str(experiment) ...
                         '_conversion_' num2str(input.conversionType) '_defaultFollow_' num2str(input.followerFraction) ...
-                        '_numSteps_' num2str(input.numSteps(1)) '_' num2str(input.numSteps(2)) ...
+                        '_numSteps_' num2str(switchingTime) '_' num2str(switchingTime) ...
                         '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                     if isempty(dir(['results/' input.saveInfo '_running*.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                         % load the relevant reference simulation
@@ -59,8 +59,11 @@ for experiment = [12 11]
                             otherwise
                                 input.transplantXLocation = NaN; xindcs = []; yindcs = [];
                         end
-                        input.ca_new = double(out.ca_save{timeIdx});
-                        input.ca_new(xindcs,yindcs) = 1; % set region of transplant to high CA
+                        % set region of transplant to high CA
+                        transplant = implicit_heat2D(double(xindcs)*double(yindcs)',...
+                            100,mean(diff(out.xlat_save{timeIdx})),mean(diff(out.ylat_save{timeIdx})),0.1,1); % we need some smoothing to reduce the sharp boundaries
+                        input.ca_new = double(out.ca_save{timeIdx}) + transplant;
+                        input.ca_new = min(input.ca_new,1);
                         
                         rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                         CA6(input,experiment);

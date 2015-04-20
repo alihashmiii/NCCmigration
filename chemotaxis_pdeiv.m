@@ -13,7 +13,7 @@ zeroBC = param.zeroBC;
 insert = param.insert;
 growingDomain= param.growingDomain;
 
-if insert==1&&~isempty(param.ca_new) %% will have to check these when doing tissue transplantations -- LJS
+if insert==1&&~isempty(param.ca_new) %% will have to check these when doing tissue (add-on) transplantations -- LJS
     if length(x)~=length(param.ca_new(:))
         disp('interpolating initial conditions for refined grid')
         ylat = linspace(0,domainHeight,size(param.ca_new,2));
