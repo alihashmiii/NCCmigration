@@ -3,7 +3,7 @@ function handle = plotCircles(positions,radius,color,opacity)
 % Linus J. Schumacher 23.05.2014
 %
 % position should be in format 2-by-n
-% opacity is an alhpa value
+% opacity is an alpha value
 
 if size(positions,1) ~= 2
     positions = positions';
@@ -11,7 +11,7 @@ end
 
 th = (0:0.1:2*pi)'; % for plotting the cell circles
 
-% plot all the circles at once using Tony's trick for boradcasting
+% plot all the circles at once using Tony's trick for broadcasting
 handle = fill(radius*cos(th(:,ones(size(positions(1,:))))) + positions(ones(size(th)),:),...
     radius*sin(th(:,ones(size(positions(2,:))))) + positions(2*ones(size(th)),:),color);
 

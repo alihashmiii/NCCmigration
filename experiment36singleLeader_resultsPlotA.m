@@ -70,17 +70,18 @@ end
 yTicks = linspace(60,120*length(experiments)-60,length(experiments));
 maxCellNumber = max(totalCellNumbers);
 for expCtr = 1:length(experiments)
-    boxplot(distanceMigrated{expCtr},'plotstyle','compact','medianstyle','target','orientation','horizontal',...
+    boxplot(distanceMigrated{expCtr},'medianstyle','target','orientation','horizontal',...
         'colors',[1 1 1]*2*mean(lostFraction(expCtr,:)),'symbol','x','positions',yTicks(expCtr))
 end   
 xlabel('x/\mum')
+ylabel('\langle f_L\rangle')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
 
 % add a colorbar for relative stream density
 ch = colorbar;
-title(ch,'stream cohesion')
+title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
 set(ch,'YTickLabel',[0.5 0.75 1])
 
@@ -91,11 +92,13 @@ exportOptions = struct('Format','eps2',...
     'Resolution',300,...
     'FontMode','fixed',...
     'FontSize',10,...
-    'LineWidth',2);
+    'LineWidth',2,...
+    'Renderer','opengl');
 
 pos = get(gcf,'Position');
 %     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
-filename = ['manuscripts/subpopulations/figures/resultsFigS2A'];
+filename = ['manuscripts/subpopulations/figures/singleLeaderA'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
+system(['pdfcrop ' filename '.pdf']);

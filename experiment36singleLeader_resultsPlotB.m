@@ -58,7 +58,8 @@ for expCtr = length(experiments):-1:1
     end
     % plot migration profile
     f_L = mean(actualLeaderFraction(expCtr,:));
-    h(expCtr) = stairs(xBins,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)));
+%     h(expCtr) = stairs(xBins,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)));
+    h(expCtr) = plot(xBins+25,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)));
     % bar(xBins + 25,squeeze(mean(sum(cellDistributions(expCtr,:,:,:),3),2)),1,...
      %   'FaceColor', plotColor, 'EdgeColor', plotColor);
     %     h(followFracCtr) = area(xBins + 25,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),...
@@ -84,6 +85,7 @@ exportOptions = struct('Format','eps2',...
 pos = get(gcf,'Position');
 pos(4) = 1/2*pos(3); % adjust height to fraction of width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
-filename = ['manuscripts/subpopulations/figures/resultsFigS2B'];
+filename = ['manuscripts/subpopulations/figures/singleLeaderB'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
+system(['pdfcrop ' filename '.pdf']);

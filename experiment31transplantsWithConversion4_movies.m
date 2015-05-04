@@ -4,8 +4,8 @@
 close all
 clear all
 
-makeFrames = 1;
-makeAllMovie = 0;
+makeFrames = 0;
+makeAllMovie = 1;
 caCmap = load('cmap_blue2cyan.txt');
 
 time = 18;
@@ -14,8 +14,8 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
 defaultFollowValues = [1];
-lead2follow = [4];
-follow2lead = [4];
+lead2follow = [8];
+follow2lead = [8];
 sensingAccuracyValues = [0.1 0.01];
 experiments = [11 12];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
@@ -32,18 +32,33 @@ for defaultFollow = defaultFollowValues
             
             %% load data
             numSteps = [lead2follow, follow2lead];
-            for repCtr = 12
+            for repCtr = 1
+                if makeAllMovie==1
+                % load the relevant reference simulation
+                loadInfo = ['experiment31conversion4/exp31'...
+                    '_conversion_4_defaultFollow_' num2str(defaultFollow) ...
+                    '_numSteps_' num2str(lead2follow) '_' num2str(follow2lead) ...
+                    '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
+                load(['results/' loadInfo '.mat'])
+                % load results from the output structure into
+                % variables
+                load_results
+                saveInfo = ['exp' num2str(experiment) ...
+                    '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
+                    '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
+                    '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
+                keepFrames=1;
+                stopTime = 12;
+                make_all_movie_hidden
+                startAtFrame = frameCtr;
+                end
+                % load the transplant simulation
                 loadInfo = ['experiment31transplants/exp' num2str(experiment) ...
                     '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
                     '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
                     '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
-                try % sometime we get corrupt files, which crashes the script
-                    load(['results/' loadInfo '.mat'])
-                catch
-                    delete(['results/' loadInfo '.mat']) % delete the corrupt file
-                    experiment31transplantsWithConversion4; % recreate the missing results file
-                    load(['results/' loadInfo '.mat']) % load again
-                end
+                load(['results/' loadInfo '.mat'])
+               
                 % load results from the output structure into
                 % variables
                 load_results
@@ -75,7 +90,10 @@ for defaultFollow = defaultFollowValues
                 %% make movies %%
                 %%% make cells+ca movie (allmovie.avi)%%%
                 if makeAllMovie==1
+                    keepFrames = 0;
+                    stopTime = 25;
                     make_all_movie_hidden
+                    startAtFrame = 1;
                 end
             end
         end

@@ -41,7 +41,11 @@ for followFracCtr = length(followFracValues):-1:1
         % load cell positions into variables
         cells = out.cells_save{end}; % all cells
         numberOfCells = size(cells,2);
-        followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        if isfield(out,'cellsFollow')
+            followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        else
+            followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+        end
         attachIdcs = out.attach_save{end}(1:numberOfCells);
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
@@ -74,19 +78,19 @@ end
     
 xlabel('x/\mum')
 ylabel('# cells / 50\mum'), 
-hlegend = legend(num2str(flipud(mean(actualLeaderFraction,2)),precision),'Location',...
+legend(num2str(flipud(mean(actualLeaderFraction,2)),precision),'Location',...
     'NorthEast'); 
-set(get(hlegend,'xlabel'),'string','<f_L>')
+text(675,10,'\langle f_L\rangle')
 ylim([0 17]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid off, set(gca,'Layer','top')
-box off
+box on
 %% save figure as .fig file
 filename = 'manuscripts/subpopulations/figures/resultsFig1C';
 saveas(gcf,[filename '.fig'])
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','14.5',...
+    'Width','13.8',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...

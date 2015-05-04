@@ -31,7 +31,8 @@ numberOfCells = NaN(length(dataSets),length(followerFractionValues),numRepeats);
 distanceMigrated = NaN(length(dataSets),length(followerFractionValues),numRepeats);
 plotHandles = NaN(size(dataSets));
 
-figure
+mainfigure = figure;
+subplot(3,4,[1:3,5:7])
 hold on
 for dataSetCtr = length(dataSets):-1:1
     for followFracCtr = 1:length(followerFractionValues)
@@ -46,9 +47,9 @@ for dataSetCtr = length(dataSets):-1:1
             ['exp31_followFrac_' num2str(followerFraction,precision) ...
             '_sensingAcc_' num2str(sensingAccuracy)];
             ['exp31_followFrac_' num2str(followerFraction,precision) ...
-                '_sensingAcc_' num2str(sensingAccuracy)];
+            '_sensingAcc_' num2str(sensingAccuracy)];
             ['exp37_conversion_' num2str(conversionType) '_followFrac_' num2str(followerFraction) ...
-                '_sensingAcc_' num2str(sensingAccuracy)];
+            '_sensingAcc_' num2str(sensingAccuracy)];
             ['exp31_followFrac_' num2str(followerFraction,precision) ...
             '_sensingAcc_0.001_needNeighbours_' num2str(needNeighbours)]};
         % loop through realisations of particular parameter combination
@@ -82,10 +83,53 @@ legend(plotHandles,labels,'Location','NorthWest')
 xlabel('furthest distance migrated (\mum)')
 ylabel('number of cells')
 box on
-
+%% plot individual parameter perturbations in separate panels
+panelIndcs = [4,8,9:12];
+for dataSetCtr = 1:length(dataSets)
+    if dataSetCtr == 1;
+        for panelCtr = 1:6
+            subplot(3,4,panelIndcs(panelCtr))
+            hold on
+            for followFracCtr = 1:length(followerFractionValues)
+                followerFraction = followerFractionValues(followFracCtr);
+                % scatter plot individual simulation outcomes
+                plot(squeeze(distanceMigrated(dataSetCtr,followFracCtr,:)),...
+                    squeeze(numberOfCells(dataSetCtr,followFracCtr,:)),...
+                    plotMarkers{dataSetCtr},'Color',plotColors(dataSetCtr,:)/2*(1 + followerFraction));
+            end
+            lineHandle = plot(mean(distanceMigrated(dataSetCtr,:,:),3),mean(numberOfCells(dataSetCtr,:,:),3),...
+                'LineWidth',2);
+            % undocumented trick for shaded lines: http://undocumentedmatlab.com/blog/plot-line-transparency-and-color-gradient
+            drawnow
+            set(lineHandle.Edge, 'ColorBinding','interpolated','colordata',...
+                uint8(255*[plotColors(dataSetCtr,:)'*(1 + followerFractionValues)/2; ones(size(followerFractionValues))]))
+%             xlabel('distance (\mum)')
+%             ylabel('number of cells')
+            ylim([20 160])
+            set(gca,'ytick',[40:40:160])
+            box on
+        end
+    else
+        subplot(3,4,panelIndcs(dataSetCtr-1))
+        for followFracCtr = 1:length(followerFractionValues)
+            followerFraction = followerFractionValues(followFracCtr);
+            % scatter plot individual simulation outcomes
+            plot(squeeze(distanceMigrated(dataSetCtr,followFracCtr,:)),...
+                squeeze(numberOfCells(dataSetCtr,followFracCtr,:)),...
+                plotMarkers{dataSetCtr},'Color',plotColors(dataSetCtr,:)/2*(1 + followerFraction));
+        end
+        lineHandle = plot(mean(distanceMigrated(dataSetCtr,:,:),3),mean(numberOfCells(dataSetCtr,:,:),3),...
+            'LineWidth',2);
+        % undocumented trick for shaded lines: http://undocumentedmatlab.com/blog/plot-line-transparency-and-color-gradient
+        drawnow
+        set(lineHandle.Edge, 'ColorBinding','interpolated','colordata',...
+            uint8(255*[plotColors(dataSetCtr,:)'*(1 + followerFractionValues)/2; ones(size(followerFractionValues))]))
+    end
+end
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','17',...
+    'Width','18',...
+    'Height','18',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
@@ -93,6 +137,6 @@ exportOptions = struct('Format','eps2',...
     'LineWidth',2);
 
 filename = '../../Thesis/figures/parameterSensitivityNoPlasticity';
-set(gcf,'PaperUnits','centimeters');
-exportfig(gcf,[filename '.eps'],exportOptions);
+set(mainfigure,'PaperUnits','centimeters');
+exportfig(mainfigure,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
