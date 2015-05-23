@@ -1,5 +1,6 @@
 % load data for gene expression, to analyse time scales of change
-close all, clear
+close all
+clear
 load integrateAndSwitchGeneExpression.mat
 
 %% normalise data relative to baseline (t -120)

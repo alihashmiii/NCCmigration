@@ -1,6 +1,12 @@
 % perform anova analysis for each gene
 % issues to-do
-% - manova1 & manovacluster might be of interest (?), but currently gives the error that The within-group sum of squares and cross products matrix is singular.
+% - manova1 & manovacluster might be of interest (?), but currently gives 
+% the error that The within-group sum of squares and cross products matrix 
+% is singular (even when excluding the reference genes). I think this might
+% be due to the fact that we only have three replicates for each group, so
+% that within-group sum-of-squares becomes singular for more than three
+% genes?
+
 clear, close all
 load('integrateAndSwitchGeneExpression.mat')
 
@@ -10,17 +16,17 @@ precision = 2;
 TX = [T0; T02; T04; T08; T16; T30; T45; T60; T90];
 timesRep = [0 0 0 2 2 2 4 4 4 8 8 16 16 16 30 30 30 45 45 45 60 60 60 90 90 90];
 % remove genes with data missing from all timepoints
-missingData = all(isnan(TX));
-TX = TX(:,~missingData);
-Tgenes = genes(~missingData);
+missingGenes = all(isnan(TX));
+TX = TX(:,~missingGenes);
+Tgenes = genes(~missingGenes);
 numTgenes = length(Tgenes);
 TpVals = NaN(numTgenes,1);
 offFigure = figure;
 for geneCtr = 1:numTgenes
-    missingData = isnan(TX(:,geneCtr));
-    [TpVals(geneCtr),~,Tstats(geneCtr)] = anova1(TX(~missingData,geneCtr),timesRep(~missingData),'off');
+    missingTimes = isnan(TX(:,geneCtr));
+    [TpVals(geneCtr),~,Tstats(geneCtr)] = anova1(TX(~missingTimes,geneCtr),timesRep(~missingData),'off');
     subplot(8,11,geneCtr)
-    boxplot(TX(~missingData,geneCtr),timesRep(~missingData),'color','r');
+    boxplot(TX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','r');
     htitle = title([Tgenes{geneCtr} ' p=' num2str(TpVals(geneCtr),precision)]);
     if TpVals(geneCtr)<=pThreshold&&Tstats(geneCtr).df>0 % if the means are different, check which groups are different from the first
         multipleComparison = multcompare(Tstats(geneCtr),'Alpha',pThreshold,'Display','off',...
@@ -42,17 +48,17 @@ end
 VX = [T90; V02; V04; V08; V16; V30; V45; V60; V90];
 timesRep = [0 0 0 2 2 2 4 4 8 8 8 16 16 30 30 45 45 45 60 60 90 90 90];
 % remove genes with data missing from all timepoints
-missingData = all(isnan(VX));
-VX = VX(:,~missingData);
-Vgenes = genes(~missingData);
+missingGenes = all(isnan(VX));
+VX = VX(:,~missingGenes);
+Vgenes = genes(~missingGenes);
 numVgenes = length(Vgenes);
 VpVals = NaN(numVgenes,1);
 onFigure = figure;
 for geneCtr = 1:numVgenes
-    missingData = isnan(VX(:,geneCtr));
-    [VpVals(geneCtr),~,Vstats(geneCtr)] = anova1(VX(~missingData,geneCtr),timesRep(~missingData),'off');
+    missingTimes = isnan(VX(:,geneCtr));
+    [VpVals(geneCtr),~,Vstats(geneCtr)] = anova1(VX(~missingTimes,geneCtr),timesRep(~missingData),'off');
     subplot(8,11,geneCtr)
-    boxplot(VX(~missingData,geneCtr),timesRep(~missingData),'color','b');
+    boxplot(VX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','b');
     htitle = title([Vgenes{geneCtr} ' p=' num2str(VpVals(geneCtr),precision)]);
     if VpVals(geneCtr)<=pThreshold&&Vstats(geneCtr).df>0 % if the means are different, check which groups are different from the first
         multipleComparison = multcompare(Vstats(geneCtr),'Alpha',pThreshold,'Display','off',...

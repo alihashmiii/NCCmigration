@@ -5,7 +5,6 @@
 close all
 clear all
 
-time = 30;
 numRepeats = 20;
 
 precision = 2; % significant figures for filenames and plot labels etc.
@@ -20,13 +19,13 @@ time2plot = [24];
 tstep = 1/60;                   % time step in hours
 xBins = 0:50:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-referenceCellDistribution = NaN(numRepeats,3,length(xBins));
+referenceCellDistribution = NaN(numRepeats,length(sensingAccuracyValues),3,length(xBins));
 
 % preallocate variables for saving collated results
 actualLeaderFraction = NaN(length(defaultFollowValues),length(sensingAccuracyValues),length(lead2followValues),length(follow2leadValues),numRepeats);
 numCells = NaN(length(defaultFollowValues),length(sensingAccuracyValues),length(lead2followValues),length(follow2leadValues),numRepeats);
-referenceLeaderFraction = NaN(numRepeats,1);
-referenceNumCells = NaN(numRepeats,1);
+referenceLeaderFraction = NaN(numRepeats,length(sensingAccuracyValues));
+referenceNumCells = NaN(numRepeats,length(sensingAccuracyValues));
 
 paramCtr = 1;
 
@@ -52,13 +51,13 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
         followers = cells(:,followIdcs==1&attachIdcs~=0);
         losts = cells(:,followIdcs==1&attachIdcs==0);
         
-        referenceLeaderFraction(repCtr) = size(leaders,2)/numberOfCells;
-        referenceNumCells(repCtr) = numberOfCells;
+        referenceLeaderFraction(repCtr,sensAccCtr) = size(leaders,2)/numberOfCells;
+        referenceNumCells(repCtr,sensAccCtr) = numberOfCells;
         
         % calculate migration profile
-        referenceCellDistribution(repCtr,1,:) = histc(leaders(1,:),xBins); % leaders
-        referenceCellDistribution(repCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
-        referenceCellDistribution(repCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
+        referenceCellDistribution(repCtr,sensAccCtr,1,:) = histc(leaders(1,:),xBins); % leaders
+        referenceCellDistribution(repCtr,sensAccCtr,2,:) = histc(followers(1,:),xBins); % followers, attached
+        referenceCellDistribution(repCtr,sensAccCtr,3,:) = histc(losts(1,:),xBins); % followers, attached
     end
     for defaultFollow = defaultFollowValues
         figure
@@ -81,7 +80,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
                         experiment31leaderFractionWithConversion4; % recreate the missing results file
                         load(['results/' loadInfo '.mat']) % load again
                     end
-                    timeIdx = find(out.t_save + 6 >= time2plot,1,'first');
+                    timeIdx = find(out.t_save >= time2plot,1,'first');
                     % load cell positions into variables
                     cells = out.cells_save{timeIdx}; % all cells
                     numberOfCells = size(cells,2);
@@ -107,7 +106,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
 %                 plot(max(xBins)*(lead2followCtr - [1 0]), 16*(follow2leadCtr - [0 1]),'--','Color',[0.5 0.5 0.5])
                 % plot reference migration profile
                 stairs(xBins + max(xBins)*(lead2followCtr - 1) ... % add x-offset
-                    ,squeeze(mean(sum(referenceCellDistribution,2),1)) + 16*(follow2leadCtr - 1),... % add y-offset
+                    ,squeeze(mean(sum(referenceCellDistribution(:,sensAccCtr,:,:),3),1)) + 16*(follow2leadCtr - 1),... % add y-offset
                     'color',[0.5 0.5 0.5],'LineWidth',1);
                 % plot offset migration profile
                 stairs(xBins + max(xBins)*(lead2followCtr - 1) ... % add x-offset

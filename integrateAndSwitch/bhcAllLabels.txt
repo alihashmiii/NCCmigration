@@ -1,0 +1,16 @@
+x
+---CLUSTER 1 ---
+60
+---CLUSTER 2 ---
+11
+NA
+NA
+---CLUSTER 3 ---
+16
+NA
+NA
+---CLUSTER 4 ---
+NA
+NA
+NA
+NA

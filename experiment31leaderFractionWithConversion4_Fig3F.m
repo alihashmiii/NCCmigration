@@ -25,7 +25,7 @@ axisticks = [1 8 16 24 32 40 48 56];
 defaultFollow = [2];
 sensAccCtr = 1;
 contourFig = figure;
-migrationEfficiency = squeeze(mean(numCells(defaultFollow + 1,sensAccCtr,:,:,:),5))/mean(referenceNumCells);
+migrationEfficiency = squeeze(mean(numCells(defaultFollow + 1,sensAccCtr,:,:,:),5))/mean(referenceNumCells(:,sensAccCtr));
 migrationCOV = squeeze(std(numCells(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
     ./mean(numCells(defaultFollow + 1,sensAccCtr,:,:,:),5));
 contourf(lead2followValues,follow2leadValues,migrationEfficiency',linspace(0,1,nLevels+1),...
