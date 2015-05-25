@@ -152,7 +152,7 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/Fig4Emodel_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['manuscripts/VEGF/figures/Fig5I_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         set(migrationProfilesFig,'PaperUnits','centimeters');
         exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);
@@ -166,7 +166,7 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/Fig4K_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['manuscripts/VEGF/figures/FigS5B_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         set(neighbourRelationsFig,'PaperUnits','centimeters');
         exportfig(neighbourRelationsFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);

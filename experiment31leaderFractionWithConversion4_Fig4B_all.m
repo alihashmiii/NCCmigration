@@ -36,16 +36,16 @@ for defaultFollow = [0 1 2]
         set(gca,'xtick',axisticks,'ytick',axisticks)
         % plot contours showing coefficient of variation
         hold on
-        contour(lead2followValues,follow2leadValues,migrationCOV',[0.15 0.15],...
+        contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],...
             'Color',[1 1 1], 'LineWidth', 1);
-        contourIdcs = migrationCOV'>=0.15&migrationCOV'<0.2;
+        contourIdcs = migrationCOV'>=0.2&migrationCOV'<0.3;
         scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
         %         [~, covBins] = hist(migrationCOV(:),20);
         %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.15&covBins<0.2),...
         %             'Color',[1 1 1], 'LineStyle', ':')
-        contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],...
+        contour(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],...
             'Color',[1 1 1]/2, 'LineWidth', 1)
-        contourIdcs = migrationCOV'>0.2;
+        contourIdcs = migrationCOV'>0.3;
         scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
         %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.2),...
         %             'Color',[1 1 1]*0.5, 'LineStyle', ':')
@@ -71,7 +71,7 @@ end
         'FontSize',10,...
         'LineWidth',2);
     
-    filename = 'manuscripts/VEGF/figures/Fig3F_all';
+    filename = 'manuscripts/VEGF/figures/Fig4B_all';
     pos = get(gcf,'Position');
     pos(4) = 4/3*pos(3); % adjust height to fraction of width
     set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');

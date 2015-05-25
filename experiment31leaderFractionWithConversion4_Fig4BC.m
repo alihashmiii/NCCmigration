@@ -30,7 +30,7 @@ migrationCOV = squeeze(std(numCells(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
     ./mean(numCells(defaultFollow + 1,sensAccCtr,:,:,:),5));
 contourf(lead2followValues,follow2leadValues,migrationEfficiency',linspace(0,1,nLevels+1),...
     'EdgeColor','none')
-% pcolor(lead2followValues,follow2leadValues,migrationEfficiency)
+% pcolor(lead2followValues,follow2leadValues,migrationEfficiency')
 % shading interp
 cb = colorbar; cb.Label.String = 'relative migration efficiency';
 caxis([0 1]), colormap(parula(nLevels))
@@ -39,15 +39,15 @@ ylabel('switch time follow -> lead, \tau_{F->L} (min)')
 set(gca,'xtick',axisticks,'ytick',axisticks)
 % plot contours showing coefficient of variation
 hold on
-contour(lead2followValues,follow2leadValues,migrationCOV',[0.15 0.15],'Color',[1 1 1]);
-contourIdcs = migrationCOV'>=0.15&migrationCOV'<0.2;
+contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],'Color',[1 1 1]);
+contourIdcs = migrationCOV'>=0.2&migrationCOV'<0.3;
 scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
 %         [~, covBins] = hist(migrationCOV(:),25);
 %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.15&covBins<0.2),...
 %             'Color',[1 1 1], 'LineStyle', ':')
-contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],...
+contour(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],...
     'Color',[1 1 1]/2, 'LineWidth', 1)
-contourIdcs = migrationCOV'>0.2;
+contourIdcs = migrationCOV'>0.3;
 scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
 %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.2),...
 %             'Color',[1 1 1]*0.5, 'LineStyle', ':')
@@ -55,16 +55,17 @@ scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
 %             'Color',[1 1 1]*0, 'LineWidth', 1)
 %%
 ratioFig = figure;
+plotHandles = NaN(length(lead2followValues')+1,1);
+plotHandles(1) = plot(0,0,'.','Color',[1 1 1]);
 hold on
-plotHandles = NaN(size(lead2followValues'));
 for tauCtr = 1:length(lead2followValues)
     if plotError
-        plotHandles(tauCtr) = errorbar(lead2followValues./follow2leadValues(tauCtr),migrationEfficiency(tauCtr,:),...
+        plotHandles(tauCtr+1) = errorbar(lead2followValues./follow2leadValues(tauCtr),migrationEfficiency(tauCtr,:),...
             migrationCOV(tauCtr,:)./sqrt(numReps));
     else
-        plotHandles(tauCtr) = plot(lead2followValues./follow2leadValues(tauCtr),migrationEfficiency(tauCtr,:));
+        plotHandles(tauCtr+1) = plot(lead2followValues./follow2leadValues(tauCtr),migrationEfficiency(tauCtr,:));
         plot(lead2followValues./follow2leadValues(tauCtr),migrationCOV(tauCtr,:),...
-            '--','Color',get(plotHandles(tauCtr),'Color'));
+            '--','Color',get(plotHandles(tauCtr+1),'Color'));
     end
 end
 plot([1 1],[0 1],'k:')
@@ -75,9 +76,9 @@ if plotError
 else
     ylabel('migration efficiency, \mu (-), \mu/\sigma (--)')
 end
-legendHandle = legend(plotHandles,[num2str(follow2leadValues'), ...
-    repmat(' min',length(follow2leadValues),1)]);
-text(15,1,'\tau_{F->L}')
+legendHandle = legend(plotHandles,['\tau_{F->L}';mat2cell([num2str(follow2leadValues'),repmat(' min',length(follow2leadValues),1)],ones(length(follow2leadValues),1),6)]);
+% text(15,1,'\tau_{F->L}')
+box on
 %% export figure
 exportOptions = struct('Format','eps2',...
     'Width','10.0',...
@@ -87,12 +88,12 @@ exportOptions = struct('Format','eps2',...
     'FontSize',10,...
     'LineWidth',2);
 
-filename = 'manuscripts/VEGF/figures/Fig3F';
+filename = 'manuscripts/VEGF/figures/Fig4B';
 set(contourFig,'PaperUnits','centimeters');
 exportfig(contourFig,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
 
-filename = 'manuscripts/VEGF/figures/Fig3G';
+filename = 'manuscripts/VEGF/figures/Fig4C';
 set(ratioFig,'PaperUnits','centimeters');
 exportfig(ratioFig,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);

@@ -73,7 +73,7 @@ end
         'FontSize',10,...
         'LineWidth',2);
     
-    filename = 'manuscripts/VEGF/figures/FigS3';
+    filename = 'manuscripts/VEGF/figures/FigS4';
     pos = get(gcf,'Position');
     pos(4) = 4/3*pos(3); % adjust height to fraction of width
     set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');

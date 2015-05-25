@@ -89,7 +89,7 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['manuscripts/VEGF/figures/FigS4_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['manuscripts/VEGF/figures/FigS5_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         pos = get(gcf,'Position');
         % pos(4) = 1/2*pos(3); % adjust height to fraction of width
         set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');

@@ -135,7 +135,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
         %             'FontMode','fixed',...
 %             'FontSize',8,...
         
-        filename = ['manuscripts/VEGF/figures/FigS3_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['manuscripts/VEGF/figures/FigS4_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
         pos = get(gcf,'Position');
         % pos(4) = 1/2*pos(3); % adjust height to fraction of width
         set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
