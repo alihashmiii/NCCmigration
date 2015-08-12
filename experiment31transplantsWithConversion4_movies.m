@@ -4,7 +4,7 @@
 close all
 clear all
 
-makeFrames = 0;
+makeFrames = 1;
 makeAllMovie = 1;
 caCmap = load('cmap_blue2cyan.txt');
 
@@ -13,10 +13,10 @@ time = 18;
 precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
-defaultFollowValues = [1];
+defaultFollowValues = [2];
 lead2follow = [8];
 follow2lead = [8];
-sensingAccuracyValues = [0.1 0.01];
+sensingAccuracyValues = [0.1];
 experiments = [11 12];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
     *length(experiments);
@@ -32,7 +32,7 @@ for defaultFollow = defaultFollowValues
             
             %% load data
             numSteps = [lead2follow, follow2lead];
-            for repCtr = 1
+            for repCtr = 2
                 if makeAllMovie==1
                 % load the relevant reference simulation
                 loadInfo = ['experiment31conversion4/exp31'...
@@ -90,7 +90,7 @@ for defaultFollow = defaultFollowValues
                 %% make movies %%
                 %%% make cells+ca movie (allmovie.avi)%%%
                 if makeAllMovie==1
-                    keepFrames = 0;
+                    keepFrames = 1;
                     stopTime = 25;
                     make_all_movie_hidden
                     startAtFrame = 1;

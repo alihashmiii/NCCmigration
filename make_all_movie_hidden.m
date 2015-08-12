@@ -44,17 +44,17 @@ for timeCtr=1:skip:numTsteps
 end
 close(movieFig)
 %% using external video compiling
+disp('compiling the movie now');
+
+system(['avconv -i ', filePath, '%d.tiff -r ', int2str(frameRate), ' -qscale 10 -y ',filePath,saveInfo,'.mp4']);
+% To have a constant quality (but a variable bitrate), use the option
+% ?-qscale n? when ?n? is between 1 (excellent quality) and 31 (worst quality).
+%help on this to be found here:
+%https://libav.org/avconv.html
+
 if exist('keepFrames','var')&&keepFrames==1
     disp('keeping individual franes')
 else
-    disp('compiling the movie now');
-    %help on this to be found here:
-    %https://libav.org/avconv.html
-    
-    system(['avconv -i ', filePath, '%d.tiff -r ', int2str(frameRate), ' -qscale 10 -y ',filePath,saveInfo,'.mp4']);
-    % To have a constant quality (but a variable bitrate), use the option
-    % ?-qscale n? when ?n? is between 1 (excellent quality) and 31 (worst quality).
-    
     % delete the individual frames
     system(['rm -f ' filePath '*.tiff']);
 end

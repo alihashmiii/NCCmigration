@@ -24,7 +24,7 @@ TpVals = NaN(numTgenes,1);
 offFigure = figure;
 for geneCtr = 1:numTgenes
     missingTimes = isnan(TX(:,geneCtr));
-    [TpVals(geneCtr),~,Tstats(geneCtr)] = anova1(TX(~missingTimes,geneCtr),timesRep(~missingData),'off');
+    [TpVals(geneCtr),~,Tstats(geneCtr)] = anova1(TX(~missingTimes,geneCtr),timesRep(~missingTimes),'off');
     subplot(8,11,geneCtr)
     boxplot(TX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','r');
     htitle = title([Tgenes{geneCtr} ' p=' num2str(TpVals(geneCtr),precision)]);
@@ -56,7 +56,7 @@ VpVals = NaN(numVgenes,1);
 onFigure = figure;
 for geneCtr = 1:numVgenes
     missingTimes = isnan(VX(:,geneCtr));
-    [VpVals(geneCtr),~,Vstats(geneCtr)] = anova1(VX(~missingTimes,geneCtr),timesRep(~missingData),'off');
+    [VpVals(geneCtr),~,Vstats(geneCtr)] = anova1(VX(~missingTimes,geneCtr),timesRep(~missingTimes),'off');
     subplot(8,11,geneCtr)
     boxplot(VX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','b');
     htitle = title([Vgenes{geneCtr} ' p=' num2str(VpVals(geneCtr),precision)]);
@@ -90,8 +90,10 @@ filename = ['../manuscripts/VEGF/figures/FigS3A_anovaForEachGeneOffCondition'];
 set(offFigure,'PaperUnits','centimeters');
 exportfig(offFigure,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
+system(['pdfcrop ' filename '.pdf'])
 
 filename = ['../manuscripts/VEGF/figures/FigS3A_anovaForEachGeneOnCondition'];
 set(onFigure,'PaperUnits','centimeters');
 exportfig(onFigure,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
+system(['pdfcrop ' filename '.pdf'])

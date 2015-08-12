@@ -6,17 +6,20 @@ filopodiaAll = [filopodia; filopodia1; filopodia2];
 
 %% plot results
 subplot(1,2,1)
-hist(cellSizes)
+h1 = histogram(cellSizes);
+h1.BinWidth = 5;
 set(gca,'Ytick',0:5)
 hold on
 plot(mean(cellSizes)*[1 1], [0 6], 'r-')
 plot(median(cellSizes)*[1 1], [0 6], 'r--')
 xlabel('s/\mum')
 ylabel('n')
+ylim([0 5])
 title({'A: cell size (including filopodia)';''})
 
 subplot(1,2,2)
-hist(filopodiaAll)
+h2 = histogram(filopodiaAll);
+h2.BinWidth = 2.5;
 hold on
 plot(mean(filopodiaAll)*[1 1], [0 70], 'r-')
 plot(median(filopodiaAll)*[1 1], [0 70], 'r--')

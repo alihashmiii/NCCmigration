@@ -118,11 +118,12 @@ mSmooth = 'akima';
 %% plot data and smoothed curves
 %% significant genes
 sigFig = figure;
+genes2plot = onSigIdcs&offSigIdcs;
 subplot(2,1,1)
-gh = plot(timeData(2:10),normExpression(2:10,allSigIdcs),'Color',[0.5 0.5 0.5]);
+gh = plot(timeData(2:10),normExpression(2:10,genes2plot),'Color',[0.5 0.5 0.5]);
 hold on
 [weightedMean,~,weightedMeanAverageError] = ...
-    weightedStats(normExpression(2:10,allSigIdcs)', sqrt(imputedError(2:10,allSigIdcs)'),'s');
+    weightedStats(normExpression(2:10,genes2plot)', sqrt(imputedError(2:10,genes2plot)'),'s');
 % when providing sigma, the function weights by 1/sigma^2, but if we
 % want single power weighting, provide srqt(sigma)
 if plotError
@@ -133,16 +134,16 @@ else
 end
 
 legend([gh(1),mh],'genes','mean')
-set(gca,'ytick',0:1:7,'xtick',0:30:90)
-ylim([0 3])
+set(gca,'ytick',0:1:7,'xtick',timeData(2:10))
+ylim([0 2])
 xlim([0 90])
 xlabel('time (min)')
-ylabel('relative expression')
+ylabel({'differential expression'; 'after VEGF removal'})
 subplot(2,1,2)
-gh = plot(timeData(10:end),normExpression(10:end,allSigIdcs),'Color',[0.5 0.5 0.5]);
+gh = plot(timeData(10:end),normExpression(10:end,genes2plot),'Color',[0.5 0.5 0.5]);
 hold on
 [weightedMean,~,weightedMeanAverageError] = ...
-    weightedStats(normExpression(10:end,allSigIdcs)', sqrt(imputedError(10:end,allSigIdcs)'),'s');
+    weightedStats(normExpression(10:end,genes2plot)', sqrt(imputedError(10:end,genes2plot)'),'s');
 % when providing sigma, the function weights by 1/sigma^2, but if we
 % want single power weighting, provide srqt(sigma)
 if plotError
@@ -152,11 +153,11 @@ else
     mh = plot(timeData(10:end),weightedMean,'g','LineWidth',3);
 end
 legend([gh(1),mh],'genes','mean')
-set(gca,'ytick',0:1:7,'xtick',90:30:180)
+set(gca,'ytick',0:1:7,'xtick',[timeData(10); timeData(12:end)])
 xlim([90 180])
-ylim([0 3])
+ylim([0 2])
 xlabel('time (min)')
-ylabel('relative expression')
+ylabel({'differential expression'; 'after VEGF readdition'})
 
 %% smoothed genes
 smoothFig = figure;
@@ -194,7 +195,7 @@ end
 subplot(2,1,1)
 xlim([offSmoothTime(1) offSmoothTime(end)])
 % ylim([-4 5]), ylim([-2 4]), box on
-set(gca,'ytick',-4:1:5,'xtick',0:30:90)
+set(gca,'ytick',-4:2:8,'xtick',timeData(2:10))
 xlabel('time (min)')
 ylabel('relative expression')
 hLegend = legend(hLines(:,1),num2str(offVarExplained(1:nPlots),2),'Location','NorthEast');
@@ -203,7 +204,7 @@ hLegend = legend(hLines(:,1),num2str(offVarExplained(1:nPlots),2),'Location','No
 subplot(2,1,2)
 xlim([onSmoothTime(1) onSmoothTime(end)])
 % ylim([-4 5]),  ylim([-2 4]), box on
-set(gca,'ytick',-4:1:5,'xtick',90:30:180)
+set(gca,'ytick',-4:2:8,'xtick',[timeData(10); timeData(12:end)])
 xlabel('time (min)')
 ylabel('relative expression')
 hLegend = legend(hLines(:,2),num2str(onVarExplained(1:nPlots),2),'Location','NorthEast');
@@ -219,13 +220,13 @@ imagesc(M')
 set(gca,'xticklabel',num2str(binCntrs'),'yticklabel',num2str(binCntrs'),'TickLength',[0 0])
 set(gca,'ydir','normal')
 cb = colorbar;
-cm = colormap(jet(max(max(M))+2));
-colormap(cm(2:end,:)) %shift colormap for better readibility of text on blue...
+cm = colormap(hot(max(max(M))+3));
+colormap(flipud([cm(2:end-2,:); cm(end,:)])) %shift colormap for better readibility of text on blue...
 caxis([-0.5 5.5])
 set(cb,'ytick',0:5,'TickLength',[0 0])
 set(get(cb,'xlabel'),'string','number of genes')
-xlabel('first response after VEGF removal (min)')
-ylabel('first response after VEGF readdition (min)')
+xlabel('first change in expression after VEGF removal (min)')
+ylabel('first change in expression after VEGF readdition (min)')
 
 % add gene names (taken from spreadsheet 'I&S comparison 090814'
 % highlighted ones are allSigIdcs
@@ -250,7 +251,7 @@ text(3.55,6.3,'Slit2')
 %% export figures as eps & convert to PDF
 
 exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
+    'Width','17.0',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
