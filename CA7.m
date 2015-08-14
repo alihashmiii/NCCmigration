@@ -1,4 +1,4 @@
-% Louise Dyson D.Phil project CA program describing the migration of cranial neural crest cells, 22/10/09
+% based on Louise Dyson D.Phil project CA program describing the migration of cranial neural crest cells, 22/10/09
 % Edited on 07/12/09
 % Further developed by Linus Schumacher (LJS) from Oct 2012 onwards.
 % Cells move through a 2D box, each cell is represented by an (x,y) coordinate in a width x height y box

@@ -41,7 +41,7 @@ switch param.experiment
 end
 opti(2) = int64(20); % max Jacobian evaluations
 optr = [1.0;1.0;1.0];   % specifies parameters in the space and time monitors
-itrace = int64(1);     % level of trace information
+itrace = int64(0);     % level of trace information (-1 no output, 0 only warnings, 1,2,3 more info)
 
 [ts, tout, rwk, iwk, ind, ifail] = d03ra(ts, tout, dt, xmin, xmax, ymin, ymax, nx, ny, tols,...
     tolt, 'chemotaxis_pdedef', 'chemotaxis_bndary', 'chemotaxis_pdeiv', 'chemotaxis_monitr', opti, optr,rwk, iwk, itrace,...

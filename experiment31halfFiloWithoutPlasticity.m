@@ -17,7 +17,7 @@ for followerFraction = [0, 1]
         for repCtr = 1:numReps
             input.saveInfo = ['experiment31halfFilo/exp31_followFrac_' num2str(followerFraction,precision) ...
                 '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
-            if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
+            if isempty(dir(['results/' input.saveInfo '_running*.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                 rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                 CA6(input,0);
                 % check if anyone else is logged into the

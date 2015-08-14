@@ -23,7 +23,7 @@ for defaultFollow = [2]
                         '_conversion_' num2str(input.conversionType) '_defaultFollow_' num2str(input.followerFraction) ...
                         '_numSteps_' num2str(input.numSteps(1)) '_' num2str(input.numSteps(2)) ...
                         '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
-                    if isempty(dir(['results/' input.saveInfo '_running.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
+                    if isempty(dir(['results/' input.saveInfo '_running*.mat']))&&isempty(dir(['results/' input.saveInfo '.mat']))
                         rng('shuffle'); % shuffle random number sequences to not repeat result from previous matlab sessions
                         CA6(input,0);
                         % check if anyone else is logged into the

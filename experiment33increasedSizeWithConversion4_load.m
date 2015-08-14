@@ -1,137 +1,93 @@
-% load
-% L.J. Schumacher 28.10.13
+% load simulation results and save data for plotting
+% L.J. Schumacher 05.09.14, 14.08.15
 
 close all
-clear
+clear all
 
 time = 18;
-numRepeats = 100;
-maxRuns2plot = 20;
-numParamCombinations = 8;
-% to calculate the density profile of cells and chemoattractant along the x-direction
-cellRadius = 7.5;
-filolength = cellRadius + 9*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
-xBins = 0:(cellRadius + filolength):24*(cellRadius + filolength); % bins for counting cell num vs. x profiles
-cellDistributions = NaN(numParamCombinations,numRepeats,3,length(xBins));
-caDistribution = NaN(numParamCombinations,numRepeats,64);
-xlat_save = NaN(64,1);
-% preallocate variables for saving collated results
-actualLeaderFraction = NaN(numParamCombinations,1);
-eatRates = NaN(numParamCombinations,1);
-volumeExclusions = NaN(numParamCombinations,1);
-standStills = NaN(numParamCombinations,1);
-tsteps = NaN(numParamCombinations,1);
+numRepeats = 20;
 
-exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
-    'Color','cmyk',...
-    'Resolution',300,...
-    'FontMode','fixed',...
-    'FontSize',10,...
-    'LineWidth',2);
 precision = 2; % significant figures for filenames and plot labels etc.
-paramCtr = 1;
-eatRate = 1000;
+
 conversionType = 4;
-numSteps = 5*4;
-standStill = 0;
-volumeExclusion = 1;
-tstep = 1/4*5/60;
-insertStepsValues = [1 2];
-followFracValues = [0, 1];
-diffValues = [0.1 100];
-sensingAccuracy = 0.01;
+defaultFollowValues = [1 2];
+switchingTimes = [4 8];
+sensingAccuracyValues = [0.1, 0.01];
+experiments = [33 34];
+insertStepsValues = [1 3; 12 24];
+xBins = 0:50:800; % bins for counting cell num vs. x profiles
 
-caCmap = load('cmap_blue2cyan.txt');
-
-profilesFig = figure('Visible','off');
-for insertStepsCtr = 1:length(insertStepsValues)
-    insertEverySteps = insertStepsValues(insertStepsCtr);
-    for followFracCtr = 1:length(followFracValues)
-        followerFraction = followFracValues(followFracCtr);
-        for diffCtr = 1:length(diffValues)
-            diffus = diffValues(diffCtr);
-            runsFig = figure('Visible','off');
-            for repCtr = 1:numRepeats
-                loadInfo = ['experiment33/exp33_followFrac_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                    '_diff_' num2str(diffus) '_conversion_' num2str(conversionType) '_numSteps_' num2str(numSteps) ...
-                    '_insertSteps_' num2str(insertEverySteps) '_tstep_' num2str(tstep,precision) '_Run_' num2str(repCtr)];
-                try % sometimes we get corrupt files, which crashes the script
-                    load(['results/' loadInfo '.mat'])
-                catch
-                    delete(['results/' loadInfo '.mat']) % delete the corrupt file
-                    experiment33increasedSizeWithConversion4; % recreate the missing results file
-                    load(['results/' loadInfo '.mat']) % load again
+for defaultFollow = defaultFollowValues
+    for sensAccCtr = 1:length(sensingAccuracyValues)
+        sensingAccuracy = sensingAccuracyValues(sensAccCtr);
+        for switchingTime = switchingTimes
+            numSteps = [switchingTime, switchingTime];
+            figure
+            hold on
+            for expCtr = 1:length(experiments)
+                experiment = experiments(expCtr);
+                for insertStepsCtr = 1:2
+                    insertEverySteps = insertStepsValues(expCtr,insertStepsCtr);
+                    %% load data
+                    actualLeaderFraction = NaN(numRepeats,1);
+                    numCells = NaN(numRepeats,1);
+                    for repCtr = 1:numRepeats
+                        loadInfo = ['experiment' num2str(experiment) '/exp' num2str(experiment) ...
+                            '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
+                            '_numSteps_' num2str(numSteps(1)) '_' num2str(numSteps(2)) ...
+                            '_sensingAcc_' num2str(sensingAccuracy) '_insertSteps_' num2str(insertEverySteps) ...
+                            '_Run_' num2str(repCtr)];
+                        try % sometime we get corrupt files, which crashes the script
+                            load(['results/' loadInfo '.mat'])
+                        catch
+                            delete(['results/' loadInfo '.mat']) % delete the corrupt file
+                            switch experiment
+                                case 33
+                                    experiment33increasedSizeWithConversion4; % recreate the missing results file
+                                case 34
+                                    experiment34decreasedSizeWithConversion4; % recreate the missing results file
+                            end
+                            load(['results/' loadInfo '.mat']) % load again
+                        end
+                        
+                        % load cell positions into variables
+                        cells = out.cells_save{end}; % all cells
+                        numberOfCells = size(cells,2);
+                        followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+                        attachIdcs = out.attach_save{end}(1:numberOfCells);
+                        leaders = cells(:,followIdcs==0);
+                        followers = cells(:,followIdcs==1&attachIdcs~=0);
+                        losts = cells(:,followIdcs==1&attachIdcs==0);
+                        
+                        actualLeaderFraction(repCtr) = size(leaders,2)/numberOfCells;
+                        numCells(repCtr) = numberOfCells;
+                    end
+                    %% plot data
+                    h = plot(numCells,actualLeaderFraction,'o');
+                    plot(numCells,actualLeaderFraction.*numCells/100,'+','Color',h.Color);
                 end
-                % make a plot of all repeats
-                if repCtr <= maxRuns2plot
-                    subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,repCtr+2)
-                    make_plot(out.cells_save{end},out.cellsFollow{end},out.xlat_save{end},out.ylat_save{end}, ...
-                        t_save(timeCtr-1),out.ca_save{end},out.filopodia_save{end},out.numFilopodia,out.attach_save{end},out.cellRadius,filolength,sensingAccuracy,0,caCmap,1,param)
-                    title([num2str(size(out.cells_save{end},2)) ' cells, ' num2str(min([size(out.cells_save{end},2) nnz(out.cellsFollow{end}==0)])) ' leaders.'])
-                end
-                % calculate migration profile
-                numberOfCells = size(out.cells_save{end},2);
-                cellDistributions(paramCtr,repCtr,1,:) = histc(out.cells_save{end}(1,out.cellsFollow{end}(1:numberOfCells)==0),xBins); % leaders
-                cellDistributions(paramCtr,repCtr,2,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)~=0)),xBins); % followers, attached
-                cellDistributions(paramCtr,repCtr,3,:) = histc(out.cells_save{end}(1,(out.cellsFollow{end}(1:numberOfCells)==1)&(out.attach_save{end}(1:numberOfCells)==0)),xBins); % followers, attached
-                caDistribution(paramCtr,repCtr,:) = mean(out.ca_save{end},2);
-                if paramCtr==1, xlat_save = out.xlat_save{end}; end % load the x-coordinated of the CA profile, only once as they're always the same
             end
-            % plot migration profile
-            subplot(min(numRepeats,maxRuns2plot)/2 + 2,2,[1 2])
-            plot_migration_profile
-            xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
-            legend([H3(3);H3(2);H3(1)],'lead','follow','lost');
+            grid on
+            box on
+            set(gca,'GridLineStyle','-')
+            xlabel('number of cells')
+            ylabel('fraction (o) and number/100 (+) of leaders')
+            %% export figure
+            exportOptions = struct('Format','eps2',...
+                'Width','17.0',...
+                'Color','rgb',...
+                'Resolution',300,...
+                'FontMode','fixed',...
+                'FontSize',10,...
+                'LineWidth',2);
             
-            % title has parameter values and actual leader fraction
-            actualLeaderFraction(paramCtr) = sum(mean(squeeze(cellDistributions(paramCtr,:,1,:)))); % mean number of leader cells
-            actualLeaderFraction(paramCtr) = actualLeaderFraction(paramCtr)/(actualLeaderFraction(paramCtr) + sum(sum(mean(squeeze(cellDistributions(paramCtr,:,2:3,:)))))); % divide by mean total number of cells
-            title(['Exp3.3: leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', eatRate=' num2str(eatRate) '_D=' num2str(diffus) ', followDefault=' num2str(followerFraction) ', numSteps=' num2str(numSteps) ', insertSteps=' num2str(insertEverySteps)])
-            % save plot
-            filename = ['results/experiment33/figures/exp33_defaultFollow_' num2str(followerFraction,precision) '_eatRate_' num2str(eatRate) ...
-                '_diff_' num2str(diffus) '_numSteps_' num2str(numSteps) ...
-                '_insertStep_' num2str(insertEverySteps) '_tstep_' num2str(tstep,precision) '_allRuns'];
-            pos = get(runsFig,'Position');
-            pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-            set(runsFig,'PaperUnits','centimeters','Position',pos);
-            exportfig(runsFig,filename,exportOptions);
+            filename = ['results/experiment33/figures/leaderFractionPopulationSize' ...
+                '_defaultFollow_' num2str(defaultFollow) '_switchT_' num2str(switchingTime) ...
+                '_sensingAcc_' num2str(sensingAccuracy)];
+            pos = get(gcf,'Position');
+            set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
+            exportfig(gcf,[filename '.eps'],exportOptions);
             system(['epstopdf ' filename '.eps']);
-            system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
-            close(runsFig);
-            
-            set(0,'CurrentFigure',profilesFig);
-            subplot(length(followFracValues)+length(insertStepsValues),length(diffValues),length(diffValues)*(followFracCtr - 1) + (length(diffValues) + length(followFracValues))*(insertStepsCtr - 1) + diffCtr)
-            plot_migration_profile
-            % xlabel('x/\mum'), ylabel(AX(1),'N(cells)'), ylabel(AX(2),'C(chemoattractant)')
-            % %                     legend([H3;H1;H2],'leaders','followers','chemoattractant');
-            
-            % title has parameter values and actual leader fraction
-            if diffCtr==1,
-                title(['Exp3.3: followDefault=' num2str(followerFraction) ', leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', D=' num2str(diffus) ', insertSteps=' num2str(insertEverySteps)])
-            else
-                title(['leadFrac=' num2str(actualLeaderFraction(paramCtr),precision) ', D=' num2str(diffus)])
-            end
-            eatRates(paramCtr) = eatRate;
-            volumeExclusions(paramCtr) = volumeExclusion;
-            standStills(paramCtr) = standStill;
-            tsteps(paramCtr) = tstep;
-            
-            paramCtr = paramCtr + 1;
         end
     end
 end
-% make one summary plot with a migration profile for each of the 8
-% parameter combinations
-pos = get(profilesFig,'Position');
-pos(4) = 3/2*pos(3);% adjust height to 3/2 width
-set(profilesFig,'PaperUnits','centimeters','Position',pos);
-filename = ['results/experiment33/figures/exp33_eatRate_' num2str(eatRate) ...
-                '_numSteps_' num2str(numSteps) ...
-                '_tstep_' num2str(tstep,precision) '_migrationProfiles'];
-exportfig(profilesFig,filename,exportOptions);
-system(['epstopdf ' filename '.eps']);
-    system(['cp -t results/PDFs/ ' filename '.pdf']); % copying finished plots to a plave where Dropbox will sync them
-close(profilesFig);
-
-save('results/experiment33/figures/experiment33collatedResults','xBins','cellDistributions','xlat_save','caDistribution','actualLeaderFraction','eatRates','volumeExclusions','standStills','tsteps')
