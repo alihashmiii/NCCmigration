@@ -23,10 +23,10 @@ axisticks = [1 8 16 24 32 40 48 56];
 for defaultFollow = [0 1 2]
     for sensAccCtr = 1:2
         subplot(3,2,defaultFollow*2 + sensAccCtr)
-        leaderFraction = squeeze(mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
-        leaderFractionCOV = squeeze(std(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
+        leaderNumber = squeeze(mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
+        leaderNumberCOV = squeeze(std(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
             ./mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
-        contourf(lead2followValues,follow2leadValues,leaderFraction',linspace(0,40,nLevels+1),...
+        contourf(lead2followValues,follow2leadValues,leaderNumber',linspace(0,40,nLevels+1),...
             'EdgeColor','none')
         % pcolor(lead2followValues,follow2leadValues,leaderFraction)
         % shading interp
@@ -36,16 +36,16 @@ for defaultFollow = [0 1 2]
         set(gca,'xtick',axisticks,'ytick',axisticks)
         % plot contours showing coefficient of variation
         hold on
-        contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.15 0.15],...
+        contour(lead2followValues,follow2leadValues,leaderNumberCOV',[0.15 0.15],...
             'Color',[1 1 1], 'LineWidth', 1);
-        contourIdcs = leaderFractionCOV'>=0.15&leaderFractionCOV'<0.2;
+        contourIdcs = leaderNumberCOV'>=0.15&leaderNumberCOV'<0.2;
         scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
         %         [~, covBins] = hist(leaderFractionCOV(:),20);
         %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.15&covBins<0.2),...
         %             'Color',[1 1 1], 'LineStyle', ':')
-        contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.2 0.2],...
+        contour(lead2followValues,follow2leadValues,leaderNumberCOV',[0.2 0.2],...
             'Color',[1 1 1]/2, 'LineWidth', 1)
-        contourIdcs = leaderFractionCOV'>0.2;
+        contourIdcs = leaderNumberCOV'>0.2;
         scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
         %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.2),...
         %             'Color',[1 1 1]*0.5, 'LineStyle', ':')

@@ -22,15 +22,13 @@ for defaultFollow = defaultFollowValues
         sensingAccuracy = sensingAccuracyValues(sensAccCtr);
         for switchingTime = switchingTimes
             numSteps = [switchingTime, switchingTime];
-            figure
-            hold on
+            actualLeaderFraction = NaN(numRepeats,length(insertStepsValues(:)));
+            numCells = NaN(numRepeats,length(insertStepsValues(:)));
             for expCtr = 1:length(experiments)
                 experiment = experiments(expCtr);
                 for insertStepsCtr = 1:2
                     insertEverySteps = insertStepsValues(expCtr,insertStepsCtr);
                     %% load data
-                    actualLeaderFraction = NaN(numRepeats,1);
-                    numCells = NaN(numRepeats,1);
                     for repCtr = 1:numRepeats
                         loadInfo = ['experiment' num2str(experiment) '/exp' num2str(experiment) ...
                             '_conversion_' num2str(conversionType) '_defaultFollow_' num2str(defaultFollow) ...
@@ -58,20 +56,33 @@ for defaultFollow = defaultFollowValues
                         leaders = cells(:,followIdcs==0);
                         followers = cells(:,followIdcs==1&attachIdcs~=0);
                         losts = cells(:,followIdcs==1&attachIdcs==0);
-                        
-                        actualLeaderFraction(repCtr) = size(leaders,2)/numberOfCells;
-                        numCells(repCtr) = numberOfCells;
+                        actualLeaderFraction(repCtr,insertStepsCtr + ...
+                            (expCtr - 1)*length(insertStepsValues)) = ...
+                            size(leaders,2)/numberOfCells;
+                        numCells(repCtr,insertStepsCtr + ...
+                            (expCtr - 1)*length(insertStepsValues)) = numberOfCells;
                     end
-                    %% plot data
-                    h = plot(numCells,actualLeaderFraction,'o');
-                    plot(numCells,actualLeaderFraction.*numCells/100,'+','Color',h.Color);
                 end
+            end
+            %% plot data
+            figure, hold on
+            h = plotyy(numCells,actualLeaderFraction,...
+                numCells,actualLeaderFraction.*numCells);
+            for lineCtr = 1:length(h(1).Children)
+                h(1).Children(lineCtr).LineStyle = 'none';
+                h(1).Children(lineCtr).Marker = 'o';
+                h(2).Children(lineCtr).LineStyle = 'none';
+                h(2).Children(lineCtr).Marker = '.';
+                h(2).Children(lineCtr).Color = h(1).Children(lineCtr).Color;
             end
             grid on
             box on
             set(gca,'GridLineStyle','-')
-            xlabel('number of cells')
-            ylabel('fraction (o) and number/100 (+) of leaders')
+            xlabel('size of stream (number of cells)')
+            h(1).YLabel.String = 'fraction of leaders (o)';
+            h(1).YLim = [0 ceil(max(max(actualLeaderFraction))*10)/10];
+            h(2).YLabel.String = 'number of leaders (.)';
+            h(2).YLim = [0 ceil(max(max(actualLeaderFraction.*numCells))/10)*10];
             %% export figure
             exportOptions = struct('Format','eps2',...
                 'Width','17.0',...
