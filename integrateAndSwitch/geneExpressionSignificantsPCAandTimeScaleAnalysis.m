@@ -45,55 +45,6 @@ allSigIdcs = onSigIdcs&offSigIdcs&preSigIdcs;
 %     'Weights',1./nanmean(normError(10:end,allSigIdcs)./normExpression(10:end,allSigIdcs),2));
 
 % plot bar chart of coeffs with gene names?
-%% boot-strap - build a distribution of eigenvalues from shuffling the matrix
-% numIter = 1e4;
-% offEigBS = NaN(numIter,length(offEigC));
-% offExpression = normExpression(2:10,allSigIdcs);
-% shuffledOffExpression = NaN(size(offExpression));
-% onEigBS = NaN(numIter,length(onEigC));
-% onExpression = normExpression(10:end,allSigIdcs);
-% shuffledOnExpression = NaN(size(onExpression));
-% for ii = 1:numIter
-%     %     for jj = 1:size(offExpression,2) % shuffle matrix entries
-%     %        shuffledOffExpression(:,jj) = offExpression(randperm(size(offExpression,1)),jj);
-%     %        shuffledOnExpression(:,jj) = onExpression(randperm(size(onExpression,1)),jj);
-%     %     end
-%     shuffledOffExpression = reshape(offExpression(randperm(numel(offExpression))),size(offExpression));
-%     shuffledOnExpression = reshape(onExpression(randperm(numel(onExpression))),size(onExpression));
-%     
-%     [~, ~, offEigBS(ii,:), ~, ~] = pca(shuffledOffExpression,...
-%         'Algorithm','eig','Centered',true);
-%     [~, ~, onEigBS(ii,:), ~, ~] = pca(shuffledOnExpression,...
-%         'Algorithm','eig','Centered',true);
-% end
-% %%
-% nBins = 200;
-% [offEigDist, bins] = hist(offEigBS(:),linspace(0,max(offEigBS(:)),nBins));
-% % % correct for bin spacing affecting distribution height...
-% offEigDist = offEigDist./numIter./size(offExpression,2)./mean(diff(bins));
-% % eigenFigure = figure;
-% subplot(2,1,1)
-% plot(bins,offEigDist)
-% hold on
-% % we don't have enough eigenvalues to compare distributions, instead just
-% % indicate where on the bootstrapped distribution they lie
-% for lambda = offEigC'
-%     stem(lambda,offEigDist(find(bins>=lambda,1,'first')),'r')
-% end
-% xlabel('\lambda'), ylabel('\rho(\lambda)')
-% legend('bootstrapped distribution','PC eigenvalues')
-% % repeat for second experimental regime
-% [onEigDist, bins] = hist(onEigBS(:),linspace(0,max(onEigBS(:)),nBins));
-% onEigDist = onEigDist./numIter./size(onExpression,2)./mean(diff(bins));
-% subplot(2,1,2)
-% plot(bins,onEigDist)
-% hold on
-% for lambda = onEigC'
-%     stem(lambda,onEigDist(find(bins>=lambda,1,'first')),'r')
-% end
-% xlabel('\lambda'), ylabel('\rho(\lambda)')
-% legend('bootstrapped distribution','PC eigenvalues')
-
 %% check distribution of PC components against unit normal distribution
 % scale variance to unity
 scaledOffCoeffs = offCoeffs./sqrt(repmat(sum(offCoeffs.^2),size(offCoeffs,1),1))*sqrt(size(offCoeffs,1));
@@ -105,6 +56,63 @@ for pcCtr = 1:size(offPCs,2)
 [~, pOnCoeffs(pcCtr)] = kstest(scaledOnCoeffs(:,pcCtr));
 end
 
+%% boot-strap - build a distribution of eigenvalues from shuffling the matrix
+numIter = 1e4;
+offEigBS = NaN(numIter,length(offEigC));
+offExpression = normExpression(2:10,allSigIdcs);
+shuffledOffExpression = NaN(size(offExpression));
+onEigBS = NaN(numIter,length(onEigC));
+onExpression = normExpression(10:end,allSigIdcs);
+shuffledOnExpression = NaN(size(onExpression));
+for ii = 1:numIter
+        for jj = 1:size(offExpression,2) % shuffle matrix entries, for each gene, randomize time order
+           shuffledOffExpression(:,jj) = offExpression(randperm(size(offExpression,1)),jj);
+           shuffledOnExpression(:,jj) = onExpression(randperm(size(onExpression,1)),jj);
+        end
+    
+    [~, ~, offEigBS(ii,:), ~, ~] = pca(shuffledOffExpression,...
+        'Algorithm','eig','Centered',true);
+    [~, ~, onEigBS(ii,:), ~, ~] = pca(shuffledOnExpression,...
+        'Algorithm','eig','Centered',true);
+end
+%%
+PCAstatsfig = figure;
+nBins = 200;
+[offEigBSDist, bins] = hist(offEigBS(:),linspace(0,ceil(max(offEigC(:))),nBins));
+[offEigDist] = hist(offEigC(:), bins);
+% % correct for bin spacing affecting distribution height...
+offEigBSDist = offEigBSDist./numIter./size(offExpression,2)./mean(diff(bins));
+offEigDist = offEigDist./size(offExpression,2)./mean(diff(bins));
+% eigenFigure = figure;
+subplot(2,1,1)
+plot(bins,offEigBSDist)
+hold on
+plot(bins,offEigDist)
+title('VEGF removal')
+xlabel('\lambda'), ylabel('\rho(\lambda)')
+legend('randomised','PC eigvals')
+% make inset with distribution of normalised eigenvector components
+inset = axes('position',[0.4 0.65 0.25 0.25]);
+boxplot(scaledOffCoeffs)
+xlabel('PC #'), ylabel('$\{\mathrm{ev}_i\}$','interpreter','latex')
+inset.XDir = 'reverse';
+
+% repeat for second experimental regime
+[onEigBSDist, bins] = hist(onEigBS(:),linspace(0,ceil(max(onEigC(:))),nBins));
+[onEigDist] = hist(onEigC(:), bins);
+onEigBSDist = onEigBSDist./numIter./size(onExpression,2)./mean(diff(bins));
+subplot(2,1,2)
+plot(bins,onEigBSDist)
+hold on
+plot(bins,onEigDist)
+title('VEGF readdition')
+xlabel('\lambda'), ylabel('\rho(\lambda)')
+legend('randomised','PC eigvals')
+% make inset with distribution of normalised eigenvector components
+inset = axes('position',[0.4 0.175 0.25 0.25]);
+boxplot(scaledOnCoeffs)
+xlabel('PC #'), ylabel('$\{\mathrm{ev}_i\}$','interpreter','latex')
+inset.XDir = 'reverse';
 
 %% smooth data with cubic splines or akima interpolation with zero slope at final timepoint
 nSmooth = 1000;
@@ -177,7 +185,7 @@ ylabel('relative expression')
 
 %% PCs
 PCfig = figure;
-nPlots = 1;
+nPlots = 3;
 plotColor = lines(nPlots);
 hLines = NaN(nPlots,2);
 subplot(2,1,1), hold on
@@ -198,8 +206,16 @@ xlim([offSmoothTime(1) offSmoothTime(end)])
 set(gca,'ytick',-4:2:8,'xtick',timeData(2:10))
 xlabel('time (min)')
 ylabel('relative expression')
+title('VEGF removal')
 hLegend = legend(hLines(:,1),num2str(offVarExplained(1:nPlots),2),'Location','NorthEast');
-%set(get(hLegend,'title'),'string',' % var explained')
+% plot legend title
+text( 'Parent', hLegend.DecorationContainer, ...
+    'String', {'var'; 'expl.'}, ...
+    'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'bottom', ...
+    'Position', [-0.25, 0.25, 0], ...
+    'Units', 'normalized');
+box on
 
 subplot(2,1,2)
 xlim([onSmoothTime(1) onSmoothTime(end)])
@@ -207,8 +223,15 @@ xlim([onSmoothTime(1) onSmoothTime(end)])
 set(gca,'ytick',-4:2:8,'xtick',[timeData(10); timeData(12:end)])
 xlabel('time (min)')
 ylabel('relative expression')
+title('VEGF readdition')
 hLegend = legend(hLines(:,2),num2str(onVarExplained(1:nPlots),2),'Location','NorthEast');
-%set(get(hLegend,'title'),'string',' % var explained')
+text( 'Parent', hLegend.DecorationContainer, ...
+    'String', {'var'; 'expl.'}, ...
+    'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'bottom', ...
+    'Position', [-0.25, 0.25, 0], ...
+    'Units', 'normalized');
+box on
 
 %% plot histogram of first response times
 % the genes in first response times are intersect(offSig,onSig), excluding
@@ -257,13 +280,11 @@ exportOptions = struct('Format','eps2',...
     'FontMode','fixed',...
     'FontSize',10,...
     'LineWidth',2);
-figs = [sigFig, smoothFig, PCfig, timeFig];
-filenames = {'significantGenes','significantGenesSmoothed','PCA','responseTimes'};
+figs = [sigFig, smoothFig, PCfig, PCAstatsfig, timeFig];
+filenames = {'significantGenes','significantGenesSmoothed','PCA', 'PCAstats', 'responseTimes'};
 for figCtr = 1:length(figs)
     pos = get(figs(figCtr),'Position');
-    if figCtr ~= 4
-    pos(4) = 1/2*pos(3);% adjust height to fraction of width
-    else
+    if figCtr ~= 5
        exportOptions.Width = 15;
     end
     set(figs(figCtr),'PaperUnits','centimeters','Position',pos);

@@ -19,7 +19,7 @@ load('manuscripts/VEGF/figures/experiment31conv4collatedResults.mat','xBins','ce
 % for contour plots, take to take the transpose if data is (x,y), to ensure that
 % columns are plotted at x-values and rows at y-values (after transpose)
 [L2F,F2L] = meshgrid(lead2followValues,follow2leadValues); % for plotting 'patterns' inside contours
-nLevels = 20;
+nLevels = 10;
 plotColors = linspace(0,1,nLevels)'*[251 101 4]/255 + (1 - linspace(0,1,nLevels)')*[113 18 160]/255;
 actualLeaderNumber = actualLeaderFraction.*numCells;
 axisticks = [1 8 16 24 32 40 48 56];
@@ -29,7 +29,7 @@ for defaultFollow = [2]
         leaderFraction = squeeze(mean(actualLeaderFraction(defaultFollow + 1,sensAccCtr,:,:,:),5));
         leaderFractionCOV = squeeze(std(actualLeaderFraction(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
             ./mean(actualLeaderFraction(defaultFollow + 1,sensAccCtr,:,:,:),5));
-        contourf(lead2followValues,follow2leadValues,leaderFraction',linspace(0,1,nLevels+1),...
+        contourf(lead2followValues,follow2leadValues,leaderFraction',linspace(0,0.5,nLevels+1),...
             'EdgeColor','none')
         % pcolor(lead2followValues,follow2leadValues,leaderFraction)
         % shading interp
@@ -60,7 +60,7 @@ for defaultFollow = [2]
         leaderNumber = squeeze(mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
         leaderNumberCOV = squeeze(std(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
             ./mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
-        contourf(lead2followValues,follow2leadValues,leaderNumber',linspace(0,40,nLevels+1),...
+        contourf(lead2followValues,follow2leadValues,leaderNumber',linspace(0,25,nLevels+1),...
             'EdgeColor','none')
         % pcolor(lead2followValues,follow2leadValues,leaderFraction)
         % shading interp

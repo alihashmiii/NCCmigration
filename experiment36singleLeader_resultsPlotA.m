@@ -73,8 +73,8 @@ for expCtr = 1:length(experiments)
     boxplot(distanceMigrated{expCtr},'medianstyle','target','orientation','horizontal',...
         'colors',[1 1 1]*2*mean(lostFraction(expCtr,:)),'symbol','x','positions',yTicks(expCtr))
 end   
-xlabel('x/\mum')
-ylabel('\langle f_L\rangle')
+xlabel('x/$\mu$m','interpreter','latex')
+ylabel('$\langle f_L\rangle$','interpreter','latex')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
@@ -83,11 +83,11 @@ ylim([0, max(yTicks) + 60])
 ch = colorbar;
 title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
-set(ch,'YTickLabel',[0.5 0.75 1])
+set(ch,'YTick',[0.5 0.75 1],'YLim',[0.5 1])
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','18.0',...
+    'Width','17.0',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
@@ -101,4 +101,7 @@ set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 filename = ['manuscripts/subpopulations/figures/singleLeaderA'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
-system(['pdfcrop ' filename '.pdf']);
+
+filename = ['../../Thesis/figures/singleLeader'];
+exportfig(gcf,[filename '.eps'],exportOptions);
+system(['epstopdf ' filename '.eps']);

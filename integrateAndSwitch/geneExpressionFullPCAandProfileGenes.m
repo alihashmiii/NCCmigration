@@ -57,12 +57,10 @@ opt.TolFun = 0.01;
 % onEigBS = NaN(numIter,length(onEigC));
 % shuffledOnExpression = NaN(size(onExpression));
 % for ii = 1:numIter
-%     %     for jj = 1:size(offExpression,2) % shuffle matrix entries
-%     %        shuffledOffExpression(:,jj) = offExpression(randperm(size(offExpression,1)),jj);
-%     %        shuffledOnExpression(:,jj) = onExpression(randperm(size(onExpression,1)),jj);
-%     %     end
-%     shuffledOffExpression = reshape(offExpression(randperm(numel(offExpression))),size(offExpression));
-%     shuffledOnExpression = reshape(onExpression(randperm(numel(onExpression))),size(onExpression));
+    %     for jj = 1:size(offExpression,2) % shuffle matrix entries
+    %        shuffledOffExpression(:,jj) = offExpression(randperm(size(offExpression,1)),jj);
+    %        shuffledOnExpression(:,jj) = onExpression(randperm(size(onExpression,1)),jj);
+    %     end
 %     
 %     [~, ~, offEigBS(ii,:), ~, ~] = pca(shuffledOffExpression,...
 %         'Algorithm','eig','Centered',true);
