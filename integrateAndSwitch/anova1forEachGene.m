@@ -25,8 +25,9 @@ offFigure = figure;
 for geneCtr = 1:numTgenes
     missingTimes = isnan(TX(:,geneCtr));
     [TpVals(geneCtr),~,Tstats(geneCtr)] = anova1(TX(~missingTimes,geneCtr),timesRep(~missingTimes),'off');
-    subplot(8,11,geneCtr)
+    subplot(11,8,geneCtr)
     boxplot(TX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','r');
+    ylim([0 ceil(max(TX(~missingTimes,geneCtr)))]);
     htitle = title([Tgenes{geneCtr} ' p=' num2str(TpVals(geneCtr),precision)]);
     if TpVals(geneCtr)<=pThreshold&&Tstats(geneCtr).df>0 % if the means are different, check which groups are different from the first
         multipleComparison = multcompare(Tstats(geneCtr),'Alpha',pThreshold,'Display','off',...
@@ -57,8 +58,9 @@ onFigure = figure;
 for geneCtr = 1:numVgenes
     missingTimes = isnan(VX(:,geneCtr));
     [VpVals(geneCtr),~,Vstats(geneCtr)] = anova1(VX(~missingTimes,geneCtr),timesRep(~missingTimes),'off');
-    subplot(8,11,geneCtr)
+    subplot(11,8,geneCtr)
     boxplot(VX(~missingTimes,geneCtr),timesRep(~missingTimes),'color','b');
+    ylim([0 ceil(max(VX(~missingTimes,geneCtr)))]);
     htitle = title([Vgenes{geneCtr} ' p=' num2str(VpVals(geneCtr),precision)]);
     if VpVals(geneCtr)<=pThreshold&&Vstats(geneCtr).df>0 % if the means are different, check which groups are different from the first
         multipleComparison = multcompare(Vstats(geneCtr),'Alpha',pThreshold,'Display','off',...
@@ -78,22 +80,22 @@ end
 
 %% export figures
 exportOptions = struct('Format','eps2',...
-    'Width','32.0',...
-    'Height','23.0',...
+    'Width','19.0',...
+    'Height','22',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
     'FontSize',4,...
     'LineWidth',1);
 
-filename = ['../manuscripts/VEGF/figures/FigS3A_anovaForEachGeneOffCondition'];
+filename = ['../../../Thesis/figures/anovaForEachGeneOffCondition'];
 set(offFigure,'PaperUnits','centimeters');
 exportfig(offFigure,[filename '.eps'],exportOptions);
-system(['epstopdf ' filename '.eps']);
-system(['pdfcrop ' filename '.pdf'])
+%system(['epstopdf ' filename '.eps']);
+%system(['pdfcrop ' filename '.pdf'])
 
-filename = ['../manuscripts/VEGF/figures/FigS3A_anovaForEachGeneOnCondition'];
+filename = ['../../../Thesis/figures/anovaForEachGeneOnCondition'];
 set(onFigure,'PaperUnits','centimeters');
 exportfig(onFigure,[filename '.eps'],exportOptions);
-system(['epstopdf ' filename '.eps']);
-system(['pdfcrop ' filename '.pdf'])
+%system(['epstopdf ' filename '.eps']);
+%system(['pdfcrop ' filename '.pdf'])

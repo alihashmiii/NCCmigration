@@ -1,5 +1,7 @@
 % saves images and compiles movie externally - LJS
 % saves to /avi_mat
+% Issues/todo:
+% - rewrite into a function
 
 % close all
 

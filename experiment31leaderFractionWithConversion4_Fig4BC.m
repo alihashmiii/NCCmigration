@@ -34,8 +34,8 @@ contourf(lead2followValues,follow2leadValues,migrationEfficiency',linspace(0,1,n
 % shading interp
 cb = colorbar; cb.Label.String = 'relative migration efficiency';
 caxis([0 1]), colormap(parula(nLevels))
-xlabel('switch time lead -> follow, \tau_{L->F} (min)')
-ylabel('switch time follow -> lead, \tau_{F->L} (min)')
+xlabel('switch time lead \rightarrow follow, \tau_{LF} (min)')
+ylabel('switch time follow \rightarrow lead, \tau_{FL} (min)')
 set(gca,'xtick',axisticks,'ytick',axisticks)
 % plot contours showing coefficient of variation
 hold on
@@ -70,14 +70,14 @@ for tauCtr = 1:length(lead2followValues)
 end
 plot([1 1],[0 1],'k:')
 xlim([0 20])
-xlabel('relative switch time \tau_{L->F}/\tau_{F->L}')
+xlabel('relative switch time \tau_{LF}/\tau_{FL}')
 if plotError
     ylabel('migration efficiency, \mu \pm \mu/\sigma')
 else
     ylabel('migration efficiency, \mu (-), \mu/\sigma (--)')
 end
-legendHandle = legend(plotHandles,['\tau_{F->L}';mat2cell([num2str(follow2leadValues'),repmat(' min',length(follow2leadValues),1)],ones(length(follow2leadValues),1),6)]);
-% text(15,1,'\tau_{F->L}')
+legendHandle = legend(plotHandles,['\tau_{FL}';mat2cell([num2str(follow2leadValues'),repmat(' min',length(follow2leadValues),1)],ones(length(follow2leadValues),1),6)]);
+% text(15,1,'\tau_{FL}')
 box on
 %% export figure
 exportOptions = struct('Format','eps2',...
@@ -88,12 +88,12 @@ exportOptions = struct('Format','eps2',...
     'FontSize',10,...
     'LineWidth',2);
 
-filename = 'manuscripts/VEGF/figures/Fig4B';
+filename = '../../Thesis/figures/migrationEfficiencySwitchingTimesFull';
 set(contourFig,'PaperUnits','centimeters');
 exportfig(contourFig,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
 
-filename = 'manuscripts/VEGF/figures/Fig4C';
+filename = '../../Thesis/figures/migrationEfficiencySwitchingTimes';
 set(ratioFig,'PaperUnits','centimeters');
 exportfig(ratioFig,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);

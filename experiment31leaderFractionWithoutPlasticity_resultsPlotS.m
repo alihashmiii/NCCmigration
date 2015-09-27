@@ -43,7 +43,11 @@ for followFracCtr = 1:length(followFracValues)
         % make a scatter plot of all repeats on top of each other
         cells = out.cells_save{end}; % all cells
         numberOfCells = size(cells,2);
-        followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        try
+            followIdcs = out.cellsFollow{end}(1:numberOfCells);
+        catch
+            followIdcs = out.cellsFollow_save{end}(1:numberOfCells);
+        end
         attachIdcs = out.attach_save{end}(1:numberOfCells);
         leaders = cells(:,followIdcs==0);
         followers = cells(:,followIdcs==1&attachIdcs~=0);
@@ -72,19 +76,25 @@ for followFracCtr = 1:length(followFracValues)
         symbols{followFracCtr},'MarkerEdgeColor',plotColor,'MarkerFaceColor',plotColor,'MarkerSize',5);
     end
 end
-xlabel('x/\mum')
-ylabel('leader fraction f_L')
+xlabel('$x/\mu$m','interpreter','latex')
+ylabel('leader fraction $f_L$','interpreter','latex')
 xlim([0, 950])
 reverseOrderfL = 2.^-(5:-1:0)';
 ylim(log2([min(reverseOrderfL), 1]))
 set(gca,'YDir','reverse','YTick',log2(reverseOrderfL),'YTickLabel', num2str(reverseOrderfL,'%0.2f'))
 
-hlegend = legend(flipud(hsymbols),num2str(18*(1 - fliplr(followFracValues)'),precision),'Location','SouthEast');
-set(get(hlegend,'title'),'string','t_{LF}/h')
-
+hLegend = legend(flipud(hsymbols),num2str(18*(1 - fliplr(followFracValues)'),precision),'Location','SouthEast');
+% legend title hack from undocumented matlab
+text('Parent', hLegend.DecorationContainer, ...
+    'String', '$t_\mathrm{LF}$/h', ...
+    'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'bottom', ...
+    'Position', [0.5, 1.05, 0], ...
+    'Units', 'normalized',...
+    'interpreter','latex');
 % add a colorbar for relative stream density
 ch = colorbar;
-title(ch,'\rho^{stream}_{relative}')
+title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
 box on
 
@@ -100,6 +110,6 @@ exportOptions = struct('Format','eps2',...
 pos = get(gcf,'Position');
 %     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
 set(gcf,'PaperUnits','centimeters','Position',pos);
-filename = ['manuscripts/subpopulations/figures/resultsFigS1'];
+filename = ['../../Thesis/figures/leaderFractionS'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);

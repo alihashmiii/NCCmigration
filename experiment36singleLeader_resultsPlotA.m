@@ -70,10 +70,10 @@ end
 yTicks = linspace(60,120*length(experiments)-60,length(experiments));
 maxCellNumber = max(totalCellNumbers);
 for expCtr = 1:length(experiments)
-    boxplot(distanceMigrated{expCtr},'medianstyle','target','orientation','horizontal',...
-        'colors',[1 1 1]*2*mean(lostFraction(expCtr,:)),'symbol','x','positions',yTicks(expCtr))
+    boxplot(distanceMigrated{expCtr},'medianstyle','target','orientation','horizontal','boxstyle','filled',...
+        'colors',[1 1 1]*4*mean(lostFraction(expCtr,:)),'symbol','x','positions',yTicks(expCtr))
 end   
-xlabel('x/$\mu$m','interpreter','latex')
+xlabel('$x/\mu$m','interpreter','latex')
 ylabel('$\langle f_L\rangle$','interpreter','latex')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
 xlim([0, 800])
@@ -83,7 +83,8 @@ ylim([0, max(yTicks) + 60])
 ch = colorbar;
 title(ch,{'relative';'stream';'density'})
 colormap(linspace(1,0)'*[1 1 1])
-set(ch,'YTick',[0.5 0.75 1],'YLim',[0.5 1])
+caxis([0.75 1])
+%set(ch,'YTick',[0.5 0.75 1],'YLim',[0.5 1])
 
 %% export figure
 exportOptions = struct('Format','eps2',...

@@ -35,8 +35,8 @@ for defaultFollow = [2]
         % shading interp
         cb = colorbar; cb.Label.String = 'leader fraction';
         caxis([0 0.5]), colormap(plotColors)
-        xlabel('switch time lead -> follow, \tau_{L->F} (min)')
-        ylabel('switch time follow -> lead, \tau_{F->L} (min)')
+        xlabel('switch time lead -> follow, \tau_{LF} (min)')
+        ylabel('switch time follow -> lead, \tau_{FL} (min)')
         set(gca,'xtick',axisticks,'ytick',axisticks)
         % plot contours showing coefficient of variation
         hold on
@@ -66,8 +66,8 @@ for defaultFollow = [2]
         % shading interp
         cb = colorbar; cb.Label.String = 'number of leaders';
         caxis([0 25]), colormap(parula(nLevels))
-        xlabel('switch time lead -> follow, \tau_{L->F} (min)')
-        ylabel('switch time follow -> lead, \tau_{F->L} (min)')
+        xlabel('switch time lead -> follow, \tau_{LF} (min)')
+        ylabel('switch time follow -> lead, \tau_{FL} (min)')
         set(gca,'xtick',axisticks,'ytick',axisticks)
         % plot contours showing coefficient of variation
         hold on
