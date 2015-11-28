@@ -76,11 +76,11 @@ for followFracCtr = length(followFracValues):-1:1
 %     alpha(get(h(followFracCtr),'children'),0.5)
 end
     
-xlabel('x/\mum')
-ylabel('# cells / 50\mum'), 
+xlabel('x/$\mu$m','interpreter','latex')
+ylabel('number of cells / 50$\,\mu$m','interpreter','latex'), 
 legend(num2str(flipud(mean(actualLeaderFraction,2)),precision),'Location',...
     'NorthEast'); 
-text(675,10,'\langle f_L\rangle')
+text(670,8.9,'$\langle f_L\rangle$','interpreter','latex')
 ylim([0 17]), xlim([0 800]), set(gca,'YTick',[0 4 8 12 16])
 grid off, set(gca,'Layer','top')
 box on
@@ -95,11 +95,12 @@ exportOptions = struct('Format','eps2',...
     'Resolution',300,...
     'FontMode','fixed',...
     'FontSize',10,...
-    'LineWidth',2);
+    'LineWidth',2,...
+    'renderer','opengl');
 
 pos = get(gcf,'Position');
 pos(4) = 1/2*pos(3); % adjust height to fraction of width
 set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
-system(['pdfcrop ' filename '.pdf']);
+% system(['pdfcrop ' filename '.pdf']);

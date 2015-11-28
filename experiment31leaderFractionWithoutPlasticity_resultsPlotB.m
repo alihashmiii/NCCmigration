@@ -70,12 +70,12 @@ end
 yTicks = linspace(60,120*length(followFracValues)-60,length(followFracValues));
 maxCellNumber = max(totalCellNumbers);
 for followFracCtr = 1:length(followFracValues)
-    boxplot(distanceMigrated{followFracCtr},'medianstyle','target','orientation','horizontal',...
+    boxplot(distanceMigrated{followFracCtr},'medianstyle','target','orientation','horizontal','boxstyle','filled',...
         'colors',[1 1 1] - totalCellNumbers(followFracCtr)/maxCellNumber,'symbol','x','positions',yTicks(followFracCtr))
 end   
-ylabel('mean leader fraction \langle f_L\rangle')
+ylabel('mean leader fraction $\langle f_L\rangle$','interpreter','latex')
 set(gca,'YTick',yTicks,'YTickLabel', num2str(mean(actualLeaderFraction,2),precision))
-xlabel('x/\mum')
+xlabel('x/$\mu$m','interpreter','latex')
 set(gca,'XTick',0:200:800,'Xaxislocation','top')
 xlim([0, 800])
 ylim([0, max(yTicks) + 60])
@@ -90,13 +90,13 @@ box on
 
 %% export figure
 exportOptions = struct('Format','eps2',...
-    'Width','16.0',...
+    'Width','15.9',...
     'Color','rgb',...
     'Resolution',300,...
     'FontMode','fixed',...
     'FontSize',10,...
     'LineWidth',2,...
-    'Renderer','zbuffer');
+    'renderer','opengl');
 
 pos = get(gcf,'Position');
 %     pos(4) = 3/2*pos(3);% adjust height to 3/2 width
@@ -104,4 +104,4 @@ set(gcf,'PaperUnits','centimeters','Position',pos);
 filename = ['manuscripts/subpopulations/figures/resultsFig1B'];
 exportfig(gcf,[filename '.eps'],exportOptions);
 system(['epstopdf ' filename '.eps']);
-system(['pdfcrop ' filename '.pdf']);
+% system(['pdfcrop ' filename '.pdf']);
