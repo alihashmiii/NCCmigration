@@ -227,7 +227,7 @@ domainLengths = ones(1,numTsteps).*param.initialDomainLength;  % initialise doma
 % squares regression in make_domain_plot.m on data in lengths_data.m
 param.Linf = 870;                            % end domain length
 param.a = 0.0800;                            % "steepness" of the logistic domain growth -- LJS
-param.t_start = -16; %parameter used in domain_growth
+param.t_s = 16; %parameter used in domain_growth, giving the point of highest growth
 %%
 presave_stuff % create results file with parameters to signal that this simulation is being worked on
 
@@ -341,7 +341,7 @@ for timeCtr=1:numTsteps
         if param.growingDomain==1
             % Domain Growth Happens at every timestep
             % and starts 6 hours before migration -- LJS
-            [~, domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_start);
+            [~, domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_s);
         end
         
         xlat_save{timeCtr} = 0:domainLengths(timeCtr)/100:domainLengths(timeCtr);
@@ -363,7 +363,7 @@ for timeCtr=1:numTsteps
     if param.growingDomain==1
         % Domain Growth Happens at every timestep
         % and starts 6 hours before migration -- LJS
-        [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_start);
+        [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_s);
     end
     
     %% move cells %%

@@ -29,7 +29,7 @@ if isempty(dir(['/scratch/schumacher/Dropbox/DPhil/DysonModel/all_vers2/results/
     out.filolength = filolength;
     out.param = param;
     %param. Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, 
-    %...makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_start,
+    %...makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_s,
     %...eatRate, numSteps, numDirections];
     
     % these are parameters we might sweep

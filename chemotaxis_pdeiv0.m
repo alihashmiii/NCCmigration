@@ -44,10 +44,10 @@ if insert==1 %% will have to check these when doing tissue transplantations -- L
 %     Linf = param(1);
 %     a = param(2);
 %     initialDomainLength = param(6);
-%     t_start = param(13);
+%     t_s = param(13);
 %     tstep = param(12);
 %     
-%     [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
+%     [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_s);
 %     for i=1:length(x)
 %         u(i) = interp2(xlat_new*initialDomainLength/L,ylat_new,ca_new',x(i),y(i));
 %     end

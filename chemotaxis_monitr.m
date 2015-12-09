@@ -26,9 +26,9 @@ if tlast
         Linf = param.Linf;
         a = param.a;
         initialDomainLength = param.initialDomainLength;
-        t_start = param.t_start;
+        t_s = param.t_s;
         
-        [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
+        [~, L, ~] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_s);
 
         k = sum(ngpts(1:level-1));
         xpts = xpts(k+1:k+npts);

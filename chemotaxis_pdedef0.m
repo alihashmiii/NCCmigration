@@ -20,7 +20,7 @@ makeChemoattractant = param.makeChemoattractant;
 chi = param.chi;
 domainHeight = param.domainHeight;
 tstep = param.tstep;
-t_start = param.t_start;
+t_s = param.t_s;
 eatRate = param.eatRate;
 spillRate = param.spillRate;
 degRate = param.degRate;
@@ -31,7 +31,7 @@ transplantXLocation = param.transplantXLocation;
 secondaryChi = param.secondaryChi;
 
 if (growingDomain==1)
-    [~, L, Ldiff] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_start);
+    [~, L, Ldiff] = domain_growth([],t-tstep,tstep,Linf,a,initialDomainLength,t_s);
 else
     L = initialDomainLength;
     Ldiff =0;
