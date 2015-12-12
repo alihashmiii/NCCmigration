@@ -50,7 +50,7 @@ for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best
 end
 
 %% If the present area is better then stay put, else choose to move in the theta direction%%%
-caDiff = (new_area - present_area)/present_area;    % if caDiff > sensingAccuracy then the cell moves in sensed direction -- LJS
+caDiff = (new_area - present_area)/present_area;    % if caDiff > sensingAccuracy/sqrt(ca) then the cell moves in sensed direction -- LJS
 if caDiff < sensingAccuracy/sqrt(present_area) % then present_area > new_area and the cell doesn't try to move
     move = 0;
     theta = NaN; % direction of movement is undefined -- LJS

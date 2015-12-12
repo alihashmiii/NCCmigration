@@ -146,7 +146,7 @@ set(gca,'ytick',0:1:7,'xtick',timeData(2:10))
 ylim([0 2])
 xlim([0 90])
 xlabel('time (min)')
-ylabel({'differential expression'; 'after VEGF removal'})
+ylabel({'relative expression'; 'after VEGF removal'})
 subplot(2,1,2)
 gh = plot(timeData(10:end),normExpression(10:end,genes2plot),'Color',[0.5 0.5 0.5]);
 hold on
@@ -165,7 +165,7 @@ set(gca,'ytick',0:1:7,'xtick',[timeData(10); timeData(12:end)])
 xlim([90 180])
 ylim([0 2])
 xlabel('time (min)')
-ylabel({'differential expression'; 'after VEGF readdition'})
+ylabel({'relative expression'; 'after VEGF readdition'})
 
 %% smoothed genes
 smoothFig = figure;
