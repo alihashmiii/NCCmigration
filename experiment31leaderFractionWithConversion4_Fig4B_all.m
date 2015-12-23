@@ -36,21 +36,15 @@ for defaultFollow = [0 1 2]
         set(gca,'xtick',axisticks,'ytick',axisticks)
         % plot contours showing coefficient of variation
         hold on
-        contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],...
-            'Color',[1 1 1], 'LineWidth', 1);
-        contourIdcs = migrationCOV'>=0.2&migrationCOV'<0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
-        %         [~, covBins] = hist(migrationCOV(:),20);
-        %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.15&covBins<0.2),...
-        %             'Color',[1 1 1], 'LineStyle', ':')
-        contour(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],...
-            'Color',[1 1 1]/2, 'LineWidth', 1)
-        contourIdcs = migrationCOV'>0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
-        %         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.2),...
-        %             'Color',[1 1 1]*0.5, 'LineStyle', ':')
-        %         contour(lead2followValues,follow2leadValues,migrationCOV',[0.25 0.25],...
-        %             'Color',[1 1 1]*0, 'LineWidth', 1)
+        [~, contourHandle] = contourf(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],'LineColor',[1 1 1]);
+        hatchHandle = hatchfill2(contourHandle,'single','HatchAngle',45,...
+                        'HatchSpacing',10,'Fill','off');
+
+        if any(migrationCOV(:)>0.3)
+            [~, contourHandle2] = contourf(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],'LineColor',[1 1 1]/2);
+            hatchHandle2 = hatchfill2(contourHandle2,'single','HatchAngle',-45,...
+                'HatchSpacing',10,'Fill','off');
+        end
         if defaultFollow
             if defaultFollow > 1
                 title(['default = follow0, acc. = ' num2str(sensingAccuracyValues(sensAccCtr))])

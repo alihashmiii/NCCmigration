@@ -31,61 +31,47 @@ for defaultFollow = [2]
             ./mean(actualLeaderFraction(defaultFollow + 1,sensAccCtr,:,:,:),5));
         contourf(lead2followValues,follow2leadValues,leaderFraction',linspace(0,0.5,nLevels+1),...
             'EdgeColor','none')
-        % pcolor(lead2followValues,follow2leadValues,leaderFraction)
-        % shading interp
+
         cb = colorbar; cb.Label.String = 'leader fraction';
         caxis([0 0.5]), colormap(plotColors)
         xlabel('switch time lead -> follow, \tau_{LF} (min)')
         ylabel('switch time follow -> lead, \tau_{FL} (min)')
         set(gca,'xtick',axisticks,'ytick',axisticks)
-        % plot contours showing coefficient of variation
-        hold on
-        contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.2 0.2],...
-            'Color',[1 1 1], 'LineWidth', 1);
-        contourIdcs = leaderFractionCOV'>=0.2&leaderFractionCOV'<0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
-        %         [~, covBins] = hist(leaderFractionCOV(:),20);
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.15&covBins<0.2),...
-        %             'Color',[1 1 1], 'LineStyle', ':')
-        contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.3 0.3],...
-            'Color',[1 1 1]/2, 'LineWidth', 1)
-        contourIdcs = leaderFractionCOV'>0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.2),...
-        %             'Color',[1 1 1]*0.5, 'LineStyle', ':')
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.25 0.25],...
-        %             'Color',[1 1 1]*0, 'LineWidth', 1)
-        
+%         % plot contours showing coefficient of variation
+%         hold on
+%         [~, contourHandle] = contourf(lead2followValues,follow2leadValues,...
+%             leaderFractionCOV',[0.2 0.2],'LineColor',[1 1 1]);
+%         hatchHandle = hatchfill2(contourHandle,'single','HatchAngle',45,...
+%             'HatchSpacing',10,'Fill','off');
+% 
+%         [~, contourHandle2] = contourf(lead2followValues,follow2leadValues,...
+%             leaderFractionCOV',[0.3 0.3],'LineColor',[1 1 1]/2);
+%         hatchHandle2 = hatchfill2(contourHandle2,'single','HatchAngle',-45,...
+%             'HatchSpacing',10,'Fill','off');
+%         
         numberFig = figure;
         leaderNumber = squeeze(mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
         leaderNumberCOV = squeeze(std(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
             ./mean(actualLeaderNumber(defaultFollow + 1,sensAccCtr,:,:,:),5));
         contourf(lead2followValues,follow2leadValues,leaderNumber',linspace(0,25,nLevels+1),...
             'EdgeColor','none')
-        % pcolor(lead2followValues,follow2leadValues,leaderFraction)
-        % shading interp
+
         cb = colorbar; cb.Label.String = 'number of leaders';
         caxis([0 25]), colormap(parula(nLevels))
         xlabel('switch time lead -> follow, \tau_{LF} (min)')
         ylabel('switch time follow -> lead, \tau_{FL} (min)')
         set(gca,'xtick',axisticks,'ytick',axisticks)
-        % plot contours showing coefficient of variation
-        hold on
-        contour(lead2followValues,follow2leadValues,leaderNumberCOV',[0.2 0.2],...
-            'Color',[1 1 1], 'LineWidth', 1);
-        contourIdcs = leaderNumberCOV'>=0.2&leaderNumberCOV'<0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
-        %         [~, covBins] = hist(leaderFractionCOV(:),20);
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.15&covBins<0.2),...
-        %             'Color',[1 1 1], 'LineStyle', ':')
-        contour(lead2followValues,follow2leadValues,leaderNumberCOV',[0.3 0.3],...
-            'Color',[1 1 1]/2, 'LineWidth', 1)
-        contourIdcs = leaderNumberCOV'>0.3;
-        scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',covBins(covBins>=0.2),...
-        %             'Color',[1 1 1]*0.5, 'LineStyle', ':')
-        %         contour(lead2followValues,follow2leadValues,leaderFractionCOV',[0.25 0.25],...
-        %             'Color',[1 1 1]*0, 'LineWidth', 1)
+%         % plot contours showing coefficient of variation
+%         hold on
+%         [~, contourHandle] = contourf(lead2followValues,follow2leadValues,...
+%           leaderNumberCOV',[0.2 0.2],'LineColor',[1 1 1]);
+%         hatchHandle = hatchfill2(contourHandle,'single','HatchAngle',45,...
+%                         'HatchSpacing',10,'Fill','off');
+% 
+%         [~, contourHandle2] = contourf(lead2followValues,follow2leadValues,...
+%           leaderNumberCOV',[0.3 0.3],'LineColor',[1 1 1]/2);
+%         hatchHandle2 = hatchfill2(contourHandle2,'single','HatchAngle',-45,...
+%                         'HatchSpacing',10,'Fill','off');
     end
 end
 %% export figure

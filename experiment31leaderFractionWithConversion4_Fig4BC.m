@@ -30,29 +30,24 @@ migrationCOV = squeeze(std(numCells(defaultFollow + 1,sensAccCtr,:,:,:),0,5)...
     ./mean(numCells(defaultFollow + 1,sensAccCtr,:,:,:),5));
 contourf(lead2followValues,follow2leadValues,migrationEfficiency',linspace(0,1,nLevels+1),...
     'EdgeColor','none')
-% pcolor(lead2followValues,follow2leadValues,migrationEfficiency')
-% shading interp
+
 cb = colorbar; cb.Label.String = 'relative migration efficiency';
 caxis([0 1]), colormap(parula(nLevels))
 xlabel('switch time lead \rightarrow follow, \tau_{LF} (min)')
 ylabel('switch time follow \rightarrow lead, \tau_{FL} (min)')
 set(gca,'xtick',axisticks,'ytick',axisticks)
+
 % plot contours showing coefficient of variation
 hold on
-contour(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],'Color',[1 1 1]);
-contourIdcs = migrationCOV'>=0.2&migrationCOV'<0.3;
-scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1])
-%         [~, covBins] = hist(migrationCOV(:),25);
-%         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.15&covBins<0.2),...
-%             'Color',[1 1 1], 'LineStyle', ':')
-contour(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],...
-    'Color',[1 1 1]/2, 'LineWidth', 1)
-contourIdcs = migrationCOV'>0.3;
-scatter(L2F(contourIdcs),F2L(contourIdcs),'.','MarkerEdgeColor',[1 1 1]/2)
-%         contour(lead2followValues,follow2leadValues,migrationCOV',covBins(covBins>=0.2),...
-%             'Color',[1 1 1]*0.5, 'LineStyle', ':')
-%         contour(lead2followValues,follow2leadValues,migrationCOV',[0.25 0.25],...
-%             'Color',[1 1 1]*0, 'LineWidth', 1)
+[~, contourHandle] = contourf(lead2followValues,follow2leadValues,migrationCOV',[0.2 0.2],'LineColor',[1 1 1]);
+hatchHandle = hatchfill2(contourHandle,'single','HatchAngle',45,...
+    'HatchSpacing',10,'Fill','off');
+
+if any(migrationCOV(:)>0.3)
+    [~, contourHandle2] = contourf(lead2followValues,follow2leadValues,migrationCOV',[0.3 0.3],'LineColor',[1 1 1]/2);
+    hatchHandle2 = hatchfill2(contourHandle2,'single','HatchAngle',-45,...
+        'HatchSpacing',10,'Fill','off');
+end
 %%
 ratioFig = figure;
 plotHandles = NaN(length(lead2followValues')+1,1);
