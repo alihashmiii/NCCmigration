@@ -215,6 +215,12 @@ if isstruct(in)
     if ismember('t_0',fields(in))
         t_0 = in.t_0;
     end
+    if ismember('domainHeight',fields(in))
+        param.domainHeight = in.domainHeight;
+    end
+    if ismember('initYFrac',fields(in))
+        initYFrac = in.initYFrac;
+    end
 end
 
 followStart = floor(18/param.tstep) - floor(18*followerFraction/param.tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
@@ -274,7 +280,7 @@ if isstruct(in)&&ismember('ca_new',fields(in))
     param.insert = 1;
 end
 if isstruct(in)&&ismember('xlat_new',fields(in));
-    xlat_new = in.xlat_new; % take lattice passed in - not sire how important this is, as growth should be deterministic anyway
+    xlat_new = in.xlat_new; % take lattice passed in - not sure how important this is
     param.insert = 1;
 else
     xlat_new=[];
@@ -412,7 +418,7 @@ for timeCtr=1:numTsteps
     cells_save{timeCtr}=cells;
     
     %% cells can convert from leaders <-> followers
-    if (conversionType~=0)&&((param.experiment==0)||param.experiment==3||param.experiment==11||param.experiment==12||param.experiment==13||param.experiment==14||(in.it==1)||(t_save(timeCtr)==in.changeTime))
+    if (conversionType~=0)
         out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             param.eatWidth,conversionType,numFilopodia);
         cellsFollow = out.cellsFollow;

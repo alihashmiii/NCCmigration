@@ -43,5 +43,5 @@ else
         z3 = ones(size(y))/2;
         z4 = ones(size(y))/2;
     end
-    u = min(min(min(z1,z2),z3),z4)/max(min(min(min(z1,z2),z3),z4));
+    u = min(min(min(z1,z2),z3),z4)/max(min(min(min(z1,z2),z3),z4));   
 end

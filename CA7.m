@@ -360,7 +360,7 @@ for timeCtr=1:numTsteps
     cells_save{timeCtr}=cells;
     
     %% cells can convert from leaders <-> followers
-    if (conversionType~=0)&&((param.experiment==0)||param.experiment==3||param.experiment==11||param.experiment==12||param.experiment==13||(in.it==1)||(t_save(timeCtr)==in.changeTime))
+    if (conversionType~=0)
         out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             param.eatWidth,conversionType,numFilopodia);
         cellsFollow = out.cellsFollow;
