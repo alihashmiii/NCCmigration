@@ -48,9 +48,16 @@ end
 bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*(...
     (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
 eatTerm = sum(bigEat,2);
-res = ut -(diffus.*(1./L^2.*uxx + uyy)...
-    - eatTerm...
-    + chi.*u.*(1-u));   % res = ut-f(u) means ut=f(u)
+productionTerm = zeros(size(u));
+if experiment==38
+    middleStripe = y<=(domainHeight/2 + 60)&y>=(domainHeight/2 - 60);
+    productionTerm(middleStripe) = chi.*u(middleStripe).*(1-u(middleStripe));
+else
+    productionTerm = chi.*u.*(1-u);
+end
+
+res = ut -(diffus.*(1./L^2.*uxx + uyy) - eatTerm + productionTerm);   % res = ut-f(u) means ut=f(u)
+
 if t>=transplantTime
     switch experiment
         case {12, 13}

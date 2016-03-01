@@ -54,8 +54,5 @@ if tlast
 %     surf(xsave,ysave,plotsol)
 %     pause
 
-%     save avi_mat/plotsol plotsol
-%     save avi_mat/xsave xsave
-%     save avi_mat/ysave ysave
 end
 end

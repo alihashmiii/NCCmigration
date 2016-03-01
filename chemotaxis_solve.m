@@ -19,7 +19,7 @@ if insert==1&&~isempty(xlat_new)
     xmin = min(xlat_new);
 else
     nx = int64(64); % number of x grid points including boundary
-    ny = int64(32);
+    ny = int64(y_length);
 end
 
 % tolerances
@@ -28,7 +28,7 @@ tolt = 0.1;    % time tolerance
 
 opti = zeros(4,1,'int64'); % default integrator options
 switch param.experiment
-    case {11,12,13,14}
+    case {11,12,13,14,38}
         % Default is 3 but when having sharp boundaries in the CA profile this is
         % sometimes exceeded, which gives a warning.
         opti(1) = int64(7);

@@ -35,18 +35,18 @@ allSigIdcs = onSigIdcs&offSigIdcs&preSigIdcs;
 %% method 1: principle component analysis
 % algorithms eig or svd (or als), Centered false or true
 [offCoeffs, offPCs, offEigC, ~, offVarExplained] = pca(normExpression(2:10,allSigIdcs),...
-    'Algorithm','eig','Centered',true,'variableWeights',1./mean(imputedError(2:10,allSigIdcs).^2));
+    'Algorithm','svd','Centered',true,'variableWeights',1./mean(imputedError(2:10,allSigIdcs).^2));
 %     'VariableWeights',1./nanmean(normError(2:10,allSigIdcs)./normExpression(2:10,allSigIdcs)),...
 %     'Weights',1./nanmean(normError(2:10,allSigIdcs)./normExpression(2:10,allSigIdcs),2));
     
 [onCoeffs, onPCs, onEigC, ~, onVarExplained] = pca(normExpression(10:end,allSigIdcs),...
-    'Algorithm','eig','Centered',true,'variableWeights',1./mean(imputedError(10:end,allSigIdcs).^2));
+    'Algorithm','svd','Centered',true,'variableWeights',1./mean(imputedError(10:end,allSigIdcs).^2));
 %     'VariableWeights',1./nanmean(normError(10:end,allSigIdcs)./normExpression(10:end,allSigIdcs)),...
 %     'Weights',1./nanmean(normError(10:end,allSigIdcs)./normExpression(10:end,allSigIdcs),2));
 
 % plot bar chart of coeffs with gene names?
 %% check distribution of PC components against unit normal distribution
-% scale variance to unity
+% scale to sum of squares = Number of components
 scaledOffCoeffs = offCoeffs./sqrt(repmat(sum(offCoeffs.^2),size(offCoeffs,1),1))*sqrt(size(offCoeffs,1));
 scaledOnCoeffs = onCoeffs./sqrt(repmat(sum(onCoeffs.^2),size(onCoeffs,1),1))*sqrt(size(onCoeffs,1));
 pOffCoeffs = NaN(size(offPCs,2),1); pOnCoeffs = pOffCoeffs;
@@ -71,9 +71,9 @@ for ii = 1:numIter
         end
     
     [~, ~, offEigBS(ii,:), ~, ~] = pca(shuffledOffExpression,...
-        'Algorithm','eig','Centered',true);
+        'Algorithm','svd','Centered',true);
     [~, ~, onEigBS(ii,:), ~, ~] = pca(shuffledOnExpression,...
-        'Algorithm','eig','Centered',true);
+        'Algorithm','svd','Centered',true);
 end
 %%
 PCAstatsfig = figure;
