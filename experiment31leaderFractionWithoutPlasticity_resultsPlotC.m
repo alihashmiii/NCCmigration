@@ -63,7 +63,9 @@ for followFracCtr = length(followFracValues):-1:1
     f_L = mean(actualLeaderFraction(followFracCtr,:));
     plotColor = f_L*[251 101 4]/255 + (1 - f_L)*[113 18 160]/255;
     % plot lines for migration profile (simplest, if less accurate)
-    plot(xBins + dx/2,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)),plotMarkers{followFracCtr},'color',plotColor);
+    meanNumCells = squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2));
+    stdNumCells = squeeze(std(sum(cellDistributions(followFracCtr,:,:,:),3),[],2));
+    errorbar(xBins + dx/2,meanNumCells,stdNumCells./sqrt(numRepeats),plotMarkers{followFracCtr},'color',plotColor);
 %     %   plot as area-graph instead of bar as matlab will sometimes get the alpha wrong for barplots (on mac) 
 %     [xs, ys] = stairs(xBins,squeeze(mean(sum(cellDistributions(followFracCtr,:,:,:),3),2)));
 %     h(followFracCtr) = area(xs,ys,...
@@ -96,7 +98,7 @@ exportOptions = struct('Format','eps2',...
     'FontMode','fixed',...
     'FontSize',10,...
     'LineWidth',2,...
-    'renderer','opengl');
+    'renderer','painters');
 
 pos = get(gcf,'Position');
 pos(4) = 1/2*pos(3); % adjust height to fraction of width

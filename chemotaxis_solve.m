@@ -28,7 +28,7 @@ tolt = 0.1;    % time tolerance
 
 opti = zeros(4,1,'int64'); % default integrator options
 switch param.experiment
-    case {11,12,13,14,38}
+    case {11,12,13,14,38,39}
         % Default is 3 but when having sharp boundaries in the CA profile this is
         % sometimes exceeded, which gives a warning.
         opti(1) = int64(7);

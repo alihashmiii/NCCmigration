@@ -67,9 +67,9 @@ plot([1 1],[0 1],'k:')
 xlim([0 20])
 xlabel('relative switch time \tau_{LF}/\tau_{FL}')
 if plotError
-    ylabel('migration efficiency, \mu \pm \mu/\sigma')
+    ylabel('migration efficiency, \mu \pm \sigma/\mu')
 else
-    ylabel('migration efficiency, \mu (-), \mu/\sigma (--)')
+    ylabel('migration efficiency, \mu (-), \sigma/\mu (--)')
 end
 legendHandle = legend(plotHandles,['\tau_{FL}';mat2cell([num2str(follow2leadValues'),repmat(' min',length(follow2leadValues),1)],ones(length(follow2leadValues),1),6)]);
 % text(15,1,'\tau_{FL}')

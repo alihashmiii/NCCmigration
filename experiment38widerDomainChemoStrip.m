@@ -4,7 +4,11 @@
 clear
 close all
 
-input.time = 30;
+% issues/to-dos:
+% - change file name automatically
+% - vary cell speed in simulations
+
+input.time = 24;
 input.conversionType = 4;
 input.domainHeight = 360;
 input.initYFrac = 1/3;
@@ -19,13 +23,12 @@ middleStripe = y<=(input.domainHeight/2 + 60)&y>=(input.domainHeight/2 - 60);
 ca(:,middleStripe) = 1;
 input.ca_new = implicit_heat2D(ca,100,mean(diff(x)),mean(diff(y)),0.1,1); % we need some smoothing to reduce the sharp boundaries
 
-input.diffus = 0.1*1e4;
-input.sensingAccuracy = 0.01/1e2; % sens acc scales with 1/sqrt(diffus)
-CA6(input,experiment)
+input.eatRate = 1000;
+input.diffus = 0.1;
+input.sensingAccuracy = 0.01; % sens acc scales with 1/sqrt(diffus)
+input.leadSpeed = 40;
+input.followSpeed = 50;
 
-input.diffus = 0.1*1e2;
-input.sensingAccuracy = 0.01/10; % sens acc scales with 1/sqrt(diffus)
-CA6(input,experiment)
+input.saveInfo = ['exp39_widerDomainStripe_eatRate' num2str(input.eatRate
 
-input.eatRate = 100;
 CA6(input,experiment)
