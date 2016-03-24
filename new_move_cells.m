@@ -2,7 +2,7 @@ function out = new_move_cells(cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
     domainHeight, dist, domainLength, numFilopodia,volumeExclusion, ...
     standStill, sensingAccuracy, needNeighbours, contactGuidance)
-global cells
+global cells param
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -106,12 +106,24 @@ for i =1:length(cell_order)
     end
     if (move==1)||((standStill==0)&&(move==0))
         if move==1, moved(cellIdx)=1; end
-        if (cellsFollow(cellIdx)==1) %if it's a follower
-            new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(2);
-            new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(2);
+        if ((param.experiment==40)||(param.experiment==41))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
+            if param.experiment==40
+                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(3);
+                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(3);
+            elseif param.experiment==41
+                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*...
+                    (dist(1) - (dist(1) - dist(3))*param.initialDomainLength/domainLength); % slow down is diluted with tissue growth
+                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*...
+                    (dist(1) - (dist(1) - dist(3))*param.initialDomainLength/domainLength);
+            end     
         else
-            new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
-            new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+            if (cellsFollow(cellIdx)==1) %if it's a follower
+                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(2);
+                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(2);
+            else
+                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
+                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+            end
         end
         
         if volumeExclusion==1 %% if there is no cell or edge in the way, then move

@@ -58,12 +58,13 @@ t_0 = 6; % time in hrs at which simulation starts
 cellRadius = 7.5;              % radius in um (= 7.5um)
 leadSpeed = 41.6;                     % speed of the leader cells in mu/h
 followSpeed = 49.9;                 % speed of the follower cells in mu/h
+slowSpeed = NaN; % used in simulations when a zone of reduced cell speed is imposed. should be passed into the simulation
 
 param.domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 10*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 maxFilolength = 45; % maximum length of filopodium before follower dettaches from leader. default = filolength (non-extensible)
 
-dist = [leadSpeed; followSpeed]*param.tstep;             % the distance moved in a timestep
+dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
 
 needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
@@ -140,11 +141,15 @@ initXFrac = 0;                 % initial fraction of x with cells
 if isstruct(in)
     if ismember('leadSpeed',fields(in))
         leadSpeed = in.leadSpeed; % speed of the leader cells in mu/h
-        dist = [leadSpeed; followSpeed]*param.tstep;             % the distance moved in a timestep
+        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('followSpeed',fields(in))
         followSpeed = in.followSpeed; % speed of the follower cells in mu/h
-        dist = [leadSpeed; followSpeed]*param.tstep;             % the distance moved in a timestep
+        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
+    end
+    if ismember('slowSpeed',fields(in))
+        slowSpeed = in.slowSpeed; % reduced cell speed (when used) in mu/h 
+        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;
     end
     if ismember('numFilopodia',fields(in))
         numFilopodia = in.numFilopodia; % the number of filopodia for lead cells and follower cells
@@ -173,7 +178,7 @@ if isstruct(in)
     if ismember('tstep',fields(in))
         param.tstep = in.tstep; % time step in hours
         numTsteps = floor(time/param.tstep)+1;   % number of time steps
-        dist = [leadSpeed; followSpeed]*param.tstep;             % the distance moved in a timestep
+        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('volumeExclusion',fields(in))
         volumeExclusion = in.volumeExclusion;

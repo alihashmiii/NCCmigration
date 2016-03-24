@@ -49,7 +49,7 @@ bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth
     (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
 eatTerm = sum(bigEat,2);
 productionTerm = zeros(size(u));
-if experiment==38||experiment==39
+if experiment==38||experiment==39||experiment==40||experiment==41
     middleStripe = y<=(domainHeight/2 + 60)&y>=(domainHeight/2 - 60);
     productionTerm(middleStripe) = chi.*u(middleStripe).*(1-u(middleStripe));
 else

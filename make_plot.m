@@ -41,6 +41,19 @@ if (experiment==11||experiment==12||experiment==13||experiment==14)&&time>=trans
     contour(xlat,ylat,single(yindcs)*single(xindcs)',1,'EdgeColor',[1 0 0],'LineWidth',2)
 end
 
+if (experiment==40)||(experiment==41) % for DAN simulations, show slow zone
+   xmax = max(xlat)/3;
+   ymin = min(ylat);
+   ymax = max(ylat);
+   patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
+       'r','FaceColor','none','EdgeColor','red');
+   hatchHandle = hatchfill2(patchHandle);
+   if experiment==41
+       hatchHandle.Color = hatchHandle.Color*param.initialDomainLength/max(xlat);
+       patchHandle.EdgeAlpha = param.initialDomainLength/max(xlat);
+   end
+end
+    
 colormap(caCmap)
 
 if cellRadius < 1
