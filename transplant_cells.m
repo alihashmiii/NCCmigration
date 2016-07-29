@@ -7,7 +7,7 @@ if ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)=
     if (param.experiment==1)&&(in.ablate_type==1)
         %% experiment 1
         exp.experiment = param.experiment;
-        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param)
+        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
         sort(cells(1,:))
         x_start = input('where should we ablate back from?: ');
         
@@ -21,7 +21,7 @@ if ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)=
         %% experiment 2
         exp.experiment = param.experiment;
         disp('up to date')
-        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param)
+        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
         sort(cells(1,:))
         disp(['the inserted region is ',mat2str(in.extracted_x_end-in.extracted_x_start),'um long'])
         x_start = input('where should we insert the region (x_start) [front region]?: ');
@@ -42,7 +42,7 @@ if ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)=
 
     exp.experiment = param.experiment;
     make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,...
-        attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param)
+        attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
     sort(cells(1,:))
     disp(['the inserted region is ',mat2str(in.extracted_x_end-in.extracted_x_start),'um long'])
     if param.experiment==2

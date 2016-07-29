@@ -1,5 +1,8 @@
 % simulate neural crest cell migration on wider comain with vegf production
 % only in the middle, but cells get inserted at full width
+% has a zone of reduced cell speeds at the start (grows with tissue)
+% DAN zone near domain entrance slows down cells, increases then decreases
+% with time linearly
 
 clear
 close all
@@ -9,15 +12,15 @@ makeFrames = 1;
 makeAllMovie = 1;
 keepFrames = 0;
 
-experiment = 40;
+experiment = 41;
 precision = 2;
 
-diffusivities = [100];
-slowSpeeds = [30];
+diffusivities = [1 10 100];
+slowSpeeds = [10 20 30];
 
-fileName = 'exp40_slowEntry';
+fileName = 'exp43_slowEntryTunnelingDAN';
 
-for cntGdn = {'parallel'}
+for cntGdn = {'toward', 'parallel'}
     result.contactGuidance = char(cntGdn);
     for diffus = diffusivities
         result.diffus = diffus;
@@ -30,7 +33,7 @@ for cntGdn = {'parallel'}
             load(['results/' fileName '/' result.loadInfo '.mat'])
             load_results
             make_frames
-            saveInfo = out.saveInfo(17:end); % had the folder name repeated in the saveInfo
+            saveInfo = out.saveInfo(29:end); % had the folder name repeated in the saveInfo
             make_all_movie_hidden
         end
     end

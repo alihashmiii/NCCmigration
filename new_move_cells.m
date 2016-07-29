@@ -1,7 +1,7 @@
 function out = new_move_cells(cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
     domainHeight, dist, domainLength, numFilopodia,volumeExclusion, ...
-    standStill, sensingAccuracy, needNeighbours, contactGuidance)
+    standStill, sensingAccuracy, needNeighbours, contactGuidance, currentTime, dan)
 global cells param
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
@@ -106,16 +106,32 @@ for i =1:length(cell_order)
     end
     if (move==1)||((standStill==0)&&(move==0))
         if move==1, moved(cellIdx)=1; end
-        if ((param.experiment==40)||(param.experiment==41))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
-            if param.experiment==40
-                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(3);
-                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(3);
-            elseif param.experiment==41
-                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*...
-                    (dist(1) - (dist(1) - dist(3))*param.initialDomainLength/domainLength); % slow down is diluted with tissue growth
-                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*...
-                    (dist(1) - (dist(1) - dist(3))*param.initialDomainLength/domainLength);
-            end     
+        if ((param.experiment==40)||(param.experiment==41)||(param.experiment==42)...
+                ||(param.experiment==43))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
+            switch param.experiment
+                case 40 % slow down is constant over time
+                    slowDown = 1;
+                case 41 % slow down is diluted with tissue growth
+                    slowDown = param.initialDomainLength/domainLength;
+                case 42 % slow down has it's own simple dynamics, first increases, then decreases with time
+                    tPeakSlowdown = 12;
+                    minSlowdown = 0.5;
+                    slowDown = max(minSlowdown,...
+                        (tPeakSlowdown - abs(currentTime - tPeakSlowdown))/tPeakSlowdown);
+                case 43 % slow down is proportional to DAN conc in new loc (0 or 1)
+                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
+                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+                    xrange = xlat(xlat>=0&xlat<=max(xlat)/3);
+                    % xsave and ysave are the coordinates of the chemoattractant lattice
+                    % points. dan has the same y-coordinates, but only makes up a 1/3 of the x range
+                    slowDown = mean(mean(dan(find_occupancy(xrange,ylat,try_x,try_y,cellRadius)))); % take the mean twice in case the cell sits on multiple lattice points
+                otherwise
+                    slowDown = 0;
+            end
+            new_x = cells(1,cellIdx) + cos(theta(cellIdx))*...
+                (dist(1) - (dist(1) - dist(3))*slowDown);
+            new_y = cells(2,cellIdx) + sin(theta(cellIdx))*...
+                (dist(1) - (dist(1) - dist(3))*slowDown);
         else
             if (cellsFollow(cellIdx)==1) %if it's a follower
                 new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(2);

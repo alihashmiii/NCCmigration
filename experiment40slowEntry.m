@@ -21,7 +21,7 @@ ca(:,middleStripe) = 1;
 in.ca_new = implicit_heat2D(ca,100,mean(diff(x)),mean(diff(y)),0.1,1); % we need some smoothing to reduce the sharp boundaries
 
 diffusivities = [1, 10, 100];
-slowSpeeds = [5, 10, 20];
+slowSpeeds = [30];
 in.leadSpeed = 40;
 in.followSpeed = 40;
 fileName = 'exp40_slowEntry';

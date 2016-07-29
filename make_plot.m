@@ -1,6 +1,6 @@
 %% A function to plot the data in cells, cellsFollow and ca
 
-function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode,param)
+function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode,param,dan)
 experiment = param.experiment;
 transplantTime = param.transplantTime;
 transplantXLocation = param.transplantXLocation;
@@ -41,16 +41,26 @@ if (experiment==11||experiment==12||experiment==13||experiment==14)&&time>=trans
     contour(xlat,ylat,single(yindcs)*single(xindcs)',1,'EdgeColor',[1 0 0],'LineWidth',2)
 end
 
-if (experiment==40)||(experiment==41) % for DAN simulations, show slow zone
+if (experiment==40)||(experiment==41)||(experiment==42)||(experiment==43) % for DAN simulations, show slow zone
    xmax = max(xlat)/3;
    ymin = min(ylat);
    ymax = max(ylat);
    patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
        'r','FaceColor','none','EdgeColor','red');
    hatchHandle = hatchfill2(patchHandle);
+   if experiment==43 % show contour of unconsumed dan
+       [~, contourHandle] = contour(xlat(xlat<=xmax+eps(xmax)),ylat,dan,1,'EdgeColor',[0.5 0.5 0.5],'FaceColor','none');
+       hatchfill2(contourHandle);
+   end
    if experiment==41
        hatchHandle.Color = hatchHandle.Color*param.initialDomainLength/max(xlat);
        patchHandle.EdgeAlpha = param.initialDomainLength/max(xlat);
+   elseif experiment==42
+       tPeakSlowdown = 12;
+       minSlowdown = 0.5;
+       slowDown = max(minSlowdown,(tPeakSlowdown - abs(time - tPeakSlowdown))/tPeakSlowdown);
+       hatchHandle.Color = hatchHandle.Color*slowDown;
+       patchHandle.EdgeAlpha = slowDown;
    end
 end
     

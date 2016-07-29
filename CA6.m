@@ -276,6 +276,11 @@ t_save = t_0+(0:param.tstep:param.tstep*numTsteps);
 xlat_save = cell(1,numTsteps); % spatial lattices (lat)
 ylat_save = cell(1,numTsteps);
 ca_save = cell(1,numTsteps); % chemoattractant (ca)
+if param.experiment==43 % dan tunneling simulation
+    dan_save = cell(1,numTsteps);
+else
+    dan_save = {};
+end
 cells_save = cell(numTsteps,1);
 filopodia_save = cell(numTsteps,1);
 cellsFollow_save = cell(numTsteps,1);
@@ -370,6 +375,16 @@ for timeCtr=1:numTsteps
         end
         ca_save{timeCtr} = ca;
     end
+    %% DAN %%
+    if param.experiment==43 % dan tunneling simulation
+        % instead of solving a PDE, simply set lattice points to 0 where
+        % there are cells
+        if timeCtr > 1
+            dan_save{timeCtr} = tunneling_solve(dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
+        else
+            dan_save{timeCtr} = tunneling_solve(ones(32,22),t_save(timeCtr),cellRadius);
+        end
+    end
     %% divide cells %%
     if (divide_cells==1)
         temp = cells_divide(cellsFollow,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
@@ -388,12 +403,12 @@ for timeCtr=1:numTsteps
             temp = new_move_cells(cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance);
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan_save{timeCtr});
         else
             temp = new_move_cells(cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance);
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan_save{timeCtr});
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

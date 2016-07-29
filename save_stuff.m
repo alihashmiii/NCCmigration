@@ -3,7 +3,7 @@
 if (param.experiment==1)||(param.experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param)
+        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
         sort(cells(1,:))
         
         if param.experiment==1
@@ -96,6 +96,7 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.xlat_save = xlat_save;
     out.ylat_save = ylat_save;
     out.ca_save = ca_save;
+    out.dan_save = dan_save;
     out.cells_save = cells_save;
     out.filopodia_save = filopodia_save;
     out.domainLengths = domainLengths;

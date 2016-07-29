@@ -7,16 +7,17 @@ close all
 makeMoves = 1;
 makeFrames = 1;
 makeAllMovie = 1;
+keepFrames = 0;
 
 experiment = 41;
 precision = 2;
 
-diffusivities = [1 10 100];
-slowSpeeds = [5 10 20];
+diffusivities = [100];
+slowSpeeds = [30];
 
 fileName = 'exp41_slowEntryDilute';
 
-for cntGdn = {'toward', 'parallel'}
+for cntGdn = {'parallel'}
     result.contactGuidance = char(cntGdn);
     for diffus = diffusivities
         result.diffus = diffus;
