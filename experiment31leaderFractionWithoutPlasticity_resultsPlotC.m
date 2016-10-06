@@ -79,7 +79,7 @@ for followFracCtr = length(followFracValues):-1:1
 end
     
 xlabel('x/$\mu$m','interpreter','latex')
-ylabel('number of cells / 50$\,\mu$m','interpreter','latex'), 
+ylabel('number of cells / 50$\,\mu$m','interpreter','latex')
 legend(num2str(flipud(mean(actualLeaderFraction,2)),precision),'Location',...
     'NorthEast'); 
 text(670,8.9,'$\langle f_L\rangle$','interpreter','latex')

@@ -380,10 +380,13 @@ for timeCtr=1:numTsteps
         % instead of solving a PDE, simply set lattice points to 0 where
         % there are cells
         if timeCtr > 1
-            dan_save{timeCtr} = tunneling_solve(dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
         else
-            dan_save{timeCtr} = tunneling_solve(ones(32,22),t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(ones(32,22),t_save(timeCtr),cellRadius);
         end
+        dan_save{timeCtr} = dan;
+    else
+        dan = [];
     end
     %% divide cells %%
     if (divide_cells==1)
@@ -403,12 +406,12 @@ for timeCtr=1:numTsteps
             temp = new_move_cells(cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan_save{timeCtr});
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         else
             temp = new_move_cells(cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan_save{timeCtr});
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         end
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;

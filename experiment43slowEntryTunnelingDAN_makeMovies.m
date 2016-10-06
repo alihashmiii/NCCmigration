@@ -15,12 +15,12 @@ keepFrames = 0;
 experiment = 41;
 precision = 2;
 
-diffusivities = [1 10 100];
+diffusivities = [100];
 slowSpeeds = [10 20 30];
 
 fileName = 'exp43_slowEntryTunnelingDAN';
 
-for cntGdn = {'toward', 'parallel'}
+for cntGdn = {'toward'}
     result.contactGuidance = char(cntGdn);
     for diffus = diffusivities
         result.diffus = diffus;
