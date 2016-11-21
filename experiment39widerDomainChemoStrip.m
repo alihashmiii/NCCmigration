@@ -19,8 +19,11 @@ middleStripe = y<=(in.domainHeight/2 + 60)&y>=(in.domainHeight/2 - 60);
 ca(:,middleStripe) = 1;
 in.ca_new = implicit_heat2D(ca,100,mean(diff(x)),mean(diff(y)),0.1,1); % we need some smoothing to reduce the sharp boundaries
 
-diffusivities = [1, 10, 100];
-speeds = [10, 20, 40];
+diffusivities = [1];
+speeds = [40];
+numReps = 10;
+
+for repCtr = 1:numReps
 
 for cntGdn = {'toward', 'parallel'}
     in.contactGuidance = char(cntGdn);
@@ -32,8 +35,10 @@ for cntGdn = {'toward', 'parallel'}
             in.followSpeed = speed;
             in.saveInfo = ['exp39_widerDomainStripe/exp39_widerDomainStripe' ...
                 '_D_' num2str(in.diffus)  '_sensingAcc_' num2str(in.sensingAccuracy,precision) ...
-                '_speed_' num2str(in.leadSpeed) '_contactGuidance_' in.contactGuidance];
+                '_speed_' num2str(in.leadSpeed) '_contactGuidance_' in.contactGuidance '_Run_' num2str(repCtr)];
             CA6(in,experiment)
         end
     end
+end
+
 end

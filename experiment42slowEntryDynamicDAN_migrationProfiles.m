@@ -13,7 +13,7 @@ numReps = 10;
 precision = 2;
 
 diffusivities = [1];
-slowSpeeds = [10 20 40];
+slowSpeeds = [30 10];
 
 fileName = 'exp42_slowEntryDynamicDAN';
 
@@ -22,6 +22,7 @@ plotMarkers = {'-+','-s','-o'};
 dx = 50;
 xBins = 0:dx:800; % bins for counting cell num vs. x profiles
 cellDistributions = NaN(length(slowSpeeds),numReps,length(xBins));
+refDistribution = NaN(numReps,length(xBins));
 
 exportOptions = struct('Format','eps2',...
     'Width','13.8',...
@@ -38,6 +39,23 @@ for cntGdn = {'toward', 'parallel'}
         sensingAccuracy = 0.1/sqrt(diffus/0.1); % sens acc scales with 1/sqrt(diffus)
         figure
         hold on
+        for repCtr = 1:numReps
+            %% load reference distribution
+            loadInfo = ['exp39_widerDomainStripe/exp39_widerDomainStripe' ...
+                '_D_' num2str(diffus)  '_sensingAcc_' num2str(sensingAccuracy,precision) ...
+                '_speed_40_contactGuidance_' contactGuidance '_Run_' num2str(repCtr)];
+            load(['results/' loadInfo '.mat'])
+            % find time index to plot
+            timeIdx = find(out.t_save>timeToPlot,1,'first');
+            % load cell positions into variables
+            cells = out.cells_save{timeIdx}; % all cells
+            % calculate migration profile
+            refDistribution(repCtr,:) = histc(cells(1,:),xBins);
+        end
+        %% plot reference profile
+        errorbar(xBins + dx/2,mean(refDistribution),std(refDistribution)./sqrt(numReps),...
+            plotMarkers{end});
+        %% load DAN data
         for slowSpeedCtr = 1:length(slowSpeeds)
             slowSpeed = slowSpeeds(slowSpeedCtr);
             for repCtr = 1:numReps
@@ -51,11 +69,10 @@ for cntGdn = {'toward', 'parallel'}
                 timeIdx = find(out.t_save>timeToPlot,1,'first');
                 % load cell positions into variables
                 cells = out.cells_save{timeIdx}; % all cells
-
+                
                 % calculate migration profile
-                cellDistributions(slowSpeedCtr,repCtr,:) = histc(cells(1,:),xBins); % leaders
+                cellDistributions(slowSpeedCtr,repCtr,:) = histc(cells(1,:),xBins);
             end
-            
             %% plot migration profile
             % plot lines for migration profile (simplest, if less accurate)
             meanNumCells = squeeze(mean(cellDistributions(slowSpeedCtr,:,:),2));
@@ -65,7 +82,7 @@ for cntGdn = {'toward', 'parallel'}
         end
         xlabel('x/$\mu$m','interpreter','latex')
         ylabel('number of cells / 50$\,\mu$m','interpreter','latex')
-        hl = legend(num2str(slowSpeeds'));
+        hl = legend(num2str([40 slowSpeeds]'));
         hl.Title.String = 'v_{DAN} (\mum/hr)';
         hl.Title.FontWeight = 'normal';
         xlim([0 800])
