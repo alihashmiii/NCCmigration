@@ -12,11 +12,11 @@ makeFrames = 1;
 makeAllMovie = 1;
 keepFrames = 0;
 
-experiment = 41;
+experiment = 43;
 precision = 2;
 
-diffusivities = [100];
-slowSpeeds = [10 20 30];
+diffusivities = [1];
+slowSpeeds = [10 30];
 
 fileName = 'exp43_slowEntryTunnelingDAN';
 
@@ -29,7 +29,8 @@ for cntGdn = {'toward'}
             result.slowSpeed = slowSpeed;
             result.loadInfo = [fileName '_D_' num2str(result.diffus) ...
                 '_sensingAcc_' num2str(result.sensingAccuracy,precision) ...
-                '_slowSpeed_' num2str(result.slowSpeed) '_contactGuidance_' result.contactGuidance];
+                '_slowSpeed_' num2str(result.slowSpeed) ...
+                '_contactGuidance_' result.contactGuidance '_Run_1'];
             load(['results/' fileName '/' result.loadInfo '.mat'])
             load_results
             make_frames

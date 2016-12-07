@@ -14,7 +14,7 @@ caCmap = load('cmap_blue2cyan.txt');
 for frameCtr=1:length(frames2show)
     timeCtr = frames2show(frameCtr);
     subplot(length(frames2show),1,frameCtr)
-    if exist('dan_save','var')
+    if exist('dan_save','var')&&~isempty(dan_save)
         make_plot(cells_save{timeCtr},cellsFollow_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},t_save(timeCtr),ca_save{timeCtr},filopodia_save{timeCtr},...
             numFilopodia,attach_save{timeCtr},cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,0,param,dan_save{timeCtr})
     else

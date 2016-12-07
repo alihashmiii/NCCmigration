@@ -276,7 +276,7 @@ t_save = t_0+(0:param.tstep:param.tstep*numTsteps);
 xlat_save = cell(1,numTsteps); % spatial lattices (lat)
 ylat_save = cell(1,numTsteps);
 ca_save = cell(1,numTsteps); % chemoattractant (ca)
-if param.experiment==43 % dan tunneling simulation
+if param.experiment==43||experiment==44 % dan tunneling simulation
     dan_save = cell(1,numTsteps);
 else
     dan_save = {};
@@ -376,7 +376,7 @@ for timeCtr=1:numTsteps
         ca_save{timeCtr} = ca;
     end
     %% DAN %%
-    if param.experiment==43 % dan tunneling simulation
+    if param.experiment==43||param.experiment==44 % dan tunneling simulation
         % instead of solving a PDE, simply set lattice points to 0 where
         % there are cells
         if timeCtr > 1

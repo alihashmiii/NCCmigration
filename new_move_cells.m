@@ -107,7 +107,7 @@ for i =1:length(cell_order)
     if (move==1)||((standStill==0)&&(move==0))
         if move==1, moved(cellIdx)=1; end
         if ((param.experiment==40)||(param.experiment==41)||(param.experiment==42)...
-                ||(param.experiment==43))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
+                ||(param.experiment==43)||(param.experiment==44))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
             switch param.experiment
                 case 40 % slow down is constant over time
                     slowDown = 1;
@@ -125,6 +125,17 @@ for i =1:length(cell_order)
                     % xsave and ysave are the coordinates of the chemoattractant lattice
                     % points. dan has the same y-coordinates, but only makes up a 1/3 of the x range
                     slowDown = mean(mean(dan(find_occupancy(xrange,ylat,try_x,try_y,cellRadius)))); % take the mean twice in case the cell sits on multiple lattice points
+                case 44 % slow down has intrinsic dynamics, but is also broken down by cells
+                    tPeakSlowdown = 12;
+                    minSlowdown = 0.5;
+                    slowDownDynamics = max(minSlowdown,...
+                        (tPeakSlowdown - abs(currentTime - tPeakSlowdown))/tPeakSlowdown);
+                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
+                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+                    xrange = xlat(xlat>=0&xlat<=max(xlat)/3);
+                    % xsave and ysave are the coordinates of the chemoattractant lattice
+                    % points. dan has the same y-coordinates, but only makes up a 1/3 of the x range
+                    slowDown = slowDownDynamics.*mean(mean(dan(find_occupancy(xrange,ylat,try_x,try_y,cellRadius)))); % take the mean twice in case the cell sits on multiple lattice points
                 otherwise
                     slowDown = 0;
             end

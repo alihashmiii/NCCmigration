@@ -12,15 +12,14 @@ makeFrames = 1;
 makeAllMovie = 1;
 keepFrames = 0;
 
-experiment = 42;
+experiment = 44;
 precision = 2;
 
 diffusivities = [1];
-slowSpeeds = [30 10];
+slowSpeeds = [10 30];
 
-fileName = 'exp42_slowEntryDynamicDAN';
-numReps = 10;
-for repCtr = 2:numReps
+fileName = 'exp44_slowEntryDynamicTunnelingDAN';
+
 for cntGdn = {'parallel'}
     result.contactGuidance = char(cntGdn);
     for diffus = diffusivities
@@ -31,14 +30,12 @@ for cntGdn = {'parallel'}
             result.loadInfo = [fileName '_D_' num2str(result.diffus) ...
                 '_sensingAcc_' num2str(result.sensingAccuracy,precision) ...
                 '_slowSpeed_' num2str(result.slowSpeed) ...
-                '_contactGuidance_' result.contactGuidance '_Run_' num2str(repCtr)];
+                '_contactGuidance_' result.contactGuidance '_Run_1'];
             load(['results/' fileName '/' result.loadInfo '.mat'])
             load_results
             make_frames
-            saveInfo = out.saveInfo(27:end); % had the folder name repeated in the saveInfo
-            keepFrames=1;
+            saveInfo = out.saveInfo(36:end); % had the folder name repeated in the saveInfo
             make_all_movie_hidden
         end
     end
-end
 end

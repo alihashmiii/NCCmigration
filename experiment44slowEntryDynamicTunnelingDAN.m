@@ -1,8 +1,8 @@
 % simulate neural crest cell migration on wider comain with vegf production
 % only in the middle, but cells get inserted at full width
 % has a zone of reduced cell speeds at the start (grows with tissue)
-% DAN zone near domain entrance slows down cells, but is broken down as
-% cells move through it
+% DAN zone near domain entrance slows down cells, increases then decreases
+% with time linearly, but is broken down as cells move through it
 
 clear
 close all
@@ -11,7 +11,7 @@ in.time = 24;
 in.conversionType = 4;
 in.domainHeight = 360;
 
-experiment = 43;
+experiment = 44;
 precision = 2;
 
 % setting the initial CA outside the migratory path to zero in case of a wider domain
@@ -23,13 +23,13 @@ ca(:,middleStripe) = 1;
 in.ca_new = implicit_heat2D(ca,100,mean(diff(x)),mean(diff(y)),0.1,1); % we need some smoothing to reduce the sharp boundaries
 
 diffusivities = [1];
-slowSpeeds = [10, 20, 30, 40];
+slowSpeeds = [10, 30, 40];
 in.leadSpeed = 40;
 in.followSpeed = 40;
-fileName = 'exp43_slowEntryTunnelingDAN';
-numReps = 1;
+fileName = 'exp44_slowEntryDynamicTunnelingDAN';
+numReps = 10;
 for repCtr = 1:numReps
-    for cntGdn = {'toward', 'parallel'}
+    for cntGdn = {'parallel','toward'}
         in.contactGuidance = char(cntGdn);
         for diffus = diffusivities
             in.diffus = diffus;

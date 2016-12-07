@@ -11,10 +11,10 @@ makeAllMovie = 1;
 experiment = 39;
 precision = 2;
 
-diffusivities = [1 10 100];
-speeds = [10 20 40];
+diffusivities = 1;%[1 10 100];
+speeds = [40];
 
-for cntGdn = {'toward', 'parallel'}
+for cntGdn = {'parallel', 'toward'}
     result.contactGuidance = char(cntGdn);
     for diffus = diffusivities
         result.diffus = diffus;
@@ -29,6 +29,7 @@ for cntGdn = {'toward', 'parallel'}
             load_results
             saveInfo = out.saveInfo(25:end); % had the folder name repeated in the saveInfo
             make_frames
+            keepFrames =1;
             make_all_movie_hidden
         end
     end
