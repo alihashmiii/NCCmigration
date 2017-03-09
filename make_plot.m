@@ -45,21 +45,24 @@ if (experiment==40)||(experiment==41)||(experiment==42)||(experiment==43)||exper
    xmax = max(xlat)/3;
    ymin = min(ylat);
    ymax = max(ylat);
-   patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
-       'r','FaceColor','none','EdgeColor',[1 0.2 0.2],'LineWidth',2);
-   hatchHandle = hatchfill2(patchHandle,'HatchSpacing',10,'HatchLineWidth',2);
-   if experiment==43||experiment==44 % show contour of unconsumed dan
-       [~, contourHandle] = contour(xlat(xlat<=xmax+eps(xmax)),ylat,dan,1,...
-           'EdgeColor',[0.5 0.5 0.5],'FaceColor','none','LineWidth',2);
-       hatchfill2(contourHandle,'HatchSpacing',10,'HatchLineWidth',2);
-   end
-   if experiment==41
-       hatchHandle.Color = hatchHandle.Color*param.initialDomainLength/max(xlat);
-       patchHandle.EdgeAlpha = param.initialDomainLength/max(xlat);
-   elseif experiment==42||experiment==44
+   if experiment==42||experiment==44 % determine slow-down for dynamic dan for color and hatch spacing
        tPeakSlowdown = 12;
        minSlowdown = 0.5;
        slowDown = max(minSlowdown,(tPeakSlowdown - abs(time - tPeakSlowdown))/tPeakSlowdown);
+   elseif experiment==41 % dilutiuon of DAN through growth
+       slowDown = param.initialDomainLength/max(xlat);
+   else
+       slowDown = 1;
+   end
+   patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
+       'r','FaceColor','none','EdgeColor',[1 0.2 0.2],'LineWidth',2);
+   hatchHandle = hatchfill2(patchHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
+   if experiment==43||experiment==44 % show contour of unconsumed dan
+       [~, contourHandle] = contour(xlat(xlat<=xmax+eps(xmax)),ylat,dan,1,...
+           'EdgeColor',[0.5 0.5 0.5],'FaceColor','none','LineWidth',2);
+       hatchfill2(contourHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
+   end
+   if experiment==41||experiment==42||experiment==44
        hatchHandle.Color = hatchHandle.Color*slowDown;
        patchHandle.EdgeAlpha = slowDown;
    end
