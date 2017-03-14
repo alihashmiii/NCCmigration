@@ -21,7 +21,7 @@ in.ca_new = implicit_heat2D(ca,100,mean(diff(x)),mean(diff(y)),0.1,1); % we need
 
 diffusivities = [1];
 speeds = [40];
-insertEveryStepsValues = [15 30]; % corresponding to 4 and 2 (attempted) cell insertions per hour at tstep = 1min
+insertEveryStepsValues = [10]; % corresponding to 4 and 2 (attempted) cell insertions per hour at tstep = 1min
 numReps = 10;
 
 for repCtr = 1:numReps
