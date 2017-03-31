@@ -14,7 +14,7 @@ precision = 2;
 
 diffusivities = [1];
 slowSpeeds = [30 10];
-insertEveryStepsValues = [10]; % corresponding to 4 and 2 (attempted) cell insertions per hour at tstep = 1min
+insertEveryStepsValues = [10 15 30]; % corresponding to 6, 4 and 2 (attempted) cell insertions per hour at tstep = 1min
 
 fileName = 'exp42_slowEntryDynamicDAN';
 
@@ -38,9 +38,10 @@ for cntGdn = {'parallel'}
     contactGuidance = char(cntGdn);
     for diffus = diffusivities
         sensingAccuracy = 0.1/sqrt(diffus/0.1); % sens acc scales with 1/sqrt(diffus)
-        for insertEverySteps = insertEveryStepsValues
-            figure
-            hold on
+        for insertEveryStepsCtr = 1:length(insertEveryStepsValues)
+            insertEverySteps = insertEveryStepsValues(insertEveryStepsCtr);
+            migrationHistFig = figure; hold on
+            danZoneFig = figure; hold on
             for repCtr = 1:numReps
                 %% load reference distribution
                 loadInfo = ['exp39_widerDomainStripe/exp39_widerDomainStripe' ...
@@ -56,7 +57,7 @@ for cntGdn = {'parallel'}
                 refDistribution(repCtr,:) = histc(cells(1,:),xBins);
             end
             %% plot reference profile
-            errorbar(xBins + dx/2,mean(refDistribution),std(refDistribution)./sqrt(numReps),...
+            errorbar(migrationHistFig.Children,xBins + dx/2,mean(refDistribution),std(refDistribution)./sqrt(numReps),...
                 plotMarkers{end});
             %% load DAN data
             for slowSpeedCtr = 1:length(slowSpeeds)
@@ -80,29 +81,31 @@ for cntGdn = {'parallel'}
                 % plot lines for migration profile (simplest, if less accurate)
                 meanNumCells = squeeze(mean(cellDistributions(slowSpeedCtr,:,:),2));
                 stdNumCells = squeeze(std(cellDistributions(slowSpeedCtr,:,:),[],2));
-                errorbar(xBins + dx/2,meanNumCells,stdNumCells./sqrt(numReps),...
+                errorbar(migrationHistFig.Children,xBins + dx/2,meanNumCells,stdNumCells./sqrt(numReps),...
                     plotMarkers{slowSpeedCtr});
             end
-            xlabel('x/$\mu$m','interpreter','latex')
-            ylabel('number of cells / 50$\,\mu$m','interpreter','latex')
-            hl = legend(num2str([40 slowSpeeds]'));
+            xlabel(migrationHistFig.Children,'x/$\mu$m','interpreter','latex')
+            ylabel(migrationHistFig.Children,'number of cells / 50$\,\mu$m','interpreter','latex')
+            xlim(migrationHistFig.Children,[0 800])
+            migrationHistFig.Children.XGrid = 'on';
+            migrationHistFig.Children.YGrid = 'on';
+            migrationHistFig.Children.Box = 'on';
+            set(migrationHistFig.Children,'Layer','top')
+            hl = legend(migrationHistFig.Children,num2str([40 slowSpeeds]'));
             hl.Title.String = 'v_{DAN} (\mum/hr)';
             hl.Title.FontWeight = 'normal';
-            xlim([0 800])
-            grid off, set(gca,'Layer','top')
-            box on
             %% save figure as .fig file
             savename = ['~/Dropbox/projects/cellMigration/DAN/figures/' fileName ...
                 '_D_' num2str(diffus)  '_sensingAcc_' num2str(sensingAccuracy,precision) ...
                 '_insertEvry_' num2str(insertEverySteps) ...
                 '_contactGuidance_' contactGuidance '_migrationProfiles'];
-            saveas(gcf,[savename '.fig'])
+            saveas(migrationHistFig,[savename '.fig'])
             
             %% export figure
-            pos = get(gcf,'Position');
+            pos = get(migrationHistFig,'Position');
             pos(4) = 1/2*pos(3); % adjust height to fraction of width
-            set(gcf,'PaperUnits','centimeters','Position',pos,'color','none');
-            exportfig(gcf,[savename '.eps'],exportOptions);
+            set(migrationHistFig,'PaperUnits','centimeters','Position',pos,'color','none');
+            exportfig(migrationHistFig,[savename '.eps'],exportOptions);
             system(['epstopdf ' savename '.eps']);
         end
     end

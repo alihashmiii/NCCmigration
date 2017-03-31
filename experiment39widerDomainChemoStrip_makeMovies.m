@@ -13,7 +13,7 @@ precision = 2;
 
 diffusivities = 1;%[1 10 100];
 speeds = [40];
-insertEveryStepsValues = [15 30]; % corresponding to 4 and 2 (attempted) cell insertions per hour at tstep = 1min
+insertEveryStepsValues = [10]; % corresponding to 4 and 2 (attempted) cell insertions per hour at tstep = 1min
 
 for cntGdn = {'parallel'}
     result.contactGuidance = char(cntGdn);
