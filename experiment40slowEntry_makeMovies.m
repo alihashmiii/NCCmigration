@@ -28,10 +28,9 @@ for cntGdn = {'parallel'}
                 '_sensingAcc_' num2str(result.sensingAccuracy,precision) ...
                 '_slowSpeed_' num2str(result.slowSpeed) '_contactGuidance_' result.contactGuidance];
             load(['results/' fileName '/' result.loadInfo '.mat'])
-            load_results
-            make_frames
             saveInfo = out.saveInfo(17:end); % had the folder name repeated in the saveInfo
-            make_all_movie_hidden(saveInfo)
+            make_frames(saveInfo)
+            make_all_movie_hidden(saveInfo,[],keepFrames)
         end
     end
 end

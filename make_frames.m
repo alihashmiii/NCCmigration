@@ -1,7 +1,13 @@
+function make_frames(saveInfo,showColorbar)
 % close all
 framesFig = figure;
 
+if nargin<2
 showColorbar = 1;
+end
+
+load(['results/' saveInfo '.mat'])
+load_results
 if param.experiment==0||param.experiment>=10
     frames2show = [1, find(t_save<=12,1,'last'), find(t_save<=24,1,'last')];
 else
@@ -29,5 +35,6 @@ for frameCtr=1:length(frames2show)
     xlabel('x/\mum'), ylabel('y/\mum') % -- LJS
 end
 
-saveas(framesFig,['avi_mat/frames/',saveInfo,'.fig'])
+saveas(framesFig,['avi_mat/frames/',saveInfo,'/',saveInfo,'.fig'])
 close(framesFig)
+end

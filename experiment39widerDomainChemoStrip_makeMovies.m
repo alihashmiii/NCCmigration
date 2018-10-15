@@ -30,11 +30,10 @@ for cntGdn = {'parallel'}
                         '_speed_' num2str(result.leadSpeed) '_insertEvry_' num2str(insertEverySteps) ...
                     '_contactGuidance_' result.contactGuidance '_Run_1'];
                 load(['results/exp39_widerDomainStripe/' result.loadInfo '.mat'])
-                load_results
                 saveInfo = out.saveInfo(25:end); % had the folder name repeated in the saveInfo
-                make_frames
+                make_frames(saveInfo)
                 keepFrames =1;
-                make_all_movie_hidden(saveInfo)
+                make_all_movie_hidden(saveInfo,[],keepFrames)
             end
         end
     end

@@ -49,7 +49,7 @@ for defaultFollow = defaultFollowValues
                     '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                 keepFrames=1;
                 stopTime = 12;
-                make_all_movie_hidden(saveInfo)
+                make_all_movie_hidden(saveInfo,[],keepFrames)
                 startAtFrame = frameCtr;
                 end
                 % load the transplant simulation
@@ -68,7 +68,7 @@ for defaultFollow = defaultFollowValues
                     '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                 %% make frames %%
                 if makeFrames==1
-                    make_frames
+                    make_frames(saveInfo)
                     disp('made frames')
                     framesFig = open(['avi_mat/frames/',saveInfo,'.fig']);
                     %% export figure
@@ -92,7 +92,7 @@ for defaultFollow = defaultFollowValues
                 if makeAllMovie==1
                     keepFrames = 1;
                     stopTime = 25;
-                    make_all_movie_hidden(saveInfo,startAtFrame)
+                    make_all_movie_hidden(saveInfo,startAtFrame,keepFrames)
                     startAtFrame = 1;
                 end
             end

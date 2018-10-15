@@ -1,4 +1,4 @@
-function make_all_movie_hidden(saveInfo,startAtFrame)
+function make_all_movie_hidden(saveInfo,startAtFrame,keepFrames)
 % saves images and compiles movie externally - LJS
 % saves to /avi_mat
 % Issues/todo:
@@ -21,6 +21,9 @@ if nargin>1&&exist('startAtFrame','var')&&~isempty(startAtFrame)
     frameCtr = startAtFrame;
 else
     frameCtr = 1;
+end
+if nargin<3
+    keepFrames = false;
 end
 
 caCmap = load('cmap_blue2cyan.txt');

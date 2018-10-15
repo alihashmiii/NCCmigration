@@ -468,7 +468,7 @@ if makeMovies==1
     caCmap = load('cmap_blue2cyan.txt');
     %%% make frames %%%
     if makeFrames==1
-        make_frames
+        make_frames(saveInfo)
         disp('made frames')
 %         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
     end

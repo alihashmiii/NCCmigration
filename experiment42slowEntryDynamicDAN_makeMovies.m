@@ -37,11 +37,10 @@ for repCtr = 1:2
                         '_insertEvry_' num2str(result.insertEverySteps)...
                         '_contactGuidance_' result.contactGuidance '_Run_' num2str(repCtr)];
                     load(['results/' fileName '/' result.loadInfo '.mat'])
-                    load_results
-                    make_frames
                     saveInfo = out.saveInfo(27:end); % had the folder name repeated in the saveInfo
+                    make_frames(saveInfo)
                     keepFrames=1;
-                    make_all_movie_hidden(saveInfo)
+                    make_all_movie_hidden(saveInfo,[],keepFrames)
                 end
             end
         end

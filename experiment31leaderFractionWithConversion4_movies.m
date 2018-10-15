@@ -47,7 +47,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
                     '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                 %% make frames %%
                 if makeFrames==1
-                    make_frames
+                    make_frames(saveInfo)
                     disp('made frames')
                     framesFig = open(['avi_mat/frames/',saveInfo,'.fig']);
                     %% export figure
