@@ -480,7 +480,7 @@ if makeMovies==1
     
     %%% make cells+ca movie (allmovie.avi)%%%
     if makeAllMovie==1
-        make_all_movie_hidden
+        make_all_movie_hidden(saveInfo)
     end
     
     if makeFrames==1

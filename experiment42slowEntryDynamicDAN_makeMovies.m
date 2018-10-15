@@ -41,7 +41,7 @@ for repCtr = 1:2
                     make_frames
                     saveInfo = out.saveInfo(27:end); % had the folder name repeated in the saveInfo
                     keepFrames=1;
-                    make_all_movie_hidden
+                    make_all_movie_hidden(saveInfo)
                 end
             end
         end

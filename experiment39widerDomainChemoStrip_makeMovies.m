@@ -34,7 +34,7 @@ for cntGdn = {'parallel'}
                 saveInfo = out.saveInfo(25:end); % had the folder name repeated in the saveInfo
                 make_frames
                 keepFrames =1;
-                make_all_movie_hidden
+                make_all_movie_hidden(saveInfo)
             end
         end
     end

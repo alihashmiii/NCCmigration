@@ -49,7 +49,7 @@ for defaultFollow = defaultFollowValues
                     '_sensingAcc_' num2str(sensingAccuracy) '_Run_' num2str(repCtr)];
                 keepFrames=1;
                 stopTime = 12;
-                make_all_movie_hidden
+                make_all_movie_hidden(saveInfo)
                 startAtFrame = frameCtr;
                 end
                 % load the transplant simulation
@@ -92,7 +92,7 @@ for defaultFollow = defaultFollowValues
                 if makeAllMovie==1
                     keepFrames = 1;
                     stopTime = 25;
-                    make_all_movie_hidden
+                    make_all_movie_hidden(saveInfo,startAtFrame)
                     startAtFrame = 1;
                 end
             end

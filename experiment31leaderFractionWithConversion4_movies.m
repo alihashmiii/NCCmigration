@@ -69,7 +69,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
                 %% make movies %%
                 %%% make cells+ca movie (allmovie.avi)%%%
                 if makeAllMovie==1
-                    make_all_movie_hidden
+                    make_all_movie_hidden(saveInfo)
                 end
             end
         end

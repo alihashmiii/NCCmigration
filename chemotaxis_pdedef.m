@@ -45,8 +45,11 @@ end
 % end
 % % this following vectorisation, using "Tony's trick" for indexing, is
 % faster -- LJS
-bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*(...
-    (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
+% bigEat = eatRate*u(:,ones(length(xcell),1))/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*(...
+%     (x(:,ones(length(xcell),1)) - xcell(ones(npts,1),:)).^2*L^2 + (y(:,ones(length(xcell),1)) - ycell(ones(npts,1),:)).^2)); %tony's trick
+% % from R2016b onwards, we can also use implict expansion
+bigEat = eatRate*u/(eatWidth^2*2*pi).*exp(-1/2/eatWidth^2.*(...
+    (x - xcell).^2*L^2 + (y - ycell).^2)); % implicit expansion
 eatTerm = sum(bigEat,2);
 productionTerm = zeros(size(u));
 if experiment==38||experiment==39||experiment==40||experiment==41||experiment==42||experiment==43||experiment==44
