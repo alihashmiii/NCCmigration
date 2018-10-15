@@ -31,8 +31,9 @@ followerFraction = 1;        % proportion of cells that are followers (0<=follow
 % this is only an estimated fraction. actual leader fraction currently
 % turns out to be ca. (1 - followerFraction)/2 -- LJS
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-conversionType = 0;       % type of conversion used: 0 is no conversion; 1 is time frustrated; 2 is proportion of better directions
-numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+conversionType = 0;       % type of conversion used: 0 is no conversion; 
+    % 1 is time frustrated; 2 is proportion of better directions
+    % 3 is deprecated; 4 is integrate and switchnumFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 param.makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -98,7 +99,7 @@ param.chi = 0.0001;                  % chemoattractant production term (usually 
 param.eatRate = 1000;                      % chemoattractant consumption rate
 param.eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
-%% convert parameters
+%% leader-follower conversion parameters
 if isstruct(in)
     if ismember('conversionType',fields(in))
         conversionType = in.conversionType;
@@ -294,7 +295,7 @@ if isstruct(in)&&ismember('ca_new',fields(in))
     param.ca_new = in.ca_new; % take CA field passed in
     param.insert = 1;
 end
-if isstruct(in)&&ismember('xlat_new',fields(in));
+if isstruct(in)&&ismember('xlat_new',fields(in))
     xlat_new = in.xlat_new; % take lattice passed in - not sure how important this is
     param.insert = 1;
 else
@@ -380,9 +381,9 @@ for timeCtr=1:numTsteps
         % instead of solving a PDE, simply set lattice points to 0 where
         % there are cells
         if timeCtr > 1
-            dan = tunneling_solve(dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
         else
-            dan = tunneling_solve(ones(32,22),t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,ones(32,22),t_save(timeCtr),cellRadius);
         end
         dan_save{timeCtr} = dan;
     else
@@ -390,7 +391,7 @@ for timeCtr=1:numTsteps
     end
     %% divide cells %%
     if (divide_cells==1)
-        temp = cells_divide(cellsFollow,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
+        temp = cells_divide(cells,cellsFollow,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
         cellsFollow = temp.cellsFollow;
     end
     %% domain growth %%
@@ -403,12 +404,12 @@ for timeCtr=1:numTsteps
     %% move cells %%
     if cellsMove==1
         if timeCtr==1
-            temp = new_move_cells(cellsFollow,[],attach,theta,...
+            temp = new_move_cells(cells,param,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         else
-            temp = new_move_cells(cellsFollow,filopodia,attach,theta,...
+            temp = new_move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
@@ -447,7 +448,7 @@ for timeCtr=1:numTsteps
     
     %% cells can convert from leaders <-> followers
     if (conversionType~=0)
-        out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
+        out = convert_cells(param,cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
             param.eatWidth,conversionType,numFilopodia);
         cellsFollow = out.cellsFollow;
         moved = out.moved;

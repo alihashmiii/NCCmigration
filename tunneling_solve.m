@@ -1,7 +1,6 @@
-function [ dan ] = tunneling_solve(dan_prev,t,cellRadius)
+function [ dan ] = tunneling_solve(cells, xsave, ysave, param, dan_prev,t,cellRadius)
 %sets lattice of DAN concentration to zero where cells are
 %   quick and dirty for now
-global cells xsave ysave param
 
 if (param.growingDomain==1)
     [~, L, ~] = domain_growth([],t-param.tstep,param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_s);

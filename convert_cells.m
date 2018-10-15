@@ -1,7 +1,5 @@
-function out = convert_cells(cellsFollow,timeCtr,cells_save,filolength,moved,...
+function out = convert_cells(param,cells,cellsFollow,timeCtr,cells_save,filolength,moved,...
     happiness,ca_save,xlat,ylat,eatWidth,conversionType,numFilopodia)
-
-global param cells % using global variables is much faster than saving & loading from disk -- LJS
 
 if conversionType==1
     %% using amount of time not found a gradient / another cell
@@ -55,7 +53,11 @@ elseif conversionType==2
             %             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
-elseif conversionType==3 %% Conversion type 3 was because Ruth kept asking if we couldn't just set some concentration of local chemoattractant at which cells would convert between the types. It doesn't really work, because the overall levels are being diluted as the domain expands, so you can't set just one threshold. (LJS: but what if hte consumption was high enough so that dilution wasn't much of an issue?
+elseif conversionType==3 
+    % Conversion type 3 was to check if we couldn't just set some concentration 
+    % of local chemoattractant at which cells would convert between the types. 
+    % It doesn't really work, because the overall levels are being diluted as 
+    % the domain expands, so you can't set just one threshold. (LD)
     %% using maximum chemoattractant gradient (with point measures of c'tant)
     dx = 10;
     temp_thet = 0:0.1*pi:2*pi;

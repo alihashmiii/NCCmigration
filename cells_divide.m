@@ -2,9 +2,8 @@
 % takes in cell (x_cell,y_cell) positions and follower information (cellsFollow) 
 % and outputs new cell positions including new cells due to division
 
-function out = cells_divide(cellsFollow,cellRadius,domainLength,bottom,top,ca,ca_x,ca_y,tstep)
+function out = cells_divide(cells,cellsFollow,cellRadius,domainLength,bottom,top,ca,ca_x,ca_y,tstep)
 
-global cells
 %% find the starting number of cells %%
 n = length(cells(1,:));
 
