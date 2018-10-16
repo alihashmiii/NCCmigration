@@ -33,7 +33,8 @@ followerFraction = 1;        % proportion of cells that are followers (0<=follow
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
 conversionType = 0;       % type of conversion used: 0 is no conversion; 
     % 1 is time frustrated; 2 is proportion of better directions
-    % 3 is deprecated; 4 is integrate and switchnumFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+    % 3 is deprecated; 4 is integrate and switch
+numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 param.makeChemoattractant = 1;   % there is a chemoattranctant source term
@@ -404,16 +405,17 @@ for timeCtr=1:numTsteps
     %% move cells %%
     if cellsMove==1
         if timeCtr==1
-            temp = new_move_cells(cells,param,cellsFollow,[],attach,theta,...
+            temp = move_cells(cells,param,cellsFollow,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         else
-            temp = new_move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
+            temp = move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         end
+        cells = temp.cells;
         attach = temp.attach;
         cellsFollow = temp.cellsFollow;
         filopodia = temp.filopodia;

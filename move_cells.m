@@ -1,4 +1,4 @@
-function out = new_move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
+function out = move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
     domainHeight, dist, domainLength, numFilopodia,volumeExclusion, ...
     standStill, sensingAccuracy, needNeighbours, contactGuidance, currentTime, dan)
@@ -176,6 +176,7 @@ for i =1:length(cell_order)
 end
 
 %% save stuff
+out.cells = cells;
 out.attach = attach;
 out.cellsFollow = cellsFollow;
 out.filopodia = filopodia;

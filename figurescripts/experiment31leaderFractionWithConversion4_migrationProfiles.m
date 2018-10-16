@@ -11,9 +11,9 @@ precision = 2; % significant figures for filenames and plot labels etc.
 
 conversionType = 4;
 defaultFollowValues = [0 1 2];
-lead2followValues = [1 2 4 8 12 16 24 32 40 48 56];
-follow2leadValues = [1 2 4 8 12 16 24 32 40 48 56];
-sensingAccuracyValues = [0.1, 0.01];
+lead2followValues = [4];
+follow2leadValues = [4];
+sensingAccuracyValues = [0.01];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)*length(lead2followValues)*length(follow2leadValues);
 time2plot = [24];
 tstep = 1/60;                   % time step in hours
