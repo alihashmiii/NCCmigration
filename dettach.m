@@ -1,10 +1,10 @@
 function attach= dettach(r,attach)
 
-attach(r)=0;
+attach(r)=0; % dettach cell r from whatever it was attached to
 stop = 0;
-dettach_ind = find(attach==r);   % find what was attached to cell r
+dettach_ind = find(attach==r);   % find what is attached to cell r
 if isempty(dettach_ind)
-    stop=1;                     % if nothing was attached, then detach
+    stop=1;                     % if nothing is attached, no nothing more
 else
     attach(dettach_ind)=0;      % otherwise dettach all those cells
 end
@@ -20,4 +20,5 @@ while stop==0
         attach(next_dettach_ind)=0;
         dettach_ind = next_dettach_ind;
     end
+end
 end

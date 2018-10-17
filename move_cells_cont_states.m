@@ -10,7 +10,7 @@ for i =1:length(cell_order)
     move = 0;
     cellIdx = cell_order(i);  % look at the ith cell
     other_cells = cells(:,(1:end)~=cellIdx);
-    
+
     %% calculate neighbours within reach (work in progress) -- LJS
     distance = sqrt((cells(1,cellIdx) - other_cells(1,:)).^2 + (cells(2,cellIdx) - other_cells(2,:)).^2);
     numberOfNeighbours = nnz(distance <= filolength);
@@ -40,6 +40,10 @@ for i =1:length(cell_order)
             thetaContactGuidance = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx)));
 %             attach = dettach(cellIdx,attach);
             attach(cellIdx) = 0;
+            % set dettached (first) filopodium in random direction
+            phi = (rand(1,1)*2 - 1)*pi;
+            filopodia(cellIdx,1,1) = cells(1,cellIdx) + filolength.*cos(phi);
+            filopodia(cellIdx,1,2) = cells(2,cellIdx) + filolength.*sin(phi);
         end
         % set any other filopodia in random direction -- LJS
         if numFilopodia > 1
@@ -182,7 +186,10 @@ for i =1:length(cell_order)
             pause
         end
     end
+    % check max filo length
+    assert((filopodia(cellIdx,1,1) - cells(1,cellIdx))^2 + (filopodia(cellIdx,1,2) - cells(2,cellIdx))^2 <= (maxFilolength + cellRadius)^2)
 end
+   
 
 %% save stuff
 out.cells = cells;
