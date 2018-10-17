@@ -2,7 +2,7 @@
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 else
-    if conversionType~=0
+    if exist('conversionType','var')&&conversionType~=0
         if conversionType==4
             saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(param.numSteps(1)),'_',num2str(param.numSteps(2)),...
                 '_eatRate_',num2str(param.eatRate),'_diff_',num2str(param.diffus)];
@@ -11,7 +11,7 @@ else
                 '_eatRate_',num2str(param.eatRate),'_diff_',num2str(param.diffus)];
         end
     else
-        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),...
             '_eatRate_',num2str(param.eatRate),'_diff_',num2str(param.diffus)];
     end
 end

@@ -4,7 +4,8 @@
 % movement for the cell and a parameter, d, that is related to the radius
 % of sensing of ca.
 
-function [filopodia,move,theta,num_better] = cell_movement5(sampledDirections,x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil,sensingAccuracy)
+function [filopodia,move,theta,num_better,deltaC] = sense_gradients(sampledDirections,...
+    x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil,sensingAccuracy)
 
 
 %% Integrate the chemoattractant in the present area %%%
@@ -30,6 +31,7 @@ for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best
         x_fil = fil(filo_ctr,1);
         y_fil = fil(filo_ctr,2);
         filopodia(filo_ctr,:) = fil(filo_ctr,:);
+        sampledDirections(filo_ctr) = atan2(y_fil - y_cell, x_fil - x_cell);
     end
     old_area = new_area;
     multiplier = 1/(eatWidth^2*2*pi)*exp(-(x-x_fil).^2/2/eatWidth^2)*exp(-(y'-y_fil).^2/2/eatWidth^2);
@@ -50,7 +52,8 @@ for filo_ctr=1:numFilopodia %loops through the filopodia and keeps track of best
 end
 
 %% If the present area is better then stay put, else choose to move in the theta direction%%%
-caDiff = (new_area - present_area)/present_area;    % if caDiff > sensingAccuracy/sqrt(ca) then the cell moves in sensed direction -- LJS
+deltaC = (new_area - present_area);
+caDiff = deltaC/present_area;    % if caDiff > sensingAccuracy/sqrt(ca) then the cell moves in sensed direction -- LJS
 if caDiff < sensingAccuracy/sqrt(present_area) % then present_area > new_area and the cell doesn't try to move
     move = 0;
     theta = NaN; % direction of movement is undefined -- LJS

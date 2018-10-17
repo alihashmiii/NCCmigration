@@ -17,7 +17,7 @@ if (param.experiment==1)||(param.experiment==2)
             temp = find(cellsFollow==1)';
             sort(cells(1,temp(temp<length(cells(1,:)))))
             x_start = input('where should the extracted region start (x_start) [back region]?:  ');
-            x_end = input('where should the extracted region end (x_end) [back region]?:  ');            
+            x_end = input('where should the extracted region end (x_end) [back region]?:  ');
             y_start = input('where should the extracted region start (y_start)?:  ');% start of the region to be extracted _in um_
             y_end = input('where should the extracted region end (y_end)?:  ');% end of the region to be extracted _in um_
         end
@@ -49,7 +49,7 @@ if (param.experiment==1)||(param.experiment==2)
         out.filopodia_save = filopodia_save{end}(extracted_cell_ind,:);
         out.cellsFollow_save = cellsFollow_save{end}(extracted_cell_ind);
         out.attach = attach(extracted_cell_ind) -(length(cells_save{end}(1,:)) - length(out.cells_save(1,:)));
-
+        
         %% save the interpolated xlat, ylat and chemoattractant
         out.xlat_save = xlat_new_fine(extracted_xlat);
         out.ylat_save = extracted_y;
@@ -69,15 +69,15 @@ if isstruct(in)&&ismember('saveInfo',fields(in))
 elseif ~exist('saveInfo','var')
     if conversionType~=0
         if conversionType==4
-                    saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps(1)),'_',num2str(numSteps(2)),...
-        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps(1)),'_',num2str(numSteps(2)),...
+                '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
         else
-        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
-        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),'_steps_',num2str(numSteps),...
+                '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
         end
     else
-            saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
-        '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
+        saveInfo = [datestr(now,'yyyy_mm_dd-HH_MM'),'_exp_',num2str(param.experiment),'_foll_',num2str(followerFraction,2),'_convert_',mat2str(conversionType),...
+            '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
 %% save the results %%
@@ -91,7 +91,9 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
         ca_save{timeCtr} = single(ca_save{timeCtr});
         cells_save{timeCtr} = single(cells_save{timeCtr});
         filopodia_save{timeCtr} = single(filopodia_save{timeCtr});
-        happiness = single(happiness);
+        if exist('happiness','var')
+            happiness = single(happiness);
+        end
     end
     out.xlat_save = xlat_save;
     out.ylat_save = ylat_save;
@@ -114,8 +116,9 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.param_names2 = 'chi,param.domainHeight,zeroBC,insert,tstep,t_s,d,eatRate';
     out.param = param; %param = [Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, makeChemoattractant, chi, param.domainHeight, zeroBC, insert, tstep, t_s, eatRate, numSteps, numDirections];
     out.moved = moved(:,1:numCellsFinal);
-    out.happiness = happiness(:,1:numCellsFinal);
-    
+    if exist('happiness','var')
+        out.happiness = happiness(:,1:numCellsFinal);
+    end
     % these are parameters we might sweep
     out.leadSpeed = leadSpeed;
     out.followSpeed = followSpeed;
@@ -130,6 +133,6 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     save(['~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
     system(['rm -f ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat'])
     fprintf(['saved results to ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
-
+    
     
 end

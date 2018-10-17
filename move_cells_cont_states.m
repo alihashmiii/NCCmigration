@@ -1,11 +1,11 @@
-function out = move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
+function out = move_cells_cont_states(param,cells,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
     domainHeight, dist, domainLength, numFilopodia,volumeExclusion, ...
     standStill, sensingAccuracy, needNeighbours, contactGuidance, currentTime, dan)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
-sensed = false(1,length(cells(1,:)));
+leaderness = NaN(1,length(cells(1,:)));
 for i =1:length(cell_order)
     move = 0;
     cellIdx = cell_order(i);  % look at the ith cell
@@ -15,91 +15,107 @@ for i =1:length(cell_order)
     distance = sqrt((cells(1,cellIdx) - other_cells(1,:)).^2 + (cells(2,cellIdx) - other_cells(2,:)).^2);
     numberOfNeighbours = nnz(distance <= filolength);
     
-    %% Decide whether to try to move
-    if cellsFollow(cellIdx)~=1
-        %% if it's a leader
-        [filopodia(cellIdx,1:numFilopodia(1),:),move,theta(cellIdx),~] = sense_gradients((rand(1,numFilopodia(1))*2 - 1)*pi,cells(1,cellIdx),cells(2,cellIdx),ca_save,xlat,ylat,...
-            eatWidth,filolength,numFilopodia(1),[],sensingAccuracy);
-        sensed(cellIdx) = move; % -- LJS
-    else
-        %% if it's a follower -- LJS
-        if attach(cellIdx)~=0
-            %% if it's a chained follower
-            if (cells(1,attach(cellIdx)) - cells(1,cellIdx))^2 + (cells(2,attach(cellIdx)) - cells(2,cellIdx))^2 < (maxFilolength + cellRadius)^2
-                %% if it can reach the cell ahead
-                % set (first) filopodium position to closet point on membrane of cell being followed -- LJS
-                phi = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx))); % the angle towards the cell being followed -- LJS
-                filopodia(cellIdx,1,1) = cells(1,attach(cellIdx)) - cellRadius*cos(phi);
-                filopodia(cellIdx,1,2) = cells(2,attach(cellIdx)) - cellRadius*sin(phi);
-                if strcmp(contactGuidance,'parallel')
-                    % set direction of movement parallel to that of cell being
-                    % followed -- LJS
-                    theta(cellIdx) = theta(attach(cellIdx));
-                elseif strcmp(contactGuidance,'toward')
-                    % set direction of movement towards the cell being followed -- LJS
-                    theta(cellIdx) = phi;
-                end
-                move = 1;
-            else
-                %% if the cell ahead is too far away, then dettach the chain
-                % set movement angle in the direction of cell centre of lost cell -- LJS
-                theta(cellIdx) = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx)));
-                attach = dettach(cellIdx,attach);
+    %% check attachment and compute directions of filopodia
+    % this also computes contact guidance direction
+    if attach(cellIdx)~=0
+        %% if it's already in filopodial contact with other cell
+        if (cells(1,attach(cellIdx)) - cells(1,cellIdx))^2 + (cells(2,attach(cellIdx)) - cells(2,cellIdx))^2 < (maxFilolength + cellRadius)^2
+            %% if it can reach the cell ahead
+            % set (first) filopodium position to closet point on membrane of cell being followed -- LJS
+            phi = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx))); % the angle towards the cell being followed -- LJS
+            filopodia(cellIdx,1,1) = cells(1,attach(cellIdx)) - cellRadius*cos(phi);
+            filopodia(cellIdx,1,2) = cells(2,attach(cellIdx)) - cellRadius*sin(phi);
+            if strcmp(contactGuidance,'parallel')
+                % set direction of movement parallel to that of cell being
+                % followed -- LJS
+                thetaContactGuidance = theta(attach(cellIdx));
+            elseif strcmp(contactGuidance,'toward')
+                % set direction of movement towards the cell being followed -- LJS
+                thetaContactGuidance = phi;
             end
-            % set any other filopodia in random direction (for visualisation only) -- LJS
-            if numFilopodia(2) > 1
-                phi = (rand(1,numFilopodia(2)-1)*2 - 1)*pi;
-                filopodia(cellIdx,2:numFilopodia(2),1) = cells(1,cellIdx) + filolength.*cos(phi);
-                filopodia(cellIdx,2:numFilopodia(2),2) = cells(2,cellIdx) + filolength.*sin(phi);
-            end
+            move = 1;
+        else
+            %% if the cell ahead is too far away, then dettach
+            % set movement angle in the direction of cell centre of lost cell -- LJS
+            thetaContactGuidance = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx)));
+%             attach = dettach(cellIdx,attach);
+            attach(cellIdx) = 0;
         end
-        if attach(cellIdx)==0
-            %% if it's an unchained follower (this uncludes previously chained, now dettached followers from the previous if-statement -- LJS)
-            % look for other cells
-            [foundCellidx,filopodia] = cell_movement5_follow((rand(1,numFilopodia(2))*2 - 1)*pi,cellIdx,cells(1,:),cells(2,:),cellRadius,...
-                filolength,filopodia);
-            if isempty(foundCellidx)~=1
-                %% if another cell was found then find the head of that chain
-                head = foundCellidx;
-                while attach(head)~=0
-                    head = attach(head);
-                end
-                if cellsFollow(head)==0    %% if the head is a leader, then attach and move
-                    attach(cellIdx) = foundCellidx;
-                    % set filopodium position to closet point on membrane of cell being followed -- LJS
-                    phi = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx))); % the angle towards the cell being followed -- LJS
-                    filopodia(cellIdx,1,1) = cells(1,attach(cellIdx)) - cellRadius*cos(phi);
-                    filopodia(cellIdx,1,2) = cells(2,attach(cellIdx)) - cellRadius*sin(phi);
-                    if strcmp(contactGuidance,'parallel')
-                        % set direction of movement parallel to that of cell being
-                        % followed -- LJS
-                        theta(cellIdx) = theta(attach(cellIdx));
-                    elseif strcmp(contactGuidance,'toward')
-                        % set direction of movement towards the cell being followed -- LJS
-                        theta(cellIdx) = phi;
-                    end
-                    move = 1;
-                end
-            end
+        % set any other filopodia in random direction -- LJS
+        if numFilopodia > 1
+            phi = (rand(1,numFilopodia-1)*2 - 1)*pi;
+            filopodia(cellIdx,2:numFilopodia,1) = cells(1,cellIdx) + filolength.*cos(phi);
+            filopodia(cellIdx,2:numFilopodia,2) = cells(2,cellIdx) + filolength.*sin(phi);
         end
-        % check if favourable chemoattractant gradients can be sensed, for
-        % phenotype conversion -- LJS
-        [~,sensed(cellIdx),~,~] = sense_gradients([],cells(1,cellIdx),cells(2,cellIdx),ca_save,xlat,ylat,...
-            eatWidth,filolength,numFilopodia(2),squeeze(filopodia(cellIdx,:,:)),sensingAccuracy);
+    else % sample numFilopodia random directions
+        phi = (rand(1,numFilopodia)*2 - 1)*pi;
+        filopodia(cellIdx,:,1) = cells(1,cellIdx) + filolength.*cos(phi);
+        filopodia(cellIdx,:,2) = cells(2,cellIdx) + filolength.*sin(phi);
     end
+    
+    %% Compute movement direction based on gradient signalling
+    
+    % sample gradient signal in directions of filopodia
+    [~,moveCtaxis,thetaChemotaxis,~,deltaC] = ...
+        sense_gradients([],cells(1,cellIdx),cells(2,cellIdx),ca_save,xlat,ylat,...
+        eatWidth,filolength,numFilopodia,squeeze(filopodia(cellIdx,:,:)),sensingAccuracy);
+    if moveCtaxis, move=1; end
+    
+    %% check if extended filopodia have touched another cell
+    % this also computes contact guidance direction
+    if attach(cellIdx)==0
+        % if cell is not in contact with another (this uncludes previously chained, now dettached followers from the previous if-statement -- LJS)
+        % look for other cells
+        [foundCellidx,filopodia] = cell_movement5_follow([],cellIdx,...
+            cells(1,:),cells(2,:),cellRadius,filolength,filopodia);
+        if isempty(foundCellidx)~=1
+            % if another cell was found then attach
+            attach(cellIdx) = foundCellidx;
+            % set (first) filopodium position to closet point on membrane of cell being followed -- LJS
+            phi = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),...
+                (cells(1,attach(cellIdx)) - cells(1,cellIdx))); % the angle towards the cell being followed -- LJS
+            filopodia(cellIdx,1,1) = cells(1,attach(cellIdx)) - cellRadius*cos(phi);
+            filopodia(cellIdx,1,2) = cells(2,attach(cellIdx)) - cellRadius*sin(phi);
+            if strcmp(contactGuidance,'parallel')
+                % set direction of movement parallel to that of cell being
+                % followed -- LJS
+                thetaContactGuidance = theta(attach(cellIdx));
+            elseif strcmp(contactGuidance,'toward')
+                % set direction of movement towards the cell being followed -- LJS
+                thetaContactGuidance = phi;
+            end
+            move = 1;
+        else % no cell found for contact guidance
+            thetaContactGuidance = NaN;
+        end
+    end
+    
     if numberOfNeighbours < needNeighbours % check if a cell should wait around for others
         move = 0;
     end
-    % end
-    %
+    
     %% Try to move
-    % for i =1:length(cell_order)
-    %     cellidx = cell_order(i);  % look at the ith cell
-    %     other_cells = cells(:,(1:end)~=cellidx);
     
     if (standStill==0)&&(move==0) % if standStill = 0, cells move in a random direction
         theta(cellIdx) = (rand()*2 - 1)*pi; % pick a random direction for movement
+    elseif ~isnan(thetaContactGuidance)&&~isnan(thetaChemotaxis)
+        % combine directional information from gradient and contact guidance
+        xc = cos(thetaContactGuidance);
+        yc = sin(thetaContactGuidance);
+        xg = cos(thetaChemotaxis);
+        yg = sin(thetaChemotaxis);
+        xcombined = xc*(1 - deltaC) + xg*deltaC;
+        ycombined = yc*(1 - deltaC) + yg*deltaC;
+        theta(cellIdx) = atan2(ycombined,xcombined);
+        leaderness(cellIdx) = deltaC;
+    elseif isnan(thetaContactGuidance)&&~isnan(thetaChemotaxis)
+        theta(cellIdx) = thetaChemotaxis;
+        leaderness(cellIdx) = 1;
+    elseif ~isnan(thetaContactGuidance)&&isnan(thetaChemotaxis)
+        theta(cellIdx) = thetaContactGuidance;
+        leaderness(cellIdx) = 0;
     end
+
     if (move==1)||((standStill==0)&&(move==0))
         if move==1, moved(cellIdx)=1; end
         if ((param.experiment==40)||(param.experiment==41)||(param.experiment==42)...
@@ -140,13 +156,9 @@ for i =1:length(cell_order)
             new_y = cells(2,cellIdx) + sin(theta(cellIdx))*...
                 (dist(1) - (dist(1) - dist(3))*slowDown);
         else
-            if (cellsFollow(cellIdx)==1) %if it's a follower
-                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(2);
-                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(2);
-            else
-                new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
-                new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
-            end
+            dist_combined = deltaC*dist(1) + (1 - deltaC)*dist(2);
+            new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist_combined;
+            new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist_combined;
         end
         
         if volumeExclusion==1 %% if there is no cell or edge in the way, then move
@@ -175,8 +187,7 @@ end
 %% save stuff
 out.cells = cells;
 out.attach = attach;
-out.cellsFollow = cellsFollow;
 out.filopodia = filopodia;
 out.theta = theta;
 out.moved = moved;
-out.sensed = sensed;
+out.leaderness = leaderness;

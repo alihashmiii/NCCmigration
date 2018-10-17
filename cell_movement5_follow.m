@@ -6,23 +6,28 @@
 
 % theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
-function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,x_cells,y_cells,cellRadius,filolength,filopodia)
+function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,...
+    x_cells,y_cells,cellRadius,filolength,filopodia)
 %% find the coordinates of our cell
 x_cell = x_cells(cellidx);
 y_cell = y_cells(cellidx);
-
-%% the cell extends filopodia in the theta direction(s) %%
-x_fil = x_cell + cos(theta)*filolength;   % x coordinate of the filopodia
-y_fil = y_cell + sin(theta)*filolength;     % y coordinate of the filopodia
-
 if cellidx>size(filopodia,1)
     filopodia = [filopodia; NaN(1,size(filopodia,2),2)]; % extend list of filopodia if necessary -- LJS
 end
-filopodia(cellidx,1:length(theta),:) = [x_fil', y_fil'];
+%% the cell extends filopodia in the theta direction(s) %%
+if ~isempty(theta)
+    x_fil = x_cell + cos(theta)*filolength;   % x coordinate of the filopodia
+    y_fil = y_cell + sin(theta)*filolength;     % y coordinate of the filopodia
+    filopodia(cellidx,1:length(theta),:) = [x_fil', y_fil'];
+else
+    x_fil = filopodia(cellidx,:,1);
+    y_fil = filopodia(cellidx,:,2);
+    theta = atan2(y_fil - y_cell, x_fil - x_cell);
+end
+
 
 %% find the minimum distance from a line (the filopodium) to each of the points (each other cell) %%
-% by finding the closest point using x.y = |x||y|cos(theta) (see green
-% notebook 8/12/09 onwards)
+% by finding the closest point using x.y = |x||y|cos(theta) (see LD notebook 8/12/09 onwards)
 d = NaN(length(theta),length(x_cells));
 for i=1:length(x_cells)
     x = x_cells(i);
@@ -65,7 +70,10 @@ if (min(min(d))<cellRadius)
         dist(i) = sqrt((x_cell - x_cells(cells_found(i)))^2+(y_cell - y_cells(cells_found(i)))^2);
     end
     foundCellidx = cells_found(dist==min(dist));
-
+    % if two cells are equidistant, randomly pick one
+    if numel(foundCellidx)>1
+        foundCellidx = randsample(foundCellidx,1);
+    end
     %% if the filopodia finds another filopodia, then find out which was
     %% the nearest such cell that was found
     % this seems to never have been implemented -- LJS

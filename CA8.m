@@ -13,7 +13,8 @@
 
 % requires a subfolder avi_mat to save results
 
-function out = CA6(in,experiment)
+% 2018: version CA8 explores a continuum between leader- and follower cells
+function out = CA8(in,experiment)
 global param cells % using global variables is much faster than saving & loading from disk -- LJS
 param.experiment = experiment;
 
@@ -30,15 +31,13 @@ followerFraction = 1;        % proportion of cells that are followers (0<=follow
 % this is only an estimated fraction. actual leader fraction currently
 % turns out to be ca. (1 - followerFraction)/2 -- LJS
 divide_cells = 0;       % the cells can divide - they divide more where there's more c'tant
-conversionType = 0;       % type of conversion used: 0 is no conversion; 
-    % 1 is time frustrated; 2 is proportion of better directions
-    % 3 is deprecated; 4 is integrate and switch
-numFilopodia = [2,2];  % the number of filopodia for lead cells and follower cells
+
+numFilopodia = 2;  % the number of filopodia for lead cells and follower cells
 
 %%% probably don't want to change these %%%
 param.makeChemoattractant = 1;   % there is a chemoattranctant source term
 param.zeroBC = 0;                % = 1: make the boundary conditions for the c'tant c(edge) = 0 (has smoothed initial conditions)
-                            % else no flux boundary conditions
+% else no flux boundary conditions
 caSolve = 1;           % solve for the chemoattractant concentration
 cellsMove = 1;             % the cells move
 insertCells = 1;           % new cells are inserted at x=0
@@ -70,7 +69,7 @@ sensingAccuracy = 0.01; % relative accuracy with which concentration can be meas
 
 needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 % set direction of movement 'parallel' or 'toward' to that of cell being
-contactGuidance = 'parallel'; 
+contactGuidance = 'parallel';
 %% experimental parameters %%
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 switch param.experiment
@@ -99,33 +98,6 @@ param.chi = 0.0001;                  % chemoattractant production term (usually 
 param.eatRate = 1000;                      % chemoattractant consumption rate
 param.eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
-%% leader-follower conversion parameters
-if isstruct(in)
-    if ismember('conversionType',fields(in))
-        conversionType = in.conversionType;
-    end
-end
-if conversionType == 1
-    param.numSteps = 5; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
-    param.numDirections=NaN;
-elseif conversionType == 2
-    param.numSteps = numFilopodia(1); % number of directions to sample in (convert type 2) -- this is currently set in convert_cells.m
-    param.numDirections = 1/param.numSteps; % fraction of directions needed to be better to maintain a leader profile (convert type 2) -- this is currently set in convert_cells.m
-elseif conversionType == 4
-    param.numSteps = [8, 8]; % timescale in minutes for switching [lead2follow, follow2lead]
-    param.numDirections = NaN;
-else
-    param.numSteps=10;
-    param.numDirections=NaN;
-end
-if isstruct(in)
-    if ismember('numSteps',fields(in))
-        param.numSteps = in.numSteps;
-    end
-    if ismember('numDirections',fields(in))
-        param.numDirections = in.numDirections;
-    end
-end
 %% insertCells parameters %%
 insertTimeStep = 0.1;         % the time in hours between each new cell insertion
 insertEverySteps = floor(insertTimeStep/param.tstep);    % how often are new cells inserted
@@ -149,7 +121,7 @@ if isstruct(in)
         dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('slowSpeed',fields(in))
-        slowSpeed = in.slowSpeed; % reduced cell speed (when used) in mu/h 
+        slowSpeed = in.slowSpeed; % reduced cell speed (when used) in mu/h
         dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;
     end
     if ismember('numFilopodia',fields(in))
@@ -230,7 +202,7 @@ if isstruct(in)
         initYFrac = in.initYFrac;
     end
     if ismember('contactGuidance',fields(in))
-        contactGuidance = in.contactGuidance; 
+        contactGuidance = in.contactGuidance;
     end
 end
 
@@ -260,12 +232,12 @@ end
 finalNumCells = (numCellsInitial + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
 
 if followerFraction > 1
-        cellsFollow = true(finalNumCells,1); % cells are followeres by default
-    else
-        cellsFollow = false(finalNumCells,1); % cells are leaders by default.
-end    
+    cellsFollow = true(finalNumCells,1); % cells are followeres by default
+else
+    cellsFollow = false(finalNumCells,1); % cells are leaders by default.
+end
 if isstruct(in)&&ismember('cellsFollow',fields(in))
-        cellsFollow(1:numCellsInitial) = in.cellsFollow(1:numCellsInitial); % take cell states passed in
+    cellsFollow(1:numCellsInitial) = in.cellsFollow(1:numCellsInitial); % take cell states passed in
 end
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
@@ -302,7 +274,6 @@ else
     xlat_new=[];
 end
 moved = false(numTsteps,finalNumCells);
-happiness = NaN(numTsteps,finalNumCells); % for integrate-and-switch cell behaviour conversion
 %% begin timesteps %%
 for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
@@ -342,7 +313,7 @@ for timeCtr=1:numTsteps
         end
         % run the solver
         if ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
-            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,length(ylat_new),param.insert);            
+            temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,length(ylat_new),param.insert);
         elseif timeCtr>1
             temp = chemotaxis_solve(t_save(timeCtr),t_save(timeCtr+1),ind,iwk,rwk,param.initialDomainLength,param.domainHeight,xlat_new,length(ylat_save{timeCtr-1}),param.insert);
         else % initialise chemoattractant
@@ -351,7 +322,7 @@ for timeCtr=1:numTsteps
         if temp.ifail~=0
             save(['results/' saveInfo '_' num2str(timeCtr) '_solverWarningLog.mat'],'temp')
         end
-        % take output 
+        % take output
         xlat_save{timeCtr} = temp.xsave;
         ylat_save{timeCtr} = temp.ysave;
         iwk = temp.iwk;
@@ -404,57 +375,30 @@ for timeCtr=1:numTsteps
     %% move cells %%
     if cellsMove==1
         if timeCtr==1
-            temp = move_cells(cells,param,cellsFollow,[],attach,theta,...
+            temp = move_cells_cont_states(param,cells,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         else
-            temp = move_cells(cells,param,cellsFollow,filopodia,attach,theta,...
+            temp = move_cells_cont_states(param,cells,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         end
         cells = temp.cells;
         attach = temp.attach;
-        cellsFollow = temp.cellsFollow;
+        cellsFollow = 1 - temp.leaderness;
+
         filopodia = temp.filopodia;
         theta = temp.theta;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
-        if conversionType==4
-            if timeCtr ==1
-                happiness(timeCtr,1:length(cells(1,:))) = ~cellsFollow(1:length(cells(1,:))); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
-                if isstruct(in)&&ismember('happiness',fields(in))
-                    happiness(1,1:numCellsInitial) = in.happiness; % take cell happiness passed in
-                end
-            else
-                newCellIdcs = isnan(happiness(timeCtr - 1,1:length(cells(1,:)))); % newly existing cells have previous happiness nan -- LJS
-                happiness(timeCtr,newCellIdcs) = ~cellsFollow(newCellIdcs); % leaders start at happiness 1, followers at zero (their respective switching thresholds, i.e. max /min) -- LJS
-                happiness(timeCtr,temp.sensed&~newCellIdcs) = min(1,... % the maximum happiness is 1 -- LJS
-                    happiness(timeCtr-1,temp.sensed&~newCellIdcs) + param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
-                happiness(timeCtr,~temp.sensed&~newCellIdcs) = max(0,... % minimum happiness is 0 -- LJS
-                    happiness(timeCtr-1,~temp.sensed&~newCellIdcs) - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
-                % new cells change from current happiness, as previous is
-                % nan
-                happiness(timeCtr,temp.sensed&newCellIdcs) = min(1,... % the maximum happiness is 1 -- LJS
-                    happiness(timeCtr,temp.sensed&newCellIdcs)+ param.tstep*60/param.numSteps(2)); % cells that sensed CA become happier, with maximum 1 -- LJS
-                happiness(timeCtr,~temp.sensed&newCellIdcs) = max(0,... % minimum happiness is 0 -- LJS
-                    happiness(timeCtr,~temp.sensed&newCellIdcs) - param.tstep*60/param.numSteps(1)); % cells that haven't sensed CA become sadder, with minimum 0 -- LJS
-            end
-        end
+
         attach_save{timeCtr} = attach(1:size(cells,2));
         cellsFollow_save{timeCtr} = cellsFollow(1:size(cells,2));
         filopodia_save{timeCtr} = filopodia;
     end
     cells_save{timeCtr}=cells;
-    
-    %% cells can convert from leaders <-> followers
-    if (conversionType~=0)
-        out = convert_cells(param,cells,cellsFollow,timeCtr,cells_save,filolength,moved,happiness,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-            param.eatWidth,conversionType,numFilopodia);
-        cellsFollow = out.cellsFollow;
-        moved = out.moved;
-        cellsFollow_save{timeCtr} = cellsFollow(1:size(cells,2));
-    end
+
 end
 
 toc
@@ -466,13 +410,13 @@ save_stuff
 %% make movies %%
 % make_figure
 
-if makeMovies==1    
+if makeMovies==1
     caCmap = load('cmap_blue2cyan.txt');
     %%% make frames %%%
     if makeFrames==1
         make_frames(saveInfo)
         disp('made frames')
-%         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
+        %         open(['avi_mat/frames/frames3',saveInfo,'.fig'])
     end
     
     %%% make camovie.avi %%%

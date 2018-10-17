@@ -42,32 +42,32 @@ if (experiment==11||experiment==12||experiment==13||experiment==14)&&time>=trans
 end
 
 if (experiment==40)||(experiment==41)||(experiment==42)||(experiment==43)||experiment==44 % for DAN simulations, show slow zone
-   xmax = max(xlat)/3;
-   ymin = min(ylat);
-   ymax = max(ylat);
-   if experiment==42||experiment==44 % determine slow-down for dynamic dan for color and hatch spacing
-       tPeakSlowdown = 12;
-       minSlowdown = 0.5;
-       slowDown = max(minSlowdown,(tPeakSlowdown - abs(time - tPeakSlowdown))/tPeakSlowdown);
-   elseif experiment==41 % dilutiuon of DAN through growth
-       slowDown = param.initialDomainLength/max(xlat);
-   else
-       slowDown = 1;
-   end
-   patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
-       'r','FaceColor','none','EdgeColor',[1 0.2 0.2],'LineWidth',2);
-   hatchHandle = hatchfill2(patchHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
-   if experiment==43||experiment==44 % show contour of unconsumed dan
-       [~, contourHandle] = contour(xlat(xlat<=xmax+eps(xmax)),ylat,dan,1,...
-           'EdgeColor',[0.5 0.5 0.5],'FaceColor','none','LineWidth',2);
-       hatchfill2(contourHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
-   end
-   if experiment==41||experiment==42||experiment==44
-       hatchHandle.Color = hatchHandle.Color*slowDown;
-       patchHandle.EdgeAlpha = slowDown;
-   end
+    xmax = max(xlat)/3;
+    ymin = min(ylat);
+    ymax = max(ylat);
+    if experiment==42||experiment==44 % determine slow-down for dynamic dan for color and hatch spacing
+        tPeakSlowdown = 12;
+        minSlowdown = 0.5;
+        slowDown = max(minSlowdown,(tPeakSlowdown - abs(time - tPeakSlowdown))/tPeakSlowdown);
+    elseif experiment==41 % dilutiuon of DAN through growth
+        slowDown = param.initialDomainLength/max(xlat);
+    else
+        slowDown = 1;
+    end
+    patchHandle = patch([0,max(xlat)/3,max(xlat)/3,0,0],[ymin,ymin,ymax,ymax,ymin],...
+        'r','FaceColor','none','EdgeColor',[1 0.2 0.2],'LineWidth',2);
+    hatchHandle = hatchfill2(patchHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
+    if experiment==43||experiment==44 % show contour of unconsumed dan
+        [~, contourHandle] = contour(xlat(xlat<=xmax+eps(xmax)),ylat,dan,1,...
+            'EdgeColor',[0.5 0.5 0.5],'FaceColor','none','LineWidth',2);
+        hatchfill2(contourHandle,'HatchSpacing',10/slowDown,'HatchLineWidth',2);
+    end
+    if experiment==41||experiment==42||experiment==44
+        hatchHandle.Color = hatchHandle.Color*slowDown;
+        patchHandle.EdgeAlpha = slowDown;
+    end
 end
-    
+
 colormap(caCmap)
 
 if cellRadius < 1
@@ -84,15 +84,23 @@ phi = 0:0.1:2*pi; % for plotting the cell circles -- LJS
 
 for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
-        filoNum = numFilopodia(2);
+        filoNum = numFilopodia(end);
         if attach(cellidx)==0
             cellColor = [0.5 0.5 0.5]; % dettached followers -- LJS
         else
             cellColor = [0.466 0.674 0.188]; % followers -- LJS
         end
-    else
+    elseif cellsFollow(cellidx)==0
         filoNum = numFilopodia(1);
         cellColor = [1 1 0]; % leaders
+    else % continuous states
+        filoNum = numFilopodia;
+        if isnan(cellsFollow(cellidx))
+            cellColor = [0.5 0.5 0.5];
+        else
+            cellColor = [1 1 0]*(1 - cellsFollow(cellidx)) ...
+                + cellsFollow(cellidx)*[0.466 0.674 0.188];
+        end
     end
     
     % draw the cell
@@ -108,7 +116,7 @@ end
 
 hold off
 axis equal
-if showColorbar 
+if showColorbar
     hcb = colorbar;
     set(hcb,'ytick',[0 1])
     set(get(hcb,'title'),'string','CA')
