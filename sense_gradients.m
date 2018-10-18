@@ -56,12 +56,12 @@ deltaC = (new_area - present_area);
 caDiff = deltaC/present_area;    % if caDiff > sensingAccuracy/sqrt(ca) then the cell moves in sensed direction -- LJS
 if caDiff < sensingAccuracy/sqrt(present_area) % then present_area > new_area and the cell doesn't try to move
     move = 0;
-    theta = NaN; % direction of movement is undefined -- LJS
+    theta = (rand()*2 - 1)*pi; % direction of movement is random -- LJS
 else   % else the cell does try to move
     move=1;
     if ~isempty(sampledDirections)
         theta = sampledDirections(chosen_theta_idx);
     else
-        theta = NaN;
+        theta = (rand()*2 - 1)*pi;% direction of movement is random -- LJS
     end
 end

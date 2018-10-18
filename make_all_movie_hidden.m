@@ -28,7 +28,6 @@ end
 
 caCmap = load('cmap_blue2cyan.txt');
 
-minx = min([min(xlat_save{end}) 0]);
 for timeCtr=1:skip:numTsteps
     disp(['step ',mat2str(timeCtr),' of ',mat2str(numTsteps)])
     if exist('dan_save','var')&&~isempty(dan_save)

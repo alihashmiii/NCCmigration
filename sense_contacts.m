@@ -6,7 +6,7 @@
 
 % theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
-function [foundCellidx,filopodia] = cell_movement5_follow(theta,cellidx,...
+function [foundCellidx,filopodia] = sense_contacts(theta,cellidx,...
     x_cells,y_cells,cellRadius,filolength,filopodia)
 %% find the coordinates of our cell
 x_cell = x_cells(cellidx);

@@ -232,12 +232,12 @@ end
 finalNumCells = (numCellsInitial + floor(numTsteps/insertEverySteps)*insertNumCells)*2;    % final number of cells expected (*2 for divisions and experimental insertions)
 
 if followerFraction > 1
-    cellsFollow = true(finalNumCells,1); % cells are followeres by default
+    followerness = true(finalNumCells,1); % cells are followeres by default
 else
-    cellsFollow = false(finalNumCells,1); % cells are leaders by default.
+    followerness = false(finalNumCells,1); % cells are leaders by default.
 end
-if isstruct(in)&&ismember('cellsFollow',fields(in))
-    cellsFollow(1:numCellsInitial) = in.cellsFollow(1:numCellsInitial); % take cell states passed in
+if isstruct(in)&&ismember('followerness',fields(in))
+    followerness(1:numCellsInitial) = in.followerness(1:numCellsInitial); % take cell states passed in
 end
 % cells being inserted after a certain time-point will be set to followers.
 % This is a better approximation of leader fraction than pre-setting based
@@ -279,9 +279,9 @@ for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
     if timeCtr==followStart
         if param.experiment==35 % makes only half of trailers followers, half leaders
-            cellsFollow(length(cells(1,:))+1:2:end) = 1;
+            followerness(length(cells(1,:))+1:2:end) = 1;
         else
-            cellsFollow(length(cells(1,:))+1:end) = 1;
+            followerness(length(cells(1,:))+1:end) = 1;
         end
         disp('followers start here')
     end
@@ -362,8 +362,8 @@ for timeCtr=1:numTsteps
     end
     %% divide cells %%
     if (divide_cells==1)
-        temp = cells_divide(cells,cellsFollow,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
-        cellsFollow = temp.cellsFollow;
+        temp = cells_divide(cells,followerness,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
+        followerness = temp.cellsFollow;
     end
     %% domain growth %%
     if param.growingDomain==1
@@ -375,26 +375,26 @@ for timeCtr=1:numTsteps
     %% move cells %%
     if cellsMove==1
         if timeCtr==1
-            temp = move_cells_cont_states(param,cells,[],attach,theta,...
+            temp = move_cells_cont_states(param,cells,followerness,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         else
-            temp = move_cells_cont_states(param,cells,filopodia,attach,theta,...
+            temp = move_cells_cont_states(param,cells,followerness,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
                 volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
         end
         cells = temp.cells;
         attach = temp.attach;
-        cellsFollow = 1 - temp.leaderness;
+        followerness = 1 - temp.leaderness;
 
         filopodia = temp.filopodia;
         theta = temp.theta;
         moved(timeCtr,:) = [temp.moved, false(1,length(moved(1,:))-length(temp.moved))]; % with padding for not-yet-existing cells -- LJS
 
         attach_save{timeCtr} = attach(1:size(cells,2));
-        cellsFollow_save{timeCtr} = cellsFollow(1:size(cells,2));
+        cellsFollow_save{timeCtr} = followerness(1:size(cells,2));
         filopodia_save{timeCtr} = filopodia;
     end
     cells_save{timeCtr}=cells;

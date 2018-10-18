@@ -56,7 +56,7 @@ for i =1:length(cell_order)
         if attach(cellIdx)==0
             %% if it's an unchained follower (this uncludes previously chained, now dettached followers from the previous if-statement -- LJS)
             % look for other cells
-            [foundCellidx,filopodia] = cell_movement5_follow((rand(1,numFilopodia(2))*2 - 1)*pi,cellIdx,cells(1,:),cells(2,:),cellRadius,...
+            [foundCellidx,filopodia] = sense_contacts((rand(1,numFilopodia(2))*2 - 1)*pi,cellIdx,cells(1,:),cells(2,:),cellRadius,...
                 filolength,filopodia);
             if isempty(foundCellidx)~=1
                 %% if another cell was found then find the head of that chain

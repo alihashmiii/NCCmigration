@@ -6,6 +6,10 @@ transplantTime = param.transplantTime;
 transplantXLocation = param.transplantXLocation;
 domainHeight = param.domainHeight;
 
+leadColor = [247 252 185]/255;
+followColor = [111 192 113]/255;
+lostColor = [0.5 0.5 0.5];
+
 if ~quickMode, whitebg('white'), end
 %  plot the chemoattractant
 contourf(xlat,ylat,ca',100,'EdgeColor','none')
@@ -86,20 +90,20 @@ for cellidx = 1:length(cells(1,:))
     if cellsFollow(cellidx)==1
         filoNum = numFilopodia(end);
         if attach(cellidx)==0
-            cellColor = [0.5 0.5 0.5]; % dettached followers -- LJS
+            cellColor = lostColor; % dettached followers -- LJS
         else
-            cellColor = [0.466 0.674 0.188]; % followers -- LJS
+            cellColor = followColor; % followers -- LJS
         end
     elseif cellsFollow(cellidx)==0
         filoNum = numFilopodia(1);
-        cellColor = [1 1 0]; % leaders
+        cellColor = leadColor; % leaders
     else % continuous states
         filoNum = numFilopodia;
         if isnan(cellsFollow(cellidx))
-            cellColor = [0.5 0.5 0.5];
+            cellColor = lostColor;
         else
-            cellColor = [1 1 0]*(1 - cellsFollow(cellidx)) ...
-                + cellsFollow(cellidx)*[0.466 0.674 0.188];
+            cellColor = leadColor*(1 - cellsFollow(cellidx)) ...
+                + cellsFollow(cellidx)*followColor;
         end
     end
     
