@@ -70,6 +70,7 @@ sensingAccuracy = 0.01; % relative accuracy with which concentration can be meas
 needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 % set direction of movement 'parallel' or 'toward' to that of cell being
 contactGuidance = 'parallel';
+guidanceMode = 'combination';
 %% experimental parameters %%
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 switch param.experiment
@@ -204,6 +205,9 @@ if isstruct(in)
     if ismember('contactGuidance',fields(in))
         contactGuidance = in.contactGuidance;
     end
+    if ismember('guidanceMode',fields(in))
+        guidanceMode = in.guidanceMode;
+    end
 end
 
 followStart = floor(18/param.tstep) - floor(18*followerFraction/param.tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
@@ -261,7 +265,7 @@ attach = zeros(finalNumCells,1,'uint16'); % indices of which cell each cell is a
 if isstruct(in)&&ismember('attach',fields(in))
     attach(1:numCellsInitial) = in.attach(1:numCellsInitial); % take cell attachments passed in
 end
-theta = NaN(finalNumCells,1); % cells' movement directions-- LJS
+theta = (2*rand(finalNumCells,1) - 1)*pi; % cells' movement directions initialised as random-- LJS
 attach_save = cell(1,numTsteps);
 if isstruct(in)&&ismember('ca_new',fields(in))
     param.ca_new = in.ca_new; % take CA field passed in
@@ -378,12 +382,12 @@ for timeCtr=1:numTsteps
             temp = move_cells_cont_states(param,cells,followerness,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,guidanceMode,t_save(timeCtr),dan);
         else
             temp = move_cells_cont_states(param,cells,followerness,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
                 cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,t_save(timeCtr),dan);
+                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,guidanceMode,t_save(timeCtr),dan);
         end
         cells = temp.cells;
         attach = temp.attach;

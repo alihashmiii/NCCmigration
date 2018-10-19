@@ -1,7 +1,7 @@
 function out = move_cells_cont_states(param,cells,followerness,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
-    domainHeight, dist, domainLength, numFilopodia,volumeExclusion, ...
-    standStill, sensingAccuracy, needNeighbours, contactGuidance, currentTime, dan)
+    domainHeight, stepSize, domainLength, numFilopodia,volumeExclusion, ...
+    standStill, sensingAccuracy, needNeighbours, contactGuidance, guidanceMode, currentTime, dan)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -113,15 +113,17 @@ for i =1:length(cell_order)
     if (standStill==0)&&(moveDirected==0) % if standStill = 0, cells move in a random direction
         theta(cellIdx) = (rand()*2 - 1)*pi; % pick a random direction for movement
     else
-%         % combine directional information from gradient and contact guidance
-%         xc = cos(thetaContactGuidance);
-%         yc = sin(thetaContactGuidance);
-%         xg = cos(thetaChemotaxis);
-%         yg = sin(thetaChemotaxis);
-%         xcombined = xc*(1 - leaderness(cellIdx)) + xg*leaderness(cellIdx);
-%         ycombined = yc*(1 - leaderness(cellIdx)) + yg*leaderness(cellIdx);
-%         theta(cellIdx) = atan2(ycombined,xcombined);
-        
+        switch guidanceMode
+            case 'combination'
+                % combine directional information from gradient and contact guidance
+                xc = cos(thetaContactGuidance);
+                yc = sin(thetaContactGuidance);
+                xg = cos(thetaChemotaxis);
+                yg = sin(thetaChemotaxis);
+                xcombined = xc*(1 - leaderness(cellIdx)) + xg*leaderness(cellIdx);
+                ycombined = yc*(1 - leaderness(cellIdx)) + yg*leaderness(cellIdx);
+                theta(cellIdx) = atan2(ycombined,xcombined);
+            case 'choice'
                 % randomly choose between gradient and contact guidance
                 p = rand();
                 if p<=leaderness(cellIdx)
@@ -129,6 +131,7 @@ for i =1:length(cell_order)
                 else
                     theta(cellIdx) = thetaContactGuidance;
                 end
+        end
     end
     
     if (moveDirected==1)||((standStill==0)&&(moveDirected==0))
@@ -146,8 +149,8 @@ for i =1:length(cell_order)
                     slowDown = max(minSlowdown,...
                         (tPeakSlowdown - abs(currentTime - tPeakSlowdown))/tPeakSlowdown);
                 case 43 % slow down is proportional to DAN conc in new loc (0 or 1)
-                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
-                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*stepSize(1);
+                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*stepSize(1);
                     xrange = xlat(xlat>=0&xlat<=max(xlat)/3);
                     % xsave and ysave are the coordinates of the chemoattractant lattice
                     % points. dan has the same y-coordinates, but only makes up a 1/3 of the x range
@@ -157,8 +160,8 @@ for i =1:length(cell_order)
                     minSlowdown = 0.5;
                     slowDownDynamics = max(minSlowdown,...
                         (tPeakSlowdown - abs(currentTime - tPeakSlowdown))/tPeakSlowdown);
-                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist(1);
-                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist(1);
+                    try_x = cells(1,cellIdx) + cos(theta(cellIdx))*stepSize(1);
+                    try_y = cells(2,cellIdx) + sin(theta(cellIdx))*stepSize(1);
                     xrange = xlat(xlat>=0&xlat<=max(xlat)/3);
                     % xsave and ysave are the coordinates of the chemoattractant lattice
                     % points. dan has the same y-coordinates, but only makes up a 1/3 of the x range
@@ -167,15 +170,15 @@ for i =1:length(cell_order)
                     slowDown = 0;
             end
             new_x = cells(1,cellIdx) + cos(theta(cellIdx))*...
-                (dist(1) - (dist(1) - dist(3))*slowDown);
+                (stepSize(1) - (stepSize(1) - stepSize(3))*slowDown);
             new_y = cells(2,cellIdx) + sin(theta(cellIdx))*...
-                (dist(1) - (dist(1) - dist(3))*slowDown);
+                (stepSize(1) - (stepSize(1) - stepSize(3))*slowDown);
         else
-            dist_combined = leaderness(cellIdx)*dist(1) + (1 - leaderness(cellIdx))*dist(2);
+            dist_combined = leaderness(cellIdx)*stepSize(1) + (1 - leaderness(cellIdx))*stepSize(2);
             new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist_combined;
             new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist_combined;
         end
-        % turn setting new position respecting boundary conditions into
+        % to-do: turn setting new position respecting boundary conditions into
         % function
         if volumeExclusion==1&&length(cell_order)>1 %% if there is no cell or edge in the way, then move
             diff = [new_x-other_cells(1,:); new_y-other_cells(2,:)];

@@ -6,7 +6,7 @@ transplantTime = param.transplantTime;
 transplantXLocation = param.transplantXLocation;
 domainHeight = param.domainHeight;
 
-leadColor = [247 252 185]/255;
+leadColor = [1 1 0.5];%[247 252 185]/255;
 followColor = [111 192 113]/255;
 lostColor = [0.5 0.5 0.5];
 
