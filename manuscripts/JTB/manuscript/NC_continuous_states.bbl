@@ -1,0 +1,304 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{Kulesa2006}
+P.~M. Kulesa, J.~C. Kasemeier-Kulesa, J.~M. Teddy, N.~V. Margaryan, E.~A.
+  Seftor, R.~E.~B. Seftor, M.~J.~C. Hendrix,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1450149{\&}tool=pmcentrez{\&}rendertype=abstract}{{Reprogramming
+  metastatic melanoma cells to assume a neural crest cell-like phenotype in an
+  embryonic microenvironment.}}, Proceedings of the National Academy of
+  Sciences 103~(10) (2006) 3752--7.
+\newblock \href {http://dx.doi.org/10.1073/pnas.0506977103}
+  {\path{doi:10.1073/pnas.0506977103}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1450149{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Bailey2012}
+C.~M. Bailey, J.~A. Morrison, P.~M. Kulesa,
+  \href{http://onlinelibrary.wiley.com/doi/10.1111/j.1755-148X.2012.01025.x/full}{{Melanoma
+  revives an embryonic migration program to promote plasticity and invasion}},
+  Pigment Cell $\backslash${\&} Melanoma Research 25~(5) (2012) 573--583.
+\newblock \href {http://dx.doi.org/10.1111/j.1755-148X.2011.01025.x}
+  {\path{doi:10.1111/j.1755-148X.2011.01025.x}}.
+\newline\urlprefix\url{http://onlinelibrary.wiley.com/doi/10.1111/j.1755-148X.2012.01025.x/full}
+
+\bibitem{McLennan2017}
+R.~McLennan, C.~M. Bailey, L.~J. Schumacher, J.~M. Teddy, J.~A. Morrison, J.~C.
+  Kasemeier-Kulesa, L.~A. Wolfe, M.~M. Gogol, R.~E. Baker, P.~K. Maini, P.~M.
+  Kulesa, \href{http://www.jcb.org/lookup/doi/10.1083/jcb.201612169}{{DAN
+  (NBL1) promotes collective neural crest migration by restraining uncontrolled
+  invasion}}, The Journal of Cell Biology 216~(10) (2017) 3339--3354.
+\newblock \href {http://dx.doi.org/10.1083/jcb.201612169}
+  {\path{doi:10.1083/jcb.201612169}}.
+\newline\urlprefix\url{http://www.jcb.org/lookup/doi/10.1083/jcb.201612169}
+
+\bibitem{Simpson2007}
+M.~J. Simpson, D.~C. Zhang, M.~Mariani, K.~A. Landman, D.~F. Newgreen,
+  \href{http://www.ncbi.nlm.nih.gov/pubmed/17178116}{{Cell proliferation drives
+  neural crest cell invasion of the intestine.}}, Developmental Biology 302~(2)
+  (2007) 553--68.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2006.10.017}
+  {\path{doi:10.1016/j.ydbio.2006.10.017}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/17178116}
+
+\bibitem{Landman2011}
+K.~A. Landman, A.~E. Fernando, D.~Zhang, D.~F. Newgreen,
+  \href{http://www.ncbi.nlm.nih.gov/pubmed/21296089}{{Building stable chains
+  with motile agents: Insights into the morphology of enteric neural crest cell
+  migration.}}, Journal of Theoretical Biology 276~(1) (2011) 250--68.
+\newblock \href {http://dx.doi.org/10.1016/j.jtbi.2011.01.043}
+  {\path{doi:10.1016/j.jtbi.2011.01.043}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/21296089}
+
+\bibitem{Carmona-Fontaine2011}
+C.~Carmona-Fontaine, E.~Theveneau, A.~Tzekou, M.~Tada, M.~Woods, K.~M. Page,
+  M.~Parsons, J.~D. Lambris, R.~Mayor,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3272547{\&}tool=pmcentrez{\&}rendertype=abstract}{{Complement
+  fragment C3a controls mutual cell attraction during collective cell
+  migration.}}, Developmental Cell 21~(6) (2011) 1026--37.
+\newblock \href {http://dx.doi.org/10.1016/j.devcel.2011.10.012}
+  {\path{doi:10.1016/j.devcel.2011.10.012}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3272547{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Wynn2012}
+M.~L. Wynn, P.~M. Kulesa, S.~Schnell,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3367809{\&}tool=pmcentrez{\&}rendertype=abstract
+  http://rsif.royalsocietypublishing.org/content/9/72/1576.short}{{Computational
+  modelling of cell chain migration reveals mechanisms that sustain
+  follow-the-leader behaviour}}, Journal of the Royal Society, Interface 9~(72)
+  (2012) 1576--88.
+\newblock \href {http://dx.doi.org/10.1098/rsif.2011.0726}
+  {\path{doi:10.1098/rsif.2011.0726}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3367809{\&}tool=pmcentrez{\&}rendertype=abstract
+  http://rsif.royalsocietypublishing.org/content/9/72/1576.short}
+
+\bibitem{Wynn2013}
+M.~L. Wynn, P.~Rupp, P.~A. Trainor, S.~Schnell, P.~M. Kulesa,
+  \href{http://stacks.iop.org/1478-3975/10/i=3/a=035003?key=crossref.ac2ef20b8f70aec4324028351ef11dac}{{Follow-the-leader
+  cell migration requires biased cell-cell contact and local microenvironmental
+  signals}}, Physical Biology 10~(3) (2013) 035003.
+\newblock \href {http://dx.doi.org/10.1088/1478-3975/10/3/035003}
+  {\path{doi:10.1088/1478-3975/10/3/035003}}.
+\newline\urlprefix\url{http://stacks.iop.org/1478-3975/10/i=3/a=035003?key=crossref.ac2ef20b8f70aec4324028351ef11dac}
+
+\bibitem{McLennan2012}
+R.~McLennan, L.~Dyson, K.~W. Prather, J.~A. Morrison, R.~E. Baker, P.~K. Maini,
+  P.~M. Kulesa, \href{http://dev.biologists.org/cgi/doi/10.1242/dev.081471
+  http://www.ncbi.nlm.nih.gov/pubmed/22764050}{{Multiscale mechanisms of cell
+  migration during development: theory and experiment.}}, Development 139~(16)
+  (2012) 2935--44.
+\newblock \href {http://dx.doi.org/10.1242/dev.081471}
+  {\path{doi:10.1242/dev.081471}}.
+\newline\urlprefix\url{http://dev.biologists.org/cgi/doi/10.1242/dev.081471
+  http://www.ncbi.nlm.nih.gov/pubmed/22764050}
+
+\bibitem{McLennan2015}
+R.~McLennan, L.~J. Schumacher, J.~A. Morrison, J.~M. Teddy, D.~A. Ridenour,
+  A.~C. Box, C.~L. Semerad, H.~Li, W.~McDowell, D.~Kay, P.~K. Maini, R.~E.
+  Baker, P.~M. Kulesa,
+  \href{http://dev.biologists.org/cgi/doi/10.1242/dev.117507}{{Neural crest
+  migration is driven by a few trailblazer cells with a unique molecular
+  signature narrowly confined to the invasive front}}, Development 142~(11)
+  (2015) 2014--2025.
+\newblock \href {http://dx.doi.org/10.1242/dev.117507}
+  {\path{doi:10.1242/dev.117507}}.
+\newline\urlprefix\url{http://dev.biologists.org/cgi/doi/10.1242/dev.117507}
+
+\bibitem{Mort2016}
+R.~L. Mort, R.~J.~H. Ross, K.~J. Hainey, O.~J. Harrison, M.~A. Keighren,
+  G.~Landini, R.~E. Baker, K.~J. Painter, I.~J. Jackson, C.~A. Yates,
+  \href{http://www.nature.com/doifinder/10.1038/ncomms10288}{{Reconciling
+  diverse mammalian pigmentation patterns with a fundamental mathematical
+  model}}, Nature Communications 7 (2016) 10288.
+\newblock \href {http://dx.doi.org/10.1038/ncomms10288}
+  {\path{doi:10.1038/ncomms10288}}.
+\newline\urlprefix\url{http://www.nature.com/doifinder/10.1038/ncomms10288}
+
+\bibitem{Zhang2018}
+D.~Zhang, J.~M. Osborne, K.~D. Abu-Bonsrah, B.~L. Cheeseman, K.~A. Landman,
+  B.~Jurkowicz, D.~F. Newgreen,
+  \href{https://doi.org/10.1016/j.ydbio.2018.01.020
+  http://linkinghub.elsevier.com/retrieve/pii/S0012160617308928}{{Stochastic
+  clonal expansion of “superstars” enhances the reserve capacity of enteric
+  nervous system precursor cells}}, Developmental Biology\href
+  {http://dx.doi.org/10.1016/j.ydbio.2018.01.020}
+  {\path{doi:10.1016/j.ydbio.2018.01.020}}.
+\newline\urlprefix\url{https://doi.org/10.1016/j.ydbio.2018.01.020
+  http://linkinghub.elsevier.com/retrieve/pii/S0012160617308928}
+
+\bibitem{Merchant2018}
+B.~Merchant, L.~Edelstein-Keshet, J.~J. Feng, {A Rho-GTPase based model
+  explains spontaneous collective migration of neural crest cell clusters},
+  Developmental Biology (2018) 1--34\href
+  {http://dx.doi.org/10.1016/j.ydbio.2018.01.013}
+  {\path{doi:10.1016/j.ydbio.2018.01.013}}.
+
+\bibitem{McLennan2015b}
+R.~McLennan, L.~J. Schumacher, J.~A. Morrison, J.~M. Teddy, D.~A. Ridenour,
+  A.~C. Box, C.~L. Semerad, H.~Li, W.~McDowell, D.~Kay, P.~K. Maini, R.~E.
+  Baker, P.~M. Kulesa, \href{http://dx.doi.org/10.1016/j.ydbio.2015.08.011
+  http://linkinghub.elsevier.com/retrieve/pii/S001216061530124X}{{VEGF signals
+  induce trailblazer cell identity that drives neural crest migration}},
+  Developmental Biology 407~(1) (2015) 12--25.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2015.08.011}
+  {\path{doi:10.1016/j.ydbio.2015.08.011}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/j.ydbio.2015.08.011
+  http://linkinghub.elsevier.com/retrieve/pii/S001216061530124X}
+
+\bibitem{Morrison2017}
+J.~A. Morrison, R.~McLennan, L.~A. Wolfe, M.~M. Gogol, S.~Meier, M.~C.
+  McKinney, J.~M. Teddy, L.~Holmes, C.~L. Semerad, A.~C. Box, H.~Li, K.~E.
+  Hall, A.~G. Perera, P.~M. Kulesa,
+  \href{https://elifesciences.org/articles/28415}{{Single-cell transcriptome
+  analysis of avian neural crest migration reveals signatures of invasion and
+  molecular transitions}}, eLife 6 (2017) 1--27.
+\newblock \href {http://dx.doi.org/10.7554/eLife.28415}
+  {\path{doi:10.7554/eLife.28415}}.
+\newline\urlprefix\url{https://elifesciences.org/articles/28415}
+
+\bibitem{Wagner2016}
+A.~Wagner, A.~Regev, N.~Yosef,
+  \href{http://dx.doi.org/10.1038/nbt.3711}{{Revealing the vectors of cellular
+  identity with single-cell genomics}}, Nature Biotechnology 34~(11) (2016)
+  1145--1160.
+\newblock \href {http://arxiv.org/abs/15334406} {\path{arXiv:15334406}}, \href
+  {http://dx.doi.org/10.1038/nbt.3711} {\path{doi:10.1038/nbt.3711}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1038/nbt.3711}
+
+\bibitem{Schumacher2016a}
+L.~J. Schumacher, P.~M. Kulesa, R.~McLennan, R.~E. Baker, P.~K. Maini,
+  \href{http://rsob.royalsocietypublishing.org/lookup/doi/10.1098/rsob.160056}{{Multidisciplinary
+  approaches to understanding collective cell migration in developmental
+  biology}}, Open Biology 6~(6) (2016) 160056.
+\newblock \href {http://dx.doi.org/10.1098/rsob.160056}
+  {\path{doi:10.1098/rsob.160056}}.
+\newline\urlprefix\url{http://rsob.royalsocietypublishing.org/lookup/doi/10.1098/rsob.160056}
+
+\bibitem{Richardson2016}
+J.~Richardson, A.~Gauert, L.~B. Montecinos, L.~Fanlo, Z.~M. Alhashem, R.~Assar,
+  E.~Marti, A.~J. Kabla, S.~H{\"{a}}rtel, C.~Linker,
+  \href{http://linkinghub.elsevier.com/retrieve/pii/S2211124716305113}{{Leader
+  cells define directionality of trunk, but not cranial, neural crest cell
+  migration}}, Cell Reports 15~(9) (2016) 2076--2088.
+\newblock \href {http://dx.doi.org/10.1016/j.celrep.2016.04.067}
+  {\path{doi:10.1016/j.celrep.2016.04.067}}.
+\newline\urlprefix\url{http://linkinghub.elsevier.com/retrieve/pii/S2211124716305113}
+
+\bibitem{Genuth2018}
+M.~A. Genuth, C.~D. Allen, T.~Mikawa, O.~D. Weiner,
+  \href{http://linkinghub.elsevier.com/retrieve/pii/S0012160617306541}{{Chick
+  cranial neural crest cells use progressive polarity refinement, not contact
+  inhibition of locomotion, to guide their migration}}, Developmental
+  Biology\href {http://dx.doi.org/10.1016/j.ydbio.2018.02.016}
+  {\path{doi:10.1016/j.ydbio.2018.02.016}}.
+\newline\urlprefix\url{http://linkinghub.elsevier.com/retrieve/pii/S0012160617306541}
+
+\bibitem{Schumacher2017}
+L.~J. Schumacher, P.~K. Maini, R.~E. Baker,
+  \href{http://dx.doi.org/10.1016/j.cels.2017.06.006
+  http://linkinghub.elsevier.com/retrieve/pii/S240547121730234X}{{Semblance of
+  Heterogeneity in Collective Cell Migration}}, Cell Systems 5~(2) (2017)
+  119--127.e1.
+\newblock \href {http://dx.doi.org/10.1016/j.cels.2017.06.006}
+  {\path{doi:10.1016/j.cels.2017.06.006}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/j.cels.2017.06.006
+  http://linkinghub.elsevier.com/retrieve/pii/S240547121730234X}
+
+\bibitem{Kulesa2010}
+P.~M. Kulesa, L.~S. Gammill,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=2936914{\&}tool=pmcentrez{\&}rendertype=abstract}{{Neural
+  crest migration: patterns, phases and signals.}}, Developmental Biology
+  344~(2) (2010) 566--8.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2010.05.005}
+  {\path{doi:10.1016/j.ydbio.2010.05.005}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=2936914{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Szabo2016a}
+A.~Szab{\'{o}}, M.~Melchionda, G.~Nastasi, M.~L. Woods, S.~Campo, R.~Perris,
+  R.~Mayor, \href{http://www.jcb.org/lookup/doi/10.1083/jcb.201602083}{{In vivo
+  confinement promotes collective migration of neural crest cells}}, The
+  Journal of Cell Biology (2016) jcb.201602083\href
+  {http://dx.doi.org/10.1083/jcb.201602083} {\path{doi:10.1083/jcb.201602083}}.
+\newline\urlprefix\url{http://www.jcb.org/lookup/doi/10.1083/jcb.201602083}
+
+\bibitem{Binder2015}
+B.~J. Binder, K.~A. Landman, D.~F. Newgreen, J.~V. Ross,
+  \href{http://linkinghub.elsevier.com/retrieve/pii/S0022519315002635}{{Incomplete
+  penetrance: The role of stochasticity in developmental cell colonization}},
+  Journal of Theoretical Biology 380 (2015) 309--314.
+\newblock \href {http://dx.doi.org/10.1016/j.jtbi.2015.05.028}
+  {\path{doi:10.1016/j.jtbi.2015.05.028}}.
+\newline\urlprefix\url{http://linkinghub.elsevier.com/retrieve/pii/S0022519315002635}
+
+\bibitem{Smadbeck2015}
+P.~Smadbeck, M.~P.~H. Stumpf,
+  \href{http://biorxiv.org/lookup/doi/10.1101/022251
+  http://rsif.royalsocietypublishing.org/lookup/doi/10.1098/rsif.2016.0112}{{Coalescent
+  models for developmental biology and the spatio-temporal dynamics of growing
+  tissues}}, Journal of The Royal Society Interface 13~(117) (2016) 20160112.
+\newblock \href {http://dx.doi.org/10.1098/rsif.2016.0112}
+  {\path{doi:10.1098/rsif.2016.0112}}.
+\newline\urlprefix\url{http://biorxiv.org/lookup/doi/10.1101/022251
+  http://rsif.royalsocietypublishing.org/lookup/doi/10.1098/rsif.2016.0112}
+
+\bibitem{Weinreb2018}
+C.~Weinreb, S.~Wolock, A.~Klein, {SPRING: A kinetic interface for visualizing
+  high dimensional single-cell expression data}, Bioinformatics 34~(7) (2018)
+  1246--1248.
+\newblock \href {http://arxiv.org/abs/090332} {\path{arXiv:090332}}, \href
+  {http://dx.doi.org/10.1093/bioinformatics/btx792}
+  {\path{doi:10.1093/bioinformatics/btx792}}.
+
+\bibitem{Aparicio2018}
+L.~Aparicio, M.~Bordyuh, A.~J. Blumberg, R.~Rabadan, {Quasi-universality in
+  single-cell sequencing data}, bioRxiv\href {http://dx.doi.org/10.1101/426239}
+  {\path{doi:10.1101/426239}}.
+
+\bibitem{Yates2018}
+G.~Chappelle, C.~A. Yates, \href{http://arxiv.org/abs/1807.11852}{{Pulling in
+  models of cell migration}}\href {http://arxiv.org/abs/1807.11852}
+  {\path{arXiv:1807.11852}}.
+\newline\urlprefix\url{http://arxiv.org/abs/1807.11852}
+
+\bibitem{Ross2017}
+R.~J.~H. Ross, R.~E. Baker, A.~Parker, M.~J. Ford, R.~L. Mort, C.~A. Yates,
+  \href{http://www.nature.com/articles/s41540-017-0010-7}{{Using approximate
+  Bayesian computation to quantify cell–cell adhesion parameters in a cell
+  migratory process}}, npj Systems Biology and Applications 3~(1) (2017) 9.
+\newblock \href {http://dx.doi.org/10.1038/s41540-017-0010-7}
+  {\path{doi:10.1038/s41540-017-0010-7}}.
+\newline\urlprefix\url{http://www.nature.com/articles/s41540-017-0010-7}
+
+\bibitem{Dona2013}
+E.~Don{\`{a}}, J.~D. Barry, G.~Valentin, C.~Quirin, A.~Khmelinskii, A.~Kunze,
+  S.~Durdu, L.~R. Newton, A.~Fernandez-Minan, W.~Huber, M.~Knop, D.~Gilmour,
+  \href{http://www.nature.com/doifinder/10.1038/nature12635}{{Directional
+  tissue migration through a self-generated chemokine gradient}}, Nature
+  503~(7475) (2013) 285--289.
+\newblock \href {http://dx.doi.org/10.1038/nature12635}
+  {\path{doi:10.1038/nature12635}}.
+\newline\urlprefix\url{http://www.nature.com/doifinder/10.1038/nature12635}
+
+\bibitem{Roussigne2018}
+M.~Roussign{\'{e}}, L.~Wei, E.~Tsingos, F.~Kuchling, M.~Alkobtawi,
+  M.~Tsalavouta, J.~Wittbrodt, M.~Carl, P.~Blader, S.~W. Wilson,
+  \href{http://www.pnas.org/lookup/doi/10.1073/pnas.1812016115}{{Left/right
+  asymmetric collective migration of parapineal cells is mediated by focal FGF
+  signaling activity in leading cells}}, Proceedings of the National Academy of
+  Sciences (2018) 201812016\href {http://dx.doi.org/10.1073/pnas.1812016115}
+  {\path{doi:10.1073/pnas.1812016115}}.
+\newline\urlprefix\url{http://www.pnas.org/lookup/doi/10.1073/pnas.1812016115}
+
+\bibitem{Inaki2012}
+M.~Inaki, S.~Vishnu, A.~Cliffe, P.~R{\o}rth,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3277546{\&}tool=pmcentrez{\&}rendertype=abstract}{{Effective
+  guidance of collective migration based on differences in cell states.}},
+  Proceedings of the National Academy of Sciences 109~(6) (2012) 2027--32.
+\newblock \href {http://dx.doi.org/10.1073/pnas.1115260109}
+  {\path{doi:10.1073/pnas.1115260109}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3277546{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\end{thebibliography}

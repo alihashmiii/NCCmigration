@@ -3,7 +3,7 @@
 if (param.experiment==1)||(param.experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
-        make_plot(cells, cellsFollow, xlat_save{timeCtr-1},ylat_save{timeCtr-1},t_save(timeCtr-1),ca_save{timeCtr-1},filopodia,attach_save{timeCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
+        make_plot(cells, cellsFollow, xlat_save{saveCtr-1},ylat_save{saveCtr-1},t_save(saveCtr-1),ca_save{saveCtr-1},filopodia,attach_save{saveCtr-1},cellRadius,filolength,sensingAccuracy,0,caCmap,0,param,[])
         sort(cells(1,:))
         
         if param.experiment==1
@@ -63,7 +63,7 @@ if (param.experiment==1)||(param.experiment==2)
         makeMovies=1;
     end
 end
-%%% saveInfo included in the naming of files %%%
+%% saveInfo included in the naming of files %%%
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 elseif ~exist('saveInfo','var')
@@ -82,17 +82,41 @@ elseif ~exist('saveInfo','var')
 end
 %% save the results %%
 if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.experiment==1)||(param.experiment==2))&&(in.it~=1))
+    % downsample as appropriate
+    if saveEvery>1
+        t_save = t_save(1:saveEvery:end);
+        xlat_save = xlat_save(1:saveEvery:end); % spatial lattices (lat)
+        ylat_save = ylat_save(1:saveEvery:end);
+        ca_save = ca_save(1:saveEvery:end); % chemoattractant (ca)
+        if ~isempty(dan) % dan tunneling simulation
+            dan_save = dan_save(1:saveEvery:end);
+        end
+        if exist('happiness','var')
+            happiness = happiness(1:saveEvery:end);
+        end
+        cells_save = cells_save(1:saveEvery:end);
+        filopodia_save = filopodia_save(1:saveEvery:end);
+        cellsFollow_save = cellsFollow_save(1:saveEvery:end);
+        attach_save = attach_save(1:saveEvery:end);
+        moved = moved(1:saveEvery:end,:);
+        domainLengths = domainLengths(1:saveEvery:end);
+    end
+    numSavepoints = ceil(numTsteps/saveEvery);
+    out.saveEvery = saveEvery;
     % convert floats to single precision for saving, to reduces disk space
     % used
     out.t_save = t_save;
-    for timeCtr=1:numTsteps
-        xlat_save{timeCtr} = single(xlat_save{timeCtr});
-        ylat_save{timeCtr} = single(ylat_save{timeCtr});
-        ca_save{timeCtr} = single(ca_save{timeCtr});
-        cells_save{timeCtr} = single(cells_save{timeCtr});
-        filopodia_save{timeCtr} = single(filopodia_save{timeCtr});
+    for saveCtr=1:numSavepoints
+        xlat_save{saveCtr} = single(xlat_save{saveCtr});
+        ylat_save{saveCtr} = single(ylat_save{saveCtr});
+        ca_save{saveCtr} = single(ca_save{saveCtr});
+        cells_save{saveCtr} = single(cells_save{saveCtr});
+        filopodia_save{saveCtr} = single(filopodia_save{saveCtr});
         if exist('happiness','var')
             happiness = single(happiness);
+        end
+        if ~all(islogical(cellsFollow_save{saveCtr}))
+            cellsFollow_save{saveCtr} = single(cellsFollow_save{saveCtr});
         end
     end
     out.xlat_save = xlat_save;
@@ -104,6 +128,7 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     out.domainLengths = domainLengths;
     out.saveInfo = saveInfo;
     out.numTsteps = numTsteps;
+    out.numSavepoints = numSavepoints;
     out.growingDomain = param.growingDomain;
     out.followerFraction = followerFraction;
     out.tstep = param.tstep;

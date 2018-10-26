@@ -1,7 +1,8 @@
 function out = move_cells_cont_states(param,cells,followerness,filopodia,attach,theta,...
     ca_save,xlat,ylat,cellRadius, filolength, maxFilolength, eatWidth, ...
     domainHeight, stepSize, domainLength, numFilopodia,volumeExclusion, ...
-    standStill, sensingAccuracy, needNeighbours, contactGuidance, guidanceMode, currentTime, dan)
+    standStill, sensingAccuracy, needNeighbours, contactGuidance, ...
+    p_stayattached, guidanceMode, currentTime, dan)
 %% iterate through the cell movement in a random order %%%
 cell_order = randperm(length(cells(1,:)));
 moved = false(1,length(cells(1,:)));
@@ -26,6 +27,13 @@ for i =1:length(cell_order)
 %             attach(cellIdx) = 0; % dettach
 %         end
 %     end
+    % stay attached to cell with fixed probability
+    if p_stayattached<1&&attach(cellIdx)~=0
+        p = rand();
+        if p>p_stayattached
+            attach(cellIdx) = 0; % dettach
+        end
+    end
     if attach(cellIdx)~=0
         %% if it's already in filopodial contact with other cell
         if (cells(1,attach(cellIdx)) - cells(1,cellIdx))^2 + (cells(2,attach(cellIdx)) - cells(2,cellIdx))^2 < (maxFilolength + cellRadius)^2

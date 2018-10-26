@@ -51,6 +51,8 @@ makeCaMovie = 0; % makes a movie of a surface plot of the chemo attractant conce
 makeAllMovie = 0; % makes a movie of the cells with filopodia on top of a contourplot of the chemoattractant -- LJS
 makeFrames = 0; % makes frames at 0, 12 and 24 hours (can be changed) of the cells on top of the ca -- LJS
 
+% how many timesteps to save (for movies saveEvery = 1 is recommended)
+saveEvery = 1;
 %% General parameters %%
 param.tstep = 1/60;                   % time step in hours
 numTsteps = floor(time/param.tstep)+1;   % number of time steps
@@ -64,13 +66,14 @@ param.domainHeight = 120;                   % maximum y value
 filolength = cellRadius + 10*2;   % filopodial length (um) (measured from cell centre -- LJS). The average filopodial length found in experiment was 9mu, here I may be choosing a higher effective value to account for interfilopodial contact -- LJS
 maxFilolength = 45; % maximum length of filopodium before follower dettaches from leader. default = filolength (non-extensible)
 
-dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
+stepSize = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
 sensingAccuracy = 0.01; % relative accuracy with which concentration can be measurem. dC/C has to be greater than this to be noticed. This is the baseline value for the starting concentration, scales with 1/sqrt(c) -- LJS
 
 needNeighbours = 0; % cells only move (directed) if there are at least this many other cells within filolength -- LJS
 % set direction of movement 'parallel' or 'toward' to that of cell being
 contactGuidance = 'parallel';
 guidanceMode = 'combination';
+p_stayattached = 1;
 %% experimental parameters %%
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 switch param.experiment
@@ -115,15 +118,15 @@ initXFrac = 0;                 % initial fraction of x with cells
 if isstruct(in)
     if ismember('leadSpeed',fields(in))
         leadSpeed = in.leadSpeed; % speed of the leader cells in mu/h
-        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
+        stepSize = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('followSpeed',fields(in))
         followSpeed = in.followSpeed; % speed of the follower cells in mu/h
-        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
+        stepSize = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('slowSpeed',fields(in))
         slowSpeed = in.slowSpeed; % reduced cell speed (when used) in mu/h
-        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;
+        stepSize = [leadSpeed; followSpeed; slowSpeed]*param.tstep;
     end
     if ismember('numFilopodia',fields(in))
         numFilopodia = in.numFilopodia; % the number of filopodia for lead cells and follower cells
@@ -152,7 +155,7 @@ if isstruct(in)
     if ismember('tstep',fields(in))
         param.tstep = in.tstep; % time step in hours
         numTsteps = floor(time/param.tstep)+1;   % number of time steps
-        dist = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
+        stepSize = [leadSpeed; followSpeed; slowSpeed]*param.tstep;             % the distance moved in a timestep
     end
     if ismember('volumeExclusion',fields(in))
         volumeExclusion = in.volumeExclusion;
@@ -181,6 +184,9 @@ if isstruct(in)
     if ismember('makeFrames',fields(in))
         makeFrames = in.makeFrames;
     end
+    if ismember('saveEvery',fields(in))
+        saveEvery = in.saveEvery;
+    end
     if ismember('numCellsInitial',fields(in))
         numCellsInitial = in.numCellsInitial;
     end
@@ -204,6 +210,9 @@ if isstruct(in)
     end
     if ismember('contactGuidance',fields(in))
         contactGuidance = in.contactGuidance;
+    end
+    if ismember('p_stayattached',fields(in))
+        p_stayattached = in.p_stayattached;
     end
     if ismember('guidanceMode',fields(in))
         guidanceMode = in.guidanceMode;
@@ -381,13 +390,17 @@ for timeCtr=1:numTsteps
         if timeCtr==1
             temp = move_cells_cont_states(param,cells,followerness,[],attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,guidanceMode,t_save(timeCtr),dan);
+                cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,...
+                stepSize,domainLengths(timeCtr),numFilopodia,volumeExclusion, ...
+                standStill,sensingAccuracy,needNeighbours,contactGuidance,...
+                p_stayattached,guidanceMode,t_save(timeCtr),dan);
         else
             temp = move_cells_cont_states(param,cells,followerness,filopodia,attach,theta,...
                 ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},...
-                cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,dist,domainLengths(timeCtr),numFilopodia,...
-                volumeExclusion, standStill,sensingAccuracy,needNeighbours,contactGuidance,guidanceMode,t_save(timeCtr),dan);
+                cellRadius,filolength,maxFilolength,param.eatWidth,param.domainHeight,...
+                stepSize,domainLengths(timeCtr),numFilopodia,volumeExclusion,...
+                standStill,sensingAccuracy,needNeighbours,contactGuidance,...
+                p_stayattached,guidanceMode,t_save(timeCtr),dan);
         end
         cells = temp.cells;
         attach = temp.attach;

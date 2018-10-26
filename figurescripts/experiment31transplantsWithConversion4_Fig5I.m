@@ -4,6 +4,7 @@
 close all
 clear all
 
+addpath('../')
 time = 18;
 numRepeats = 20;
 
@@ -12,7 +13,7 @@ precision = 2; % significant figures for filenames and plot labels etc.
 conversionType = 4;
 defaultFollowValues = [2 1 0];
 lead2follow = [8];
-follow2lead = [8];
+follow2lead = [4];
 sensingAccuracyValues = [0.1, 0.01];
 experiments = [0 12 11];
 numParamCombinations = length(defaultFollowValues)*length(sensingAccuracyValues)...
@@ -71,9 +72,10 @@ for defaultFollow = defaultFollowValues
                             try % sometime we get corrupt files, which crashes the script
                                 load(['../results/' loadInfo '.mat'])
                             catch
-                                delete(['../results/' loadInfo '.mat']) % delete the corrupt file
-                                experiment31transplantsWithConversion4; % recreate the missing results file
-                                load(['../results/' loadInfo '.mat']) % load again
+%                                 delete(['../results/' loadInfo '.mat']) % delete the corrupt file
+%                                 experiment31transplantsWithConversion4; % recreate the missing results file
+%                                 load(['../results/' loadInfo '.mat']) % load again
+                                warning([loadInfo ' cannot be loaded'])
                             end
                         end
                         
@@ -129,7 +131,7 @@ for defaultFollow = defaultFollowValues
         legend('control (leaders)','control (followers)','within (leaders)','within (followers)','adjacent (leaders)','adjacent (followers)')
         xlabel('distance along stream (\mum)')
         ylabel('number of cell (per 50\mum)')
-              
+        ylim([0 16])      
 %         set(0,'CurrentFigure',neighbourRelationsFig);
 % %         subplot(1,3,1)
 % %         xlabel('#neighbours'), ylabel('P')
@@ -154,10 +156,13 @@ for defaultFollow = defaultFollowValues
             'FontSize',10,...
             'LineWidth',2);
         
-        filename = ['../manuscripts/VEGF/figures/Fig5I_defaultFollow_' num2str(defaultFollow) '_sensAcc_' num2str(sensingAccuracy)];
+        filename = ['../manuscripts/VEGF/figures/Fig5I_defaultFollow_' num2str(defaultFollow)...
+            '_tswtich_' num2str(lead2follow) '_' num2str(follow2lead)...
+            '_sensAcc_' num2str(sensingAccuracy)];
         set(migrationProfilesFig,'PaperUnits','centimeters');
         exportfig(migrationProfilesFig,[filename '.eps'],exportOptions);
         system(['epstopdf ' filename '.eps']);
+        system(['rm ' filename '.eps']);
         
 %         exportOptions = struct('Format','eps2',...
 %             'Width','15.0',...
