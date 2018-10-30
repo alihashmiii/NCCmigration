@@ -107,7 +107,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
     set(0,'CurrentFigure',contactTimeFig);
     box on
 %     legend({'discrete states','signal choice','signal combination'},'Location','NorthEast')
-    xlabel('cell-cell contact time (hrs)')
+    xlabel('filopodium-cell contact time (hrs)')
     ylabel('relative frequency')
     xlim([0 time])
     

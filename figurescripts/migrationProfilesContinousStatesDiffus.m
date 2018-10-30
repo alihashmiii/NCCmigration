@@ -72,10 +72,10 @@ box on
 xlabel('log10(D)')
 xlim([-1 5])
 yyaxis left
-ylim([60 130])
+ylim([50 130])
 ylabel('number of cells')
 yyaxis right
-ylim([800 1000]);
+ylim([750 1000]);
 ylabel('max. dist. migrated (\mum)')
 
 %% export figure
