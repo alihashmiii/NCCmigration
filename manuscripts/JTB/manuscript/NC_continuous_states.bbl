@@ -159,15 +159,6 @@ J.~A. Morrison, R.~McLennan, L.~A. Wolfe, M.~M. Gogol, S.~Meier, M.~C.
   {\path{doi:10.7554/eLife.28415}}.
 \newline\urlprefix\url{https://elifesciences.org/articles/28415}
 
-\bibitem{Wagner2016}
-A.~Wagner, A.~Regev, N.~Yosef,
-  \href{http://dx.doi.org/10.1038/nbt.3711}{{Revealing the vectors of cellular
-  identity with single-cell genomics}}, Nature Biotechnology 34~(11) (2016)
-  1145--1160.
-\newblock \href {http://arxiv.org/abs/15334406} {\path{arXiv:15334406}}, \href
-  {http://dx.doi.org/10.1038/nbt.3711} {\path{doi:10.1038/nbt.3711}}.
-\newline\urlprefix\url{http://dx.doi.org/10.1038/nbt.3711}
-
 \bibitem{Schumacher2016a}
 L.~J. Schumacher, P.~M. Kulesa, R.~McLennan, R.~E. Baker, P.~K. Maini,
   \href{http://rsob.royalsocietypublishing.org/lookup/doi/10.1098/rsob.160056}{{Multidisciplinary
@@ -207,6 +198,76 @@ L.~J. Schumacher, P.~K. Maini, R.~E. Baker,
 \newline\urlprefix\url{http://dx.doi.org/10.1016/j.cels.2017.06.006
   http://linkinghub.elsevier.com/retrieve/pii/S240547121730234X}
 
+\bibitem{Wagner2016}
+A.~Wagner, A.~Regev, N.~Yosef,
+  \href{http://dx.doi.org/10.1038/nbt.3711}{{Revealing the vectors of cellular
+  identity with single-cell genomics}}, Nature Biotechnology 34~(11) (2016)
+  1145--1160.
+\newblock \href {http://arxiv.org/abs/15334406} {\path{arXiv:15334406}}, \href
+  {http://dx.doi.org/10.1038/nbt.3711} {\path{doi:10.1038/nbt.3711}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1038/nbt.3711}
+
+\bibitem{Klein2015a}
+A.~Klein, L.~Mazutis, I.~Akartuna, N.~Tallapragada, A.~Veres, V.~Li,
+  L.~Peshkin, D.~A. Weitz, M.~W. Kirschner,
+  \href{http://linkinghub.elsevier.com/retrieve/pii/S0092867415005000}{{Droplet
+  barcoding for single-cell transcriptomics applied to embryonic stem cells}},
+  Cell 161~(5) (2015) 1187--1201.
+\newblock \href {http://dx.doi.org/10.1016/j.cell.2015.04.044}
+  {\path{doi:10.1016/j.cell.2015.04.044}}.
+\newline\urlprefix\url{http://linkinghub.elsevier.com/retrieve/pii/S0092867415005000}
+
+\bibitem{Aparicio2018}
+L.~Aparicio, M.~Bordyuh, A.~J. Blumberg, R.~Rabadan, {Quasi-universality in
+  single-cell sequencing data}, bioRxiv\href {http://dx.doi.org/10.1101/426239}
+  {\path{doi:10.1101/426239}}.
+
+\bibitem{Weinreb2018}
+C.~Weinreb, S.~Wolock, A.~Klein, {SPRING: A kinetic interface for visualizing
+  high dimensional single-cell expression data}, Bioinformatics 34~(7) (2018)
+  1246--1248.
+\newblock \href {http://arxiv.org/abs/090332} {\path{arXiv:090332}}, \href
+  {http://dx.doi.org/10.1093/bioinformatics/btx792}
+  {\path{doi:10.1093/bioinformatics/btx792}}.
+
+\bibitem{Kulesa2010a}
+P.~M. Kulesa, C.~M. Bailey, J.~C. Kasemeier-Kulesa, R.~McLennan,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=2914193{\&}tool=pmcentrez{\&}rendertype=abstract}{{Cranial
+  neural crest migration: new rules for an old road.}}, Developmental Biology
+  344~(2) (2010) 543--54.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2010.04.010}
+  {\path{doi:10.1016/j.ydbio.2010.04.010}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=2914193{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Streichan2011}
+S.~J. Streichan, G.~Valentin, D.~Gilmour, L.~Hufnagel,
+  \href{http://www.ncbi.nlm.nih.gov/pubmed/21750360}{{Collective cell migration
+  guided by dynamically maintained gradients.}}, Physical Biology 8~(4) (2011)
+  045004.
+\newblock \href {http://dx.doi.org/10.1088/1478-3975/8/4/045004}
+  {\path{doi:10.1088/1478-3975/8/4/045004}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/21750360}
+
+\bibitem{Muinonen-Martin2014}
+A.~J. Muinonen-Martin, O.~Susanto, Q.~Zhang, E.~Smethurst, W.~J. Faller, D.~M.
+  Veltman, G.~Kalna, C.~Lindsay, D.~C. Bennett, O.~J. Sansom, R.~Herd,
+  R.~Jones, L.~M. Machesky, M.~J.~O. Wakelam, D.~A. Knecht, R.~H. Insall,
+  \href{http://dx.plos.org/10.1371/journal.pbio.1001966}{{Melanoma cells break
+  down LPA to establish local gradients that drive chemotactic dispersal}},
+  PLOS Biology 12~(10) (2014) e1001966.
+\newblock \href {http://dx.doi.org/10.1371/journal.pbio.1001966}
+  {\path{doi:10.1371/journal.pbio.1001966}}.
+\newline\urlprefix\url{http://dx.plos.org/10.1371/journal.pbio.1001966}
+
+\bibitem{Tweedy2016}
+L.~Tweedy, D.~A. Knecht, G.~M. Mackay, R.~H. Insall,
+  \href{http://dx.plos.org/10.1371/journal.pbio.1002404}{{Self-Generated
+  Chemoattractant Gradients: Attractant Depletion Extends the Range and
+  Robustness of Chemotaxis}}, PLOS Biology 14~(3) (2016) e1002404.
+\newblock \href {http://dx.doi.org/10.1371/journal.pbio.1002404}
+  {\path{doi:10.1371/journal.pbio.1002404}}.
+\newline\urlprefix\url{http://dx.plos.org/10.1371/journal.pbio.1002404}
+
 \bibitem{Kulesa2010}
 P.~M. Kulesa, L.~S. Gammill,
   \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=2936914{\&}tool=pmcentrez{\&}rendertype=abstract}{{Neural
@@ -244,24 +305,32 @@ P.~Smadbeck, M.~P.~H. Stumpf,
 \newline\urlprefix\url{http://biorxiv.org/lookup/doi/10.1101/022251
   http://rsif.royalsocietypublishing.org/lookup/doi/10.1098/rsif.2016.0112}
 
-\bibitem{Weinreb2018}
-C.~Weinreb, S.~Wolock, A.~Klein, {SPRING: A kinetic interface for visualizing
-  high dimensional single-cell expression data}, Bioinformatics 34~(7) (2018)
-  1246--1248.
-\newblock \href {http://arxiv.org/abs/090332} {\path{arXiv:090332}}, \href
-  {http://dx.doi.org/10.1093/bioinformatics/btx792}
-  {\path{doi:10.1093/bioinformatics/btx792}}.
-
-\bibitem{Aparicio2018}
-L.~Aparicio, M.~Bordyuh, A.~J. Blumberg, R.~Rabadan, {Quasi-universality in
-  single-cell sequencing data}, bioRxiv\href {http://dx.doi.org/10.1101/426239}
-  {\path{doi:10.1101/426239}}.
+\bibitem{Teddy2004}
+J.~M. Teddy, P.~M. Kulesa, \href{http://www.ncbi.nlm.nih.gov/pubmed/15548586
+  http://dev.biologists.org/content/131/24/6141.short}{{In vivo evidence for
+  short-and long-range cell communication in cranial neural crest cells}},
+  Development 131~(24) (2004) 6141--51.
+\newblock \href {http://dx.doi.org/10.1242/dev.01534}
+  {\path{doi:10.1242/dev.01534}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/15548586
+  http://dev.biologists.org/content/131/24/6141.short}
 
 \bibitem{Yates2018}
 G.~Chappelle, C.~A. Yates, \href{http://arxiv.org/abs/1807.11852}{{Pulling in
   models of cell migration}}\href {http://arxiv.org/abs/1807.11852}
   {\path{arXiv:1807.11852}}.
 \newline\urlprefix\url{http://arxiv.org/abs/1807.11852}
+
+\bibitem{Camley2016}
+B.~A. Camley, J.~Zimmermann, H.~Levine, W.-j. Rappel,
+  \href{https://link.aps.org/doi/10.1103/PhysRevLett.116.098101}{{Emergent
+  Collective Chemotaxis without Single-Cell Gradient Sensing}}, Physical Review
+  Letters 116~(9) (2016) 098101.
+\newblock \href {http://arxiv.org/abs/arXiv:1506.06698v1}
+  {\path{arXiv:arXiv:1506.06698v1}}, \href
+  {http://dx.doi.org/10.1103/PhysRevLett.116.098101}
+  {\path{doi:10.1103/PhysRevLett.116.098101}}.
+\newline\urlprefix\url{https://link.aps.org/doi/10.1103/PhysRevLett.116.098101}
 
 \bibitem{Ross2017}
 R.~J.~H. Ross, R.~E. Baker, A.~Parker, M.~J. Ford, R.~L. Mort, C.~A. Yates,
@@ -300,5 +369,138 @@ M.~Inaki, S.~Vishnu, A.~Cliffe, P.~R{\o}rth,
 \newblock \href {http://dx.doi.org/10.1073/pnas.1115260109}
   {\path{doi:10.1073/pnas.1115260109}}.
 \newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3277546{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Basak2018}
+O.~Basak, T.~G. Krieger, M.~J. Muraro, K.~Wiebrands, D.~E. Stange,
+  J.~Frias-Aldeguer, N.~C. Rivron, M.~van~de Wetering, J.~H. van Es, A.~van
+  Oudenaarden, B.~D. Simons, H.~Clevers,
+  \href{http://www.pnas.org/lookup/doi/10.1073/pnas.1715911114}{{Troy+ brain
+  stem cells cycle through quiescence and regulate their number by sensing
+  niche occupancy}}, Proceedings of the National Academy of Sciences (2018)
+  201715911\href {http://arxiv.org/abs/arXiv:1408.1149}
+  {\path{arXiv:arXiv:1408.1149}}, \href
+  {http://dx.doi.org/10.1073/pnas.1715911114}
+  {\path{doi:10.1073/pnas.1715911114}}.
+\newline\urlprefix\url{http://www.pnas.org/lookup/doi/10.1073/pnas.1715911114}
+
+\bibitem{Macklin2017}
+P.~Macklin, \href{http://dx.doi.org/10.1016/j.cels.2017.08.005
+  http://linkinghub.elsevier.com/retrieve/pii/S2405471217303381}{{When Seeing
+  Isn't Believing: How Math Can Guide Our Interpretation of Measurements and
+  Experiments}}, Cell Systems 5~(2) (2017) 92--94.
+\newblock \href {http://dx.doi.org/10.1016/j.cels.2017.08.005}
+  {\path{doi:10.1016/j.cels.2017.08.005}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/j.cels.2017.08.005
+  http://linkinghub.elsevier.com/retrieve/pii/S2405471217303381}
+
+\bibitem{Yates2017}
+C.~A. Yates, M.~J. Ford, R.~L. Mort, {A multi-stage representation of cell
+  proliferation as a Markov process}, Bulletin of Mathematical Biology\href
+  {http://arxiv.org/abs/1705.09718} {\path{arXiv:1705.09718}}.
+
+\bibitem{Greulich2016}
+P.~Greulich, B.~D. Simons, {Dynamic heterogeneity as a strategy of stem cell
+  self-renewal}, Proceedings of the National Academy of Sciences I~(1).
+
+\bibitem{Stumpf2017}
+P.~S. Stumpf, R.~C. Smith, M.~Lenz, A.~Schuppert, F.-J. M{\"{u}}ller, A.~C.
+  Babtie, T.~E. Chan, M.~P.~H. Stumpf, C.~P. Please, S.~D. Howison, F.~Arai,
+  B.~D. MacArthur,
+  \href{http://linkinghub.elsevier.com/retrieve/pii/S2405471217303423}{{Stem
+  Cell Differentiation as a Non-Markov Stochastic Process}}, Cell Systems 5~(3)
+  (2017) 268--282.e7.
+\newblock \href {http://dx.doi.org/10.1016/j.cels.2017.08.009}
+  {\path{doi:10.1016/j.cels.2017.08.009}}.
+\newline\urlprefix\url{http://linkinghub.elsevier.com/retrieve/pii/S2405471217303423}
+
+\bibitem{McLennan2010a}
+R.~McLennan, P.~M. Kulesa,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3077279{\&}tool=pmcentrez{\&}rendertype=abstract}{{Neuropilin-1
+  interacts with the second branchial arch microenvironment to mediate chick
+  neural crest cell dynamics.}}, Developmental Dynamics 239~(6) (2010)
+  1664--73.
+\newblock \href {http://dx.doi.org/10.1002/dvdy.22303}
+  {\path{doi:10.1002/dvdy.22303}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3077279{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Kulesa2008}
+P.~M. Kulesa, J.~M. Teddy, D.~A. Stark, S.~E. Smith, R.~McLennan,
+  \href{http://www.ncbi.nlm.nih.gov/pubmed/18328476}{{Neural crest invasion is
+  a spatially-ordered progression into the head with higher cell proliferation
+  at the migratory front as revealed by the photoactivatable protein, KikGR.}},
+  Developmental Biology 316~(2) (2008) 275--87.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2008.01.029}
+  {\path{doi:10.1016/j.ydbio.2008.01.029}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/18328476}
+
+\bibitem{Berg1977}
+H.~C. Berg, E.~M. Purcell,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1473391{\&}tool=pmcentrez{\&}rendertype=abstract}{{Physics
+  of chemoreception.}}, Biophysical Journal 20~(2) (1977) 193--219.
+\newblock \href {http://dx.doi.org/10.1016/S0006-3495(77)85544-6}
+  {\path{doi:10.1016/S0006-3495(77)85544-6}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1473391{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{McLennan2010}
+R.~McLennan, J.~M. Teddy, J.~C. Kasemeier-Kulesa, M.~H. Romine, P.~M. Kulesa,
+  \href{http://www.ncbi.nlm.nih.gov/pubmed/20036652
+  http://linkinghub.elsevier.com/retrieve/pii/S0012160609014286}{{Vascular
+  endothelial growth factor (VEGF) regulates cranial neural crest migration in
+  vivo}}, Developmental Biology 339~(1) (2010) 114--125.
+\newblock \href {http://dx.doi.org/10.1016/j.ydbio.2009.12.022}
+  {\path{doi:10.1016/j.ydbio.2009.12.022}}.
+\newline\urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/20036652
+  http://linkinghub.elsevier.com/retrieve/pii/S0012160609014286}
+
+\bibitem{MacGabhann2006}
+F.~{Mac Gabhann}, J.~W. Ji, A.~S. Popel,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1570371{\&}tool=pmcentrez{\&}rendertype=abstract}{{Computational
+  model of vascular endothelial growth factor spatial distribution in muscle
+  and pro-angiogenic cell therapy.}}, PLOS Computational Biology 2~(9) (2006)
+  e127.
+\newblock \href {http://dx.doi.org/10.1371/journal.pcbi.0020127}
+  {\path{doi:10.1371/journal.pcbi.0020127}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=1570371{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Jain2013}
+H.~V. Jain, T.~L. Jackson,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3650479{\&}tool=pmcentrez{\&}rendertype=abstract
+  http://journal.frontiersin.org/article/10.3389/fonc.2013.00102/abstract}{{A
+  hybrid model of the role of VEGF binding in endothelial cell migration and
+  capillary formation}}, Frontiers in Oncology 3~(May) (2013) 102.
+\newblock \href {http://dx.doi.org/10.3389/fonc.2013.00102}
+  {\path{doi:10.3389/fonc.2013.00102}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3650479{\&}tool=pmcentrez{\&}rendertype=abstract
+  http://journal.frontiersin.org/article/10.3389/fonc.2013.00102/abstract}
+
+\bibitem{Yen2011}
+P.~Yen, S.~D. Finley, M.~O. Engel-Stefanini, A.~S. Popel,
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3210788{\&}tool=pmcentrez{\&}rendertype=abstract}{{A
+  two-compartment model of VEGF distribution in the mouse.}}, PLOS ONE 6~(11)
+  (2011) e27514.
+\newblock \href {http://dx.doi.org/10.1371/journal.pone.0027514}
+  {\path{doi:10.1371/journal.pone.0027514}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3210788{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{Vempati2011}
+P.~Vempati, A.~S. Popel, F.~{Mac Gabhann},
+  \href{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3113235{\&}tool=pmcentrez{\&}rendertype=abstract}{{Formation
+  of VEGF isoform-specific spatial distributions governing angiogenesis:
+  computational analysis.}}, BMC Systems Biology 5~(1) (2011) 59.
+\newblock \href {http://dx.doi.org/10.1186/1752-0509-5-59}
+  {\path{doi:10.1186/1752-0509-5-59}}.
+\newline\urlprefix\url{http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3113235{\&}tool=pmcentrez{\&}rendertype=abstract}
+
+\bibitem{MacGabhann2005}
+F.~{Mac Gabhann}, A.~S. Popel,
+  \href{http://ajpheart.physiology.org/content/288/6/H2851.short
+  http://www.ncbi.nlm.nih.gov/pubmed/15708957}{{Differential binding of VEGF
+  isoforms to VEGF receptor 2 in the presence of neuropilin-1: a computational
+  model.}}, American Journal of Physiology. Heart and Circulatory Physiology
+  288~(6) (2005) H2851--60.
+\newblock \href {http://dx.doi.org/10.1152/ajpheart.01218.2004}
+  {\path{doi:10.1152/ajpheart.01218.2004}}.
+\newline\urlprefix\url{http://ajpheart.physiology.org/content/288/6/H2851.short
+  http://www.ncbi.nlm.nih.gov/pubmed/15708957}
 
 \end{thebibliography}
