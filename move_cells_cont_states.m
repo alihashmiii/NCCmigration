@@ -186,8 +186,7 @@ for i =1:length(cell_order)
             new_x = cells(1,cellIdx) + cos(theta(cellIdx))*dist_combined;
             new_y = cells(2,cellIdx) + sin(theta(cellIdx))*dist_combined;
         end
-        % to-do: turn setting new position respecting boundary conditions into
-        % function
+        % it would be better to turn setting new position respecting boundary conditions into separate function
         if volumeExclusion==1&&length(cell_order)>1 %% if there is no cell or edge in the way, then move
             diff = [new_x-other_cells(1,:); new_y-other_cells(2,:)];
             if min(vnorm(diff))>2*cellRadius
