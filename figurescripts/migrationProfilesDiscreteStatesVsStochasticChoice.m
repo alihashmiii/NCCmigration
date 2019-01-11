@@ -1,4 +1,4 @@
-% plot migration profiles for continuous vs discrete states
+% plot migration outcomes for continuous vs discrete states
 
 close all
 clear all

@@ -1,8 +1,10 @@
-% Louise Dyson D.Phil project second CA program, 22/10/09
 % takes in a cell (x_cell,y_cell) position and lattice of chemoattractant
 % concentrations (ca, on lattice x, y) and outputs an angle, theta, of
-% movement for the cell and a parameter, d, that is related to the radius
-% of sensing of ca.
+% gradient signal sensed
+
+% based on Louise Dyson D.Phil project 
+% extended by L.J.Schumacher
+
 
 function [filopodia,move,theta,num_better,deltaC] = sense_gradients(sampledDirections,...
     x_cell,y_cell,ca,x,y,eatWidth,filolength,numFilopodia,fil,sensingAccuracy)
@@ -14,7 +16,7 @@ multiplier = 1/(eatWidth^2*2*pi)*exp(-(x-x_cell).^2/2/eatWidth^2)*exp(-(y'-y_cel
 %% Trapezoid sum computed with vector-matrix multiply. %
 intgrand = ca.*multiplier;
 intgrand = diff(x')*(intgrand(1:end-1,:) + intgrand(2:end,:))./2; 
-present_area = (intgrand(1:end-1) + intgrand(2:end))*diff(y)./2; % include the lattice spacing to get correct intergral result -- LJS
+present_area = (intgrand(1:end-1) + intgrand(2:end))*diff(y)./2; % include the lattice spacing to get correct integral result -- LJS
 
 %% Integrate the chemoattractant in the area of the filopodia %%%
 new_area = 0;

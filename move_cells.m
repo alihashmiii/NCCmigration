@@ -90,13 +90,9 @@ for i =1:length(cell_order)
     if numberOfNeighbours < needNeighbours % check if a cell should wait around for others
         move = 0;
     end
-    % end
-    %
+
     %% Try to move
-    % for i =1:length(cell_order)
-    %     cellidx = cell_order(i);  % look at the ith cell
-    %     other_cells = cells(:,(1:end)~=cellidx);
-    
+
     if (standStill==0)&&(move==0) % if standStill = 0, cells move in a random direction
         theta(cellIdx) = (rand()*2 - 1)*pi; % pick a random direction for movement
     end

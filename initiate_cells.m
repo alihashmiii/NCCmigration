@@ -1,8 +1,9 @@
-% Louise Dyson D.Phil project CA program, 05/11/09
 % Initiate n cells with radius cellRadius, so that they don't intersect
 % cells are initiated with x and y coordinates in cells(1,:,1) and
 % cells(2,:,1), resp.
-% cells is given m+1 timesteps to come
+
+% Based on Louise Dyson D.Phil project
+% Extended by L.J. Schumacher
 
 function out = initiate_cells(numCells2Insert,cellRadius,followerFraction,initialDomainLength,domainHeight,initXFrac,initYFrac,cells_in,volumeExclusion)
 %% set up the initial cells so that they aren't too close to each other or the edge %%%
@@ -15,9 +16,8 @@ if j==0 % if we're inserting the first set of cells, position them uniformly, to
         numCells2Insert)];
 end
 %% If there are follower cells, initialise them here %%%
-% I'm fairly sure this part is only relevant if we want to seed more than
-% just the very left edge with cells at the start - leave this here for now
-% as it might be important for the old transplantation experiments
+% the first if-statement is only needed for backwards-compatibility of
+% transplant simulations (2012 papers)
 if followerFraction~=0
     %% Iterate until the cells vector is full to the correct amount %%%
     while isnan(cells(1,floor(end*followerFraction),1))

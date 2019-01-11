@@ -1,19 +1,21 @@
-% Louise Dyson D.Phil project chemotaxis_solve, 14/10/09
 % using d03ra to solve a pde in a rectangular domain
 % defines initial conditions
 % for use with chemotaxis_solve.m
+% Based on Louise Dyson D.Phil project
+% modified by L.J. Schumacher
 
 function [u] = chemotaxis_pdeiv(npts, npde, t, x, y)
 
-global param % using global variables is much faster than saving & loading from disk -- LJS
-% load avi_mat/param
+global param % we need to use more parameters that used by the d03ra syntax
+% and using global variables is much faster than saving & loading from disk -- LJS
+
 initialDomainLength = param.initialDomainLength;
 domainHeight = param.domainHeight;
 zeroBC = param.zeroBC;
 insert = param.insert;
 growingDomain= param.growingDomain;
 
-if insert==1&&~isempty(param.ca_new) %% will have to check these when doing tissue (add-on) transplantations -- LJS
+if insert==1&&~isempty(param.ca_new) % backwards compatibility: check these when doing tissue (add-on) transplantations -- LJS
     if length(x)~=length(param.ca_new(:))
         disp('interpolating initial conditions for refined grid')
         ylat = linspace(0,domainHeight,size(param.ca_new,2));

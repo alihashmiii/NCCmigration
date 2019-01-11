@@ -1,4 +1,4 @@
-%% save parameters and stuff %%
+%% save parameters in otherwise empty results file while simulation is running %%
 if isstruct(in)&&ismember('saveInfo',fields(in))
     saveInfo = in.saveInfo;
 else
@@ -16,8 +16,10 @@ else
     end
 end
 % don't overwrite existing file
-if isempty(dir(['~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'])) % check if this run hasn't been done, if previous sweeps have been aborted
+if isempty(dir(['results/',saveInfo,'.mat'])) % check if this run hasn't been done, if previous sweeps have been aborted
     
+    % save parameters in output structure
+    out.param = param; 
     out.domainLengths = domainLengths;
     out.saveInfo = saveInfo;
     out.numTsteps = numTsteps;
@@ -27,24 +29,17 @@ if isempty(dir(['~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat']
     out.cellRadius = cellRadius;
     out.domainHeight = param.domainHeight;
     out.filolength = filolength;
-    out.param = param;
-    %param. Linf, a, diffus, eatWidth, growingDomain, initialDomainLength, 
-    %...makeChemoattractant, chi, domainHeight, zeroBC, insert, tstep, t_s,
-    %...eatRate, numSteps, numDirections];
-    
-    % these are parameters we might sweep
     out.leadSpeed = leadSpeed;
     out.followSpeed = followSpeed;
     out.numFilopodia = numFilopodia;
-    
     out.growingDomain = param.growingDomain;
     out.followerFraction = followerFraction;
     out.divide_cells = divide_cells;
     out.experiment = param.experiment;
     [~, computerName] = system('hostname -s');
     computerName = computerName(1:end-1); % remove newline character
-    save(['~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat'],'out')
-    fprintf(['created results file at ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat \n'])
+    save(['results/',saveInfo,'_running_on_',computerName,'.mat'],'out')
+    fprintf(['created results file at results/',saveInfo,'_running_on_',computerName,'.mat \n'])
 else
-    fprintf(['error in creating results file: ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat already exists \n'])
+    fprintf(['error in creating results file: results/',saveInfo,'.mat already exists \n'])
 end

@@ -1,5 +1,5 @@
+% calculates distribution of neighbours and area of neighbourhoods
 function neighbours = neighbourRelationships(cells,neighbourCutoff)
-% neighbour relationships 
 % input cells should be of shape [x1, y1; x2, y2; ...; xN, yN] where N is
 % number of cells
 if size(cells,1) < size(cells,2)

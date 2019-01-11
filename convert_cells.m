@@ -1,6 +1,6 @@
 function out = convert_cells(param,cells,cellsFollow,timeCtr,cells_save,filolength,moved,...
     happiness,ca_save,xlat,ylat,eatWidth,conversionType,numFilopodia)
-
+% options 1-3 are only needed for backward compatibility pre-2015
 if conversionType==1
     %% using amount of time not found a gradient / another cell
     numSteps = param.numSteps; % number of steps to not sucessfully find a direction, before changing roles (convert type 1)
@@ -36,21 +36,15 @@ elseif conversionType==2
         [~,~,~,num_better] = sense_gradients(theta,cells(1,cellCtr),cells(2,cellCtr),ca_save,xlat,ylat,eatWidth,filolength,numSteps,[],sensingAccuracy);
         
         if num_better>=(numDirections*numSteps)
-            %             if (rand()<0.7)
             if cellsFollow(cellCtr)==1
                 disp('follow -> lead')
                 cellsFollow(cellCtr)=0;
             end
-            %             else
-            %                 cellsFollow(i) = 1;
-            %             end
         elseif num_better<(numDirections*numSteps)
             if cellsFollow(cellCtr)==0
                 disp('lead -> follow')
                 cellsFollow(cellCtr)=1;
             end
-            %         elseif rand()<0.5
-            %             cellsFollow(i) = 1-cellsFollow(i);
         end
     end
 elseif conversionType==3 
@@ -65,8 +59,7 @@ elseif conversionType==3
         temp = [cells(1,cellCtr) + dx*cos(temp_thet); cells(2,cellCtr) + dx*sin(temp_thet)];
         temp = [cells(:,cellCtr) temp];
         
-        %         chemo = find_ca(temp,xlat_save,ylat_save,ca_save);
-        chemo = find_ca(temp,xlat,ylat,ca_save); % ?? -- LJS
+        chemo = find_ca(temp,xlat,ylat,ca_save);
         if chemo(1)==0
             grad = sign(chemo(2:end)-chemo(1)).*max(abs(chemo(2:end)-chemo(1)))/dx;
         else
@@ -76,34 +69,20 @@ elseif conversionType==3
             temp_grad(cellCtr,timeCtr) = grad(1);
             if (timeCtr>100)
                 [~,tempj] = find(abs(temp_grad)==max(abs(temp_grad(cellCtr,timeCtr-100:timeCtr))));
-                %                     temp = temp_grad(i,k-100:k);
-                %                     temp = temp(temp~=0);
                 follow_grad(cellCtr,timeCtr) = temp_grad(cellCtr,tempj(1));
             end
-            %                 if (k>10)&&(follow_grad(i,k)>1)
-            %                     disp('follow -> lead')
-            %                     cellsFollow(i)=0;
-            %                 end
         else
             temp_grad(cellCtr,timeCtr) = grad(1);
             if timeCtr>100
                 [~,tempj] = find(abs(temp_grad)==max(abs(temp_grad(cellCtr,timeCtr-100:timeCtr))));
-                %                     temp = temp_grad(i,k-100:k);
-                %                     temp = temp(temp~=0);
                 leader_grad(cellCtr,timeCtr) = temp_grad(cellCtr,tempj(1));
-                %                     leader_grad(i,k) = sign(temp_grad(i,k-100:k))*max(abs(temp_grad(i,k-100:k)));
             end
-            %                 if (k>10)&&(leader_grad(i,k)<0.001)
-            %                     disp('lead -> follow')
-            %                     cellsFollow(i)=1;
-            %                 end
         end
         if grad>0.8
             cellsFollow(cellCtr) = 0;
         elseif grad<0.05
             cellsFollow(cellCtr) = 1;
         end
-        %             pause
     end
 elseif conversionType == 4
      %% integrate-and-switch, or time-frustration with hysteresis -- LJS

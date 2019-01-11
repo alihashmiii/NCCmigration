@@ -1,7 +1,7 @@
-%% This function takes in the current time, position of the cells and
-%% parameters relating to the domain growth
-%% speed (including 'width', the initial length of the domain) etc.
-%% The output is the next position of the cells, end of domain and Ldiff
+% This function takes in the current time, position of the cells and
+% parameters relating to the domain growth
+% speed (including 'width', the initial length of the domain) etc.
+% The output is the next position of the cells, end of domain and Ldiff
 
 function [cellsX, r_next, Ldiff] = domain_growth(cellsX,t,tstep,Linf,a,initialDomainLength,t_s)
 

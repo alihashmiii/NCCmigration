@@ -12,25 +12,14 @@ for i =1:length(cell_order)
     cellIdx = cell_order(i);  % look at the ith cell
     other_cells = cells(:,(1:end)~=cellIdx);
     
-    %% calculate neighbours within reach (work in progress) -- LJS
-    distance = sqrt((cells(1,cellIdx) - other_cells(1,:)).^2 + (cells(2,cellIdx) - other_cells(2,:)).^2);
-    numberOfNeighbours = nnz(distance <= filolength);
-    
     %% check attachment and compute directions of filopodia
     % this also computes contact guidance direction
     
-%     % stay attached to cell with probability ~ its leaderness
-%     if attach(cellIdx)~=0
-%         p = rand();
-%         regularizer = 0;
-%         if p>(regularizer + leaderness(attach(cellIdx)))/(regularizer + 1)
-%             attach(cellIdx) = 0; % dettach
-%         end
-%     end
     % stay attached to cell with fixed probability
     if p_stayattached<1&&attach(cellIdx)~=0
         p = rand();
-        if p>p_stayattached
+        if p>p_stayattached  % alternative: stay attached to cell with probability ~ its leaderness
+    % using if p>(regularizer + leaderness(attach(cellIdx)))/(regularizer + 1)
             attach(cellIdx) = 0; % dettach
         end
     end
@@ -55,7 +44,7 @@ for i =1:length(cell_order)
             %% if the cell ahead is too far away, then dettach
             % set movement angle in the direction of cell centre of lost cell -- LJS
             thetaContactGuidance = atan2((cells(2,attach(cellIdx)) - cells(2,cellIdx)),(cells(1,attach(cellIdx)) - cells(1,cellIdx)));
-            %             attach = dettach(cellIdx,attach);
+
             attach(cellIdx) = 0;
             % set dettached (first) filopodium in random direction
             phi = (rand(1,1)*2 - 1)*pi;
@@ -112,6 +101,9 @@ for i =1:length(cell_order)
         end
     end
     
+    %% calculate neighbours within reach (only used for "cells waiting for each other") -- LJS
+    distance = sqrt((cells(1,cellIdx) - other_cells(1,:)).^2 + (cells(2,cellIdx) - other_cells(2,:)).^2);
+    numberOfNeighbours = nnz(distance <= filolength);
     if numberOfNeighbours < needNeighbours % check if a cell should wait around for others
         moveDirected = 0;
     end
@@ -144,6 +136,8 @@ for i =1:length(cell_order)
     
     if (moveDirected==1)||((standStill==0)&&(moveDirected==0))
         if moveDirected==1, moved(cellIdx)=1; end
+        % the following is mostly used for backwards compatibility with
+        % previous papers)
         if ((param.experiment==40)||(param.experiment==41)||(param.experiment==42)...
                 ||(param.experiment==43)||(param.experiment==44))&&(cells(1,cellIdx)<=1/3*domainLength) % move at reduced speed
             switch param.experiment

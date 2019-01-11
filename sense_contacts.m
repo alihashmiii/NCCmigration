@@ -1,8 +1,9 @@
-% Louise Dyson D.Phil project second CA program, 23/11/09
 % takes in a theta direction of movement and position of filopodia (--LJS), a cell (x_cell,y_cell)
 % position, the position (x_cells,y_cells,) of the other cells and the radius of a cell and
 % outputs an angle, theta, of movement for the cell, based on the existence
 % of other cells in the area of the filopodium
+% based on Louise Dyson D.Phil project 
+% modified by L.J. Schumacher
 
 % theta is the movement direction (--LJS), filopodia is the position of the filopodia
 
@@ -60,11 +61,11 @@ d(:,cellidx) = 10000*ones(length(theta),1); % so that we don't get our cell back
 %% If there is a cell there, [or a cell's filopodium - follow that cell  %%]
 
 if (min(min(d))<cellRadius)
-    %% if the filopodium finds a cell body then find out which was the
-    %% nearest such cell that was found
+    % if the filopodium finds a cell body then find out which was the
+    % nearest such cell that was found
     
     cells_found = find(min(d,[],1)<cellRadius);
-    %% find the distance from our cell to the cells found
+    % find the distance from our cell to the cells found
     dist = NaN(1,length(cells_found));
     for i=1:length(cells_found)
         dist(i) = sqrt((x_cell - x_cells(cells_found(i)))^2+(y_cell - y_cells(cells_found(i)))^2);
@@ -74,8 +75,8 @@ if (min(min(d))<cellRadius)
     if numel(foundCellidx)>1
         foundCellidx = randsample(foundCellidx,1);
     end
-    %% if the filopodia finds another filopodia, then find out which was
-    %% the nearest such cell that was found
+    % if the filopodia finds another filopodia, then find out which was
+    % the nearest such cell that was found
     % this seems to never have been implemented -- LJS
 else
     foundCellidx = [];

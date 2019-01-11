@@ -46,7 +46,7 @@ itrace = int64(0);     % level of trace information (-1 no output, 0 only warnin
 [ts, tout, rwk, iwk, ind, ifail] = d03ra(ts, tout, dt, xmin, xmax, ymin, ymax, nx, ny, tols,...
     tolt, 'chemotaxis_pdedef', 'chemotaxis_bndary', 'chemotaxis_pdeiv', 'chemotaxis_monitr', opti, optr,rwk, iwk, itrace,...
     ind);
-% if ifail
+% if ifail % used for debugging
 %     [X,Y] = meshgrid(xsave*initialDomainLength,ysave);
 %     surf(X,Y,plotsol');
 %     pause

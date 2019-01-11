@@ -1,10 +1,12 @@
-% Louise Dyson D.Phil project chemotaxis_solve, 14/10/09
 % using d03ra to solve a pde in a rectangular domain
 % defines pde "res=0"
 % for use with chemotaxis_solve.m
+% Based on Louise Dyson D.Phil project
+% modified by L.J. Schumacher
 
 function [res] = chemotaxis_pdedef(npts, npde, t, x, y, u, ut, ux, uy, uxx, uxy, uyy)
-global param cells % using global variables is much faster than saving & loading from disk -- LJS
+global param cells % we need to use more parameters that used by the d03ra syntax
+% and using global variables is much faster than saving & loading from disk -- LJS
 
 xcell = cells(1,:);
 ycell = cells(2,:);

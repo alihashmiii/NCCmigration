@@ -1,13 +1,15 @@
-% Louise Dyson D.Phil project chemotaxis_solve, 14/10/09
 % using d03ra to solve a pde in a rectangular domain
 % checking functions etc.
 % for use with chemotaxis_solve.m
+% Based on Louise Dyson D.Phil project
+% modified by L.J. Schumacher
 
 function [ierr] = chemotaxis_monitr(a, t, b, c, tlast, d, ngpts, xpts, ypts, lsol, sol, ierr)
-global param plotsol xsave ysave % using global variables is much faster than saving & loading from disk -- LJS
+global param plotsol xsave ysave  % we need to use more parameters that used by the d03ra syntax
+% and using global variables is much faster than saving & loading from disk -- LJS
 
 if isunix==1
-    ngpts = int32(ngpts); % the documentation calls for this parameter to be int32 -- LJS
+    ngpts = int32(ngpts); % the NAG documentation calls for this parameter to be int32 -- LJS
 end
 
 if tlast
@@ -47,7 +49,7 @@ if tlast
     plotsol = zeros(1,npts);
     for idks=1:npts
         plotsol(idks) = sol(ipsol+idks);
-    end;
+    end
     plotsol = reshape(plotsol,[length(xsave),length(ysave)]);
 % uncomment these next to lines to monitor the ca conc during simulation --
 % LJS

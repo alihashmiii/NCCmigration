@@ -1,5 +1,5 @@
 
-%% save stuff for tissue transplant param.experiments %%
+%%  (only needed for backwards compatibility)  save stuff for tissue transplant simulations %%
 if (param.experiment==1)||(param.experiment==2)
     if in.it==1
         %% make a plot and allow user to select the region to extract
@@ -22,8 +22,7 @@ if (param.experiment==1)||(param.experiment==2)
             y_end = input('where should the extracted region end (y_end)?:  ');% end of the region to be extracted _in um_
         end
         
-        %% interpolate the chemoattractant to give a good description of
-        %% the region
+        % interpolate the chemoattractant to give a good description of the region
         xlat_new_fine = (0:5:max(xlat_save{end}));
         if (param.experiment==1)||((y_start==0)&&(y_end==param.domainHeight))
             ca_new = interp2(xlat_save{end},ylat_save{end},ca_save{end}',xlat_new_fine,ylat_save{end});
@@ -40,8 +39,7 @@ if (param.experiment==1)||(param.experiment==2)
             extracted_y = ylat_new_fine(extracted_ylat);
         end
         
-        %% save the relevant data
-        %% save the cell positions and filopodia (cells that are across the cut are not transplanted)
+        % save the cell positions and filopodia (cells that are across the cut are not transplanted)
         extracted_cell_ind = find((cells_save{end}(1,:)>=x_start+cellRadius)&(cells_save{end}(1,:)<=x_end-cellRadius)...
             &(cells_save{end}(2,:)>=y_start+cellRadius)&(cells_save{end}(2,:)<=y_end-cellRadius));
         
@@ -50,7 +48,7 @@ if (param.experiment==1)||(param.experiment==2)
         out.cellsFollow_save = cellsFollow_save{end}(extracted_cell_ind);
         out.attach = attach(extracted_cell_ind) -(length(cells_save{end}(1,:)) - length(out.cells_save(1,:)));
         
-        %% save the interpolated xlat, ylat and chemoattractant
+        % save the interpolated xlat, ylat and chemoattractant
         out.xlat_save = xlat_new_fine(extracted_xlat);
         out.ylat_save = extracted_y;
         out.ca_save = ca_new(extracted_xlat,extracted_ylat);
@@ -80,7 +78,7 @@ elseif ~exist('saveInfo','var')
             '_eatRate_',num2str(eatRate),'_diff_',num2str(diffus)];
     end
 end
-%% save the results %%
+%% save the simulation results %%
 if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.experiment==1)||(param.experiment==2))&&(in.it~=1))
     % downsample as appropriate
     if saveEvery>1
@@ -144,20 +142,17 @@ if (param.experiment==0||param.experiment==3||param.experiment>=10)||(((param.ex
     if exist('happiness','var')
         out.happiness = happiness(:,1:numCellsFinal);
     end
-    % these are parameters we might sweep
     out.leadSpeed = leadSpeed;
     out.followSpeed = followSpeed;
     out.numFilopodia = numFilopodia;
     out.sensingAccuracy = sensingAccuracy;
-    
     out.followerFraction = followerFraction;
     out.divide_cells = divide_cells;
     out.param.experiment = param.experiment;
     [~, computerName] = system('hostname -s');
     computerName = computerName(1:end-1); % remove newline character
-    save(['~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat'],'out')
-    system(['rm -f ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'_running_on_',computerName,'.mat'])
-    fprintf(['saved results to ~/Dropbox/DPhil/DysonModel/all_vers2/results/',saveInfo,'.mat \n'])
-    
+    save(['results/',saveInfo,'.mat'],'out')
+    system(['rm -f results/',saveInfo,'_running_on_',computerName,'.mat'])
+    fprintf(['saved results to results/',saveInfo,'.mat \n'])
     
 end

@@ -1,11 +1,12 @@
-% Louise Dyson D.Phil project chemotaxis_solve, 14/10/09
 % using d03ra to solve a pde in a rectangular domain
-% defines boundary condition G = 0 at x=xmin, xmax, y=ymin, ymax by
-% rewriting the solution at those points
+% defines boundary condition 
 % for use with chemotaxis_solve.m
+% Based on Louise Dyson D.Phil project
+% modified by L.J. Schumacher
 
 function [res] = chemotaxis_bndary(npts, npde, t, x, y, u, ut, ux, uy, nbpts, lbnd, res)
-global param % using global variables is much faster than saving & loading from disk -- LJS
+global param % we need to use more parameters that used by the d03ra syntax
+% and using global variables is much faster than saving & loading from disk -- LJS
 
 domainHeight = param.domainHeight;
 zeroBC = param.zeroBC;

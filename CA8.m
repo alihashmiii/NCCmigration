@@ -1,21 +1,18 @@
 % based on Louise Dyson D.Phil project CA program describing the migration of cranial neural crest cells, 22/10/09
-% Edited on 07/12/09
 % Further developed by Linus Schumacher (LJS) from Oct 2012 onwards.
 % Cells move through a 2D box, each cell is represented by an (x,y) coordinate in a width x height y box
 % at each timestep the list of cells is worked through in a random order
 % and each cell extends filopodia in a set number of random directions
 % Domain growth in steps intervals can be added with param.growingDomain=1,
 % Chemoattractant concentration can be solved (rather than fixed) with caSolve=1
-% Cells move if cellsMove=1,
 % Cells are inserted at x=0 if insertCells=1
-
 % Cells have a fixed radius cellRadius and can't move through each other or out of the box
 
-% requires a subfolder avi_mat to save results
-
 % 2018: version CA8 explores a continuum between leader- and follower cells
+
 function out = CA8(in,experiment)
-global param cells % using global variables is much faster than saving & loading from disk -- LJS
+global param cells% we need to use more parameters that used by the d03ra syntax used for solving the RDE
+% and using global variables is much faster than saving & loading from disk -- LJS
 param.experiment = experiment;
 
 if isstruct(in)
@@ -25,7 +22,7 @@ else
 end
 
 tic
-%% Model Type Inputs %%
+%% set basic cell population parameters
 param.growingDomain = 1;     % the domain grows
 followerFraction = 1;        % proportion of cells that are followers (0<=follow_per<=1)
 % this is only an estimated fraction. actual leader fraction currently
@@ -74,7 +71,7 @@ needNeighbours = 0; % cells only move (directed) if there are at least this many
 contactGuidance = 'parallel';
 guidanceMode = 'combination';
 p_stayattached = 1;
-%% experimental parameters %%
+%% set specific computational experiments
 param.insert = 0;                     % signal that the chemoattractant has been inserted (for experiment 1)
 switch param.experiment
     case 12 %VEGF transplant back half
@@ -96,13 +93,13 @@ switch param.experiment
     otherwise
         param.transplantTime = NaN; param.transplantXLocation = NaN; param.secondaryChi = NaN;
 end
-%% caSolve parameters %%
+%% caSolve parameters 
 param.diffus = 0.1;%252e3;    % chemoattractant diffusivity (in (mu)^2/h), for VEGF diffusing in the matrix this should probably be around 7e-11m^2/s = 252e3(mu)^2/h, for membrane bound VEGF unknown/near zero -- LJS
 param.chi = 0.0001;                  % chemoattractant production term (usually 0.0001)
 param.eatRate = 1000;                      % chemoattractant consumption rate
 param.eatWidth = cellRadius;         % width of eating chemoattractant, equivalent to gaussian sigma
 
-%% insertCells parameters %%
+%% insertCells parameters 
 insertTimeStep = 0.1;         % the time in hours between each new cell insertion
 insertEverySteps = floor(insertTimeStep/param.tstep);    % how often are new cells inserted
 insertNumCells = 1;                  % how many new cells are inserted at each timepoint
@@ -114,7 +111,7 @@ end
 initYFrac = (param.domainHeight-2*cellRadius)/param.domainHeight; % fraction of y initiated with cells (so that they aren't too close to the top or bottom)
 initXFrac = 0;                 % initial fraction of x with cells
 
-%% adjust parameters if they have been provided in input %%
+%% adjust parameters if they have been provided in input structure
 if isstruct(in)
     if ismember('leadSpeed',fields(in))
         leadSpeed = in.leadSpeed; % speed of the leader cells in mu/h
@@ -221,7 +218,7 @@ end
 
 followStart = floor(18/param.tstep) - floor(18*followerFraction/param.tstep)+1 % the time step after which new cells will be followers, to aim for the desired fraction of followers at t = 18hours -- LJS
 
-%% domain growth parameters %%
+%% domain growth parameters 
 param.initialDomainLength= 300;                % initial width of the domain with growth (um)
 domainLengths = ones(1,numTsteps).*param.initialDomainLength;  % initialise domain length vector
 
@@ -287,7 +284,7 @@ else
     xlat_new=[];
 end
 moved = false(numTsteps,finalNumCells);
-%% begin timesteps %%
+%% begin timesteps 
 for timeCtr=1:numTsteps
     %% after t=followStart then all subsequent cells are followers
     if timeCtr==followStart
@@ -311,7 +308,7 @@ for timeCtr=1:numTsteps
         end
     end
     
-    %% chemoattractant %%
+    %% chemoattractant 
     if caSolve==1
         % give parameters for the solver (depending on whether this is the first run or not)
         if timeCtr==1
@@ -319,7 +316,7 @@ for timeCtr=1:numTsteps
             iwk = zeros(580230,1,'int64'); % is used by the solver for outputting the efficiency of integration, check documentation at 5.4-4: http://www.nag.co.uk/numeric/MB/manual_21_1/pdf/D03/d03ra.pdf#lnk_leniwk -- LJS
             rwk = zeros(1880000,1); % it's unclear from NAG documentation what this parameter is used for, but it needs to be a double array of a certain size -- LJS
         elseif ((param.experiment==1)||(param.experiment==2))&&(in.it==2)&&(t_save(timeCtr)==in.changeTime)
-            %% experiments 1 and 2: inserting chemoattractant % backward compatibility not test -- LJS
+            % experiments 1 and 2: inserting chemoattractant % backward compatibility not test -- LJS
             insert_tissue
         else
             ind = int64(1); % continuing integration from the previous solution
@@ -343,7 +340,7 @@ for timeCtr=1:numTsteps
         
         ca_save{timeCtr} = temp.chemotaxis;
     else
-        %% Fixed chemoattractant %%
+        %% Fixed chemoattractant
         if param.growingDomain==1
             % Domain Growth Happens at every timestep
             % and starts 6 hours before migration -- LJS
@@ -360,32 +357,32 @@ for timeCtr=1:numTsteps
         end
         ca_save{timeCtr} = ca;
     end
-    %% DAN %%
+    %% DAN - slows down cells in a restricted zone
     if param.experiment==43||param.experiment==44 % dan tunneling simulation
         % instead of solving a PDE, simply set lattice points to 0 where
         % there are cells
         if timeCtr > 1
-            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,dan_save{timeCtr - 1},t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,dan_save{timeCtr - 1},cellRadius);
         else
-            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,ones(32,22),t_save(timeCtr),cellRadius);
+            dan = tunneling_solve(cells, xlat_save{timeCtr}, ylat_save{timeCtr}, param,ones(32,22),cellRadius);
         end
         dan_save{timeCtr} = dan;
     else
         dan = [];
     end
-    %% divide cells %%
+    %% divide cells
     if (divide_cells==1)
         temp = cells_divide(cells,followerness,cellRadius,domainLengths(timeCtr),0,param.domainHeight,ca_save{timeCtr},xlat_save{timeCtr},ylat_save{timeCtr},param.tstep);
         followerness = temp.cellsFollow;
     end
-    %% domain growth %%
+    %% domain growth
     if param.growingDomain==1
         % Domain Growth Happens at every timestep
         % and starts 6 hours before migration -- LJS
         [cells(1,:), domainLengths(timeCtr), ~] = domain_growth(cells(1,:),t_save(timeCtr),param.tstep,param.Linf,param.a,param.initialDomainLength,param.t_s);
     end
     
-    %% move cells %%
+    %% move cells
     if cellsMove==1
         if timeCtr==1
             temp = move_cells_cont_states(param,cells,followerness,[],attach,theta,...
@@ -421,11 +418,10 @@ end
 toc
 numCellsFinal = size(cells,2);
 disp(['Number of cells: ' num2str(numCellsFinal)])
-%% Save stuff
+%% Save parameters and simulation outputs
 save_stuff
 
-%% make movies %%
-% make_figure
+%% make movies 
 
 if makeMovies==1
     caCmap = load('cmap_blue2cyan.txt');

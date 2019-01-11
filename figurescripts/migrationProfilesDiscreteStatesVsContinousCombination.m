@@ -1,4 +1,4 @@
-% plot migration profiles for continuous vs discrete states
+% plot migration outcomes for continuous vs discrete states
 
 close all
 clear all
@@ -33,8 +33,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
     sensingAccuracy = sensingAccuracyValues(sensAccCtr);
     migrationProfilesFig = figure;
     hold on
-%     cellNumFig = figure;
-%     hold on
+
     contactTimeFig = figure;
     hold on
     for expCtr = 1:length(experiments)
@@ -81,9 +80,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
         set(0,'CurrentFigure',migrationProfilesFig);
         plot(plotBins,squeeze(mean(cellDistributions,1)),...
             'LineWidth',2);
-%         % plot cell number distribution
-%         set(0,'CurrentFigure',cellNumFig);
-%         histogram(numCells,'BinWidth',10,'Normalization','Probability')
+
         % plot contact time distribution
         set(0,'CurrentFigure',contactTimeFig);
         histogram(vertcat(contactTimes{:})/60,'Normalization','Probability',...
