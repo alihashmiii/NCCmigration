@@ -1,4 +1,4 @@
-%% A function to plot the data in cells, cellsFollow and ca
+% function to plot cells in domain with chemoattractant gradient
 
 function [] = make_plot(cells,cellsFollow,xlat,ylat,time,ca,filopodia,numFilopodia,attach,cellRadius,filolength,sensingAccuracy,showColorbar,caCmap,quickMode,param,dan)
 experiment = param.experiment;

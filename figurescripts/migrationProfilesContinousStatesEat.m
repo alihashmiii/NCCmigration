@@ -18,6 +18,7 @@ cellRadius = 7.5;
 time2plot = [24];
 precision = 2; % significant figures for filenames and plot labels etc.
 loadpath = '../results/';
+plotSnapshot = true;
 
 lineStyles = {'-','--'};
 plotColors = lines(2);
@@ -45,10 +46,27 @@ for gdmCtr = 1:length(guidanceModes)
             
             numCells(eatCtr,repCtr) = size(cells,2);
             xMax(eatCtr,repCtr) = max(cells(1,:));
-            
+        end
+        % determine which snapshot to plot, if any
+        if plotSnapshot&&gdmCtr==1&&eatRate>=40&&eatRate<=150
+            % calculate rep that is closest to mean in relative terms
+            numCellsRel = abs(numCells(eatCtr,:) - mean(numCells(eatCtr,:),2))./mean(numCells(eatCtr,:),2);
+            xMaxRel = abs(xMax(eatCtr,:) - mean(xMax(eatCtr,:),2))./mean(xMax(eatCtr,:),2);
+            [minDev, repToPlot] = min(numCellsRel + xMaxRel);
+            % reload this rep
+            if repToPlot~=repCtr
+                filename = ['experiment31contStates_eat/exp31' ...
+                    '_contStates_' guidanceMode '_eat_' num2str(eatRate,precision) ...
+                    '_sensingAcc_' num2str(sensingAccuracy,precision) '_Run_' num2str(repToPlot)];
+                load([loadpath filename '.mat'])
+                timeIdx = find(out.t_save >= time2plot,1,'first');
+            end
+            % plot snapshots of simulations
+            plot_snapshot(out,timeIdx)
         end
     end
-            yyaxis left
+    
+    yyaxis left
     errorbar(eatRates,mean(numCells,2),std(numCells,0,2)/sqrt(numRepeats),...
         lineStyles{gdmCtr},'Color',plotColors(1,:),'LineWidth',2);
     yyaxis right

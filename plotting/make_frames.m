@@ -1,5 +1,5 @@
 function make_frames(saveInfo,showColorbar)
-% close all
+
 framesFig = figure;
 
 if nargin<2

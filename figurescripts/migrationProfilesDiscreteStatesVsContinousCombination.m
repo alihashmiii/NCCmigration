@@ -4,6 +4,7 @@ close all
 clear all
 addpath('../')
 addpath('../simulationscripts')
+addpath('../plotting')
 
 time = 18;
 numRepeatsNew = 40;
@@ -20,6 +21,7 @@ cellRadius = 7.5;
 time2plot = [24];
 precision = 2; % significant figures for filenames and plot labels etc.
 loadpath = '../results/';
+plotSnapshot = true;
 
 exportOptions = struct('Format','eps2',...
     'Width','9.0',...
@@ -33,7 +35,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
     sensingAccuracy = sensingAccuracyValues(sensAccCtr);
     migrationProfilesFig = figure;
     hold on
-
+    
     contactTimeFig = figure;
     hold on
     for expCtr = 1:length(experiments)
@@ -74,13 +76,24 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
             % compute contact times
             contactTimes{repCtr} = computeContactTimes(out.attach_save(1:timeIdx),...
                 ceil(out.numTsteps/out.numSavepoints));
+            
+            % plot snapshots of simulations
+            if plotSnapshot
+                if expCtr==1&&repCtr==6&&sensAccCtr==1
+                    plot_snapshot(out,linspace(1,timeIdx,3))
+                elseif expCtr==2&&repCtr==11&&sensAccCtr==1
+                    plot_snapshot(out,timeIdx)
+                elseif expCtr==3&&repCtr==5&&sensAccCtr==1
+                    plot_snapshot(out,timeIdx)
+                end
+            end
         end
         %% plot migration profile
         % plot migration profile
         set(0,'CurrentFigure',migrationProfilesFig);
         plot(plotBins,squeeze(mean(cellDistributions,1)),...
             'LineWidth',2);
-
+        
         % plot contact time distribution
         set(0,'CurrentFigure',contactTimeFig);
         histogram(vertcat(contactTimes{:})/60,'Normalization','Probability',...
@@ -103,7 +116,7 @@ for sensAccCtr = 1:length(sensingAccuracyValues)
     % contact times
     set(0,'CurrentFigure',contactTimeFig);
     box on
-%     legend({'discrete states','signal choice','signal combination'},'Location','NorthEast')
+    %     legend({'discrete states','signal choice','signal combination'},'Location','NorthEast')
     xlabel('filopodium-cell contact time (hrs)')
     ylabel('relative frequency')
     xlim([0 time])

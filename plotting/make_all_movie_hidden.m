@@ -1,10 +1,6 @@
 function make_all_movie_hidden(saveInfo,startAtFrame,keepFrames)
 % saves images and compiles movie externally - LJS
 % saves to /avi_mat
-% Issues/todo:
-% - rewrite into a function
-
-% close all
 
 movieFig = figure('units','points','outerposition',[0 0 1600 430],'position',[1 1 1599 363],...
     'PaperPositionMode','manual','PaperUnits','points','PaperPosition',[0 0 1600 430],'visible','off');
@@ -48,7 +44,6 @@ for timeCtr=1:skip:numTsteps
     T = get(gca,'Position');
     set(gca,'position',[T_t(1)+0.04 T_t(2) 1-T_t(1)-T_t(3)-0.1 1-T_t(2)-T_t(4)]);
     
-    %     axis image
     print(movieFig,'-r0','-dtiff',[filePath,int2str(frameCtr),'.tiff'])
     frameCtr = frameCtr + 1;
     if exist('stopTime','var')&&t_save(timeCtr)>=stopTime
